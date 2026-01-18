@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import pathlib
 
 # -------- paths --------
@@ -12,11 +14,11 @@ LOGS_REPLAY_PATH : pathlib.Path = REPO_PATH / "Config" / "Logs" / "CSVLogger" / 
 
 # -------- experiment file names --------
 
-KICK : str = "kick"
-WALK : str = "walk"
-SIDESTEP : str = "sidestep"
-STANDUP_FRONT : str = "standup_front"
-STANDUP_BACK : str = "standup_back"
+
+
+
+
+
 
 
 def update_cfg(path : pathlib.Path, replacement : list[tuple[str, str]]) -> bool:
@@ -29,3 +31,7 @@ def update_cfg(path : pathlib.Path, replacement : list[tuple[str, str]]) -> bool
     with open(path, "w") as f:
         f.write(file_text)
     return True
+
+
+
+
