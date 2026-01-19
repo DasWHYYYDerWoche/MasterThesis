@@ -1,24 +1,22 @@
 from __future__ import annotations
-import pathlib
+from pathlib import Path
 import subprocess
-import fileinput
-
 
 class Simulator:
     def __init__(self):
-        self._PATH : pathlib.Path = pathlib.Path.home() / "source" / "repos" / "NDevils2015"
+        self._PATH : Path = Path.home() / "source" / "repos" / "NDevils2015"
         # path to the config of the loggerT module
-        self._PATH_LOGGER_CONFIG : pathlib.Path = self._PATH / "Config" / "loggerT.cfg"
+        self._PATH_LOGGER_CONFIG : Path = self._PATH / "Config" / "loggerT.cfg"
         # path to the logs recorded on the field
-        self._PATH_FIELD_LOGS : pathlib.Path = self._PATH / "Config" / "Logs" / "ThesisFieldLogs"
+        self._PATH_FIELD_LOGS : Path = self._PATH / "Config" / "Logs" / "ThesisFieldLogs"
         # path to csv files extracted from the logs
-        self._PATH_LOGS_AS_CSVS : pathlib.Path = self._PATH / "Config" / "Logs" / "CSVLogger" / "logsAsCSVs"
+        self._PATH_LOGS_AS_CSVS : Path = self._PATH / "Config" / "Logs" / "CSVLogger" / "logsAsCSVs"
         # path to the replays of the extracted csv files
-        self._PATH_REPLAYS : pathlib.Path = self._PATH / "Config" / "Logs" / "CSVLogger" / "replays"
+        self._PATH_REPLAYS : Path = self._PATH / "Config" / "Logs" / "CSVLogger" / "replays"
         # path to the executable
-        self._PATH_EXECUTABLE : pathlib.Path = self._PATH / "Build" / "simulator-multiconfig" / "Release" / "SimRobot.exe"
+        self._PATH_EXECUTABLE : Path = self._PATH / "Build" / "simulator-multiconfig" / "Release" / "SimRobot.exe"
         # path to scenes
-        self._PATH_SCENE : pathlib.Path = self._PATH / "Config" / "Scenes"
+        self._PATH_SCENE : Path = self._PATH / "Config" / "Scenes"
 
 
     def run_extraction(self, action_name : str, log_folder : str, log_index : int, csv_name : str):
@@ -31,10 +29,15 @@ class Simulator:
 
     def run(self, scene : str, max_duration : int):
         try:
-            p = subprocess.Popen( str(self._PATH_EXECUTABLE) + " " + str(self._PATH_SCENE / scene) + ".ros2")
-            p.wait()
+            p = subprocess.Popen(str(self._PATH_EXECUTABLE) + " " + str(self._PATH_SCENE / scene) + ".ros2")
+            p.wait(max_duration)
         except Exception as e:
-            raise e
+            if isinstance(e, subprocess.TimeoutExpired):
+                print("Process ran for longer than the given max_duration of " + str(max_duration) + " second(s)")
+            else:
+                print("Error during subprocess creation:\n" + str(e))
+            if p:
+                p.terminate()
 
     # ---------- logger config modification
 
@@ -67,7 +70,6 @@ class Simulator:
         with open(path, "r") as f:
             lines = f.readlines()
         # change text
-        print(lines)
         with open(path, "w") as f:
             f.write("sl LOG ${Logfile:,../Logs/*Combined.log}\n")
             for line in lines:
@@ -80,23 +82,38 @@ class Simulator:
         with open(path, "r") as f:
             lines = f.readlines()
         # change text
-        print(lines)
         with open(path, "w") as f:
             f.write("sl LOG ../log/ThesisFieldLogs/" + action_name + "/" + log_recording_date + "/" + str(log_index) + ".log" + "\n")
             for line in lines:
                 if not line.startswith("sl LOG "):
                     f.write(line)
 
+    # ---------- Properties
 
-    @staticmethod
-    def _update_file(path: pathlib.Path, replacement: list[tuple[str, str]]) -> bool:
-        file_text = ""
+    @property
+    def path(self) -> Path:
+        return self._PATH
 
-        with open(path, "r") as f:
-            file_text = f.read()
-        # change text
-        for (old, new) in replacement:
-            file_text = file_text.replace(old, new)
-        with open(path, "w") as f:
-            f.write(file_text)
-        return True
+    @property
+    def path_logger_config(self) -> Path:
+        return self._PATH_LOGGER_CONFIG
+
+    @property
+    def path_field_logs(self) -> Path:
+        return self._PATH_FIELD_LOGS
+
+    @property
+    def path_logs_as_csvs(self) -> Path:
+        return self._PATH_LOGS_AS_CSVS
+
+    @property
+    def path_replays(self) -> Path:
+        return self._PATH_REPLAYS
+
+    @property
+    def path_executable(self) -> Path:
+        return self._PATH_EXECUTABLE
+
+    @property
+    def path_scene(self) -> Path:
+        return self._PATH_SCENE

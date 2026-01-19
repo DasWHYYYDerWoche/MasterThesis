@@ -4,12 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b8d71ec4-48b2-4ec5-b1a5-6fe6d26ab8b8" name="Changes" comment="feature: created and implemented &quot;update_cfg method&quot;">
-      <change afterPath="$PROJECT_DIR$/notes.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/ExperimentData.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/Simulator.py" afterDir="false" />
+    <list default="true" id="b8d71ec4-48b2-4ec5-b1a5-6fe6d26ab8b8" name="Changes" comment="feature: created simulator class">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/main.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ExperimentData.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/ExperimentData.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Simulator.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Simulator.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/__init__.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/core.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/core.py" afterDir="false" />
     </list>
@@ -80,12 +79,21 @@
       <option name="project" value="LOCAL" />
       <updated>1767789268955</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="feature: created simulator class">
+      <option name="closed" value="true" />
+      <created>1768745489076</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1768745489076</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="initial" />
     <MESSAGE value="feature: created and implemented &quot;update_cfg method&quot;" />
-    <option name="LAST_COMMIT_MESSAGE" value="feature: created and implemented &quot;update_cfg method&quot;" />
+    <MESSAGE value="feature: created simulator class" />
+    <option name="LAST_COMMIT_MESSAGE" value="feature: created simulator class" />
   </component>
 </project>
