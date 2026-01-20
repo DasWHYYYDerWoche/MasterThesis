@@ -1,35 +1,42 @@
 from __future__ import annotations
 from pathlib import Path
 import subprocess
+import xml.etree.ElementTree as ET
+
+PATH : Path = Path.home() / "source" / "repos" / "NDevils2015"
+# path to the config of the loggerT module
+PATH_LOGGER_CONFIG : Path = PATH / "Config" / "loggerT.cfg"
+# path to the logs recorded on the field
+PATH_FIELD_LOGS : Path = PATH / "Config" / "Logs" / "ThesisFieldLogs"
+# path to csv files extracted from the logs
+PATH_LOGS_AS_CSVS : Path = PATH / "Config" / "Logs" / "CSVLogger" / "logsAsCSVs"
+# path to the replays of the extracted csv files
+PATH_REPLAYS : Path = PATH / "Config" / "Logs" / "CSVLogger" / "replays"
+# path to the executable
+PATH_EXECUTABLE : Path = PATH / "Build" / "simulator-multiconfig" / "Release" / "SimRobot.exe"
+# path to scenes
+PATH_SCENE : Path = PATH / "Config" / "Scenes"
 
 class Simulator:
     def __init__(self):
-        self._PATH : Path = Path.home() / "source" / "repos" / "NDevils2015"
-        # path to the config of the loggerT module
-        self._PATH_LOGGER_CONFIG : Path = self._PATH / "Config" / "loggerT.cfg"
-        # path to the logs recorded on the field
-        self._PATH_FIELD_LOGS : Path = self._PATH / "Config" / "Logs" / "ThesisFieldLogs"
-        # path to csv files extracted from the logs
-        self._PATH_LOGS_AS_CSVS : Path = self._PATH / "Config" / "Logs" / "CSVLogger" / "logsAsCSVs"
-        # path to the replays of the extracted csv files
-        self._PATH_REPLAYS : Path = self._PATH / "Config" / "Logs" / "CSVLogger" / "replays"
-        # path to the executable
-        self._PATH_EXECUTABLE : Path = self._PATH / "Build" / "simulator-multiconfig" / "Release" / "SimRobot.exe"
-        # path to scenes
-        self._PATH_SCENE : Path = self._PATH / "Config" / "Scenes"
-
+        self._replay_scene = ET.parse(PATH_SCENE / "ThesisCSVReplay.ros2")
 
     def run_extraction(self, action_name : str, log_folder : str, log_index : int, csv_name : str):
         self.set_logger_cfg_extract(action_name, log_folder, log_index, csv_name)
-        self.run("ThesisLogExtraction", 5)
+        self.run("ThesisLogExtraction", 5, 1)
 
     def run_replay(self, action_name : str, log_folder : str, log_index : int, csv_name : str):
         self.set_logger_cfg_replay(action_name, log_folder, log_index, csv_name)
-        self.run("ThesisCSVReplay", 5)
+        self.run("ThesisCSVReplay", 5, 1)
 
-    def run(self, scene : str, max_duration : int):
+    def run(self, scene : str, max_duration : int, num_instances : int):
         try:
-            p = subprocess.Popen(str(self._PATH_EXECUTABLE) + " " + str(self._PATH_SCENE / scene) + ".ros2")
+            p = subprocess.Popen(str(PATH_EXECUTABLE) + " " + str(PATH_SCENE / scene) + ".ros2",
+                                 stdout=subprocess.PIPE, text=True)
+            for line in p.stdout:
+                print(line)
+                if line.strip() == "READY":
+                    break
             p.wait(max_duration)
         except Exception as e:
             if isinstance(e, subprocess.TimeoutExpired):
@@ -59,13 +66,13 @@ class Simulator:
         text += "logFolder = \"" + log_folder + "\";\n"
         text += "logIndex = " + str(log_index) + ";\n"
         text += "csvName = \"" + csv_name + "\";\n"
-        with open(self._PATH_LOGGER_CONFIG, "w") as f:
+        with open(PATH_LOGGER_CONFIG, "w") as f:
             f.write(text)
 
     # ---------- ThesisLogExtraction scene modification
 
     def _set_log_extraction_con_none(self):
-        path = self._PATH_SCENE / "ThesisLogExtraction.con"
+        path = PATH_SCENE / "ThesisLogExtraction.con"
         lines = ""
         with open(path, "r") as f:
             lines = f.readlines()
@@ -77,7 +84,7 @@ class Simulator:
                     f.write(line)
 
     def _set_log_extraction_con(self, action_name :str, log_recording_date : str, log_index : int):
-        path = self._PATH_SCENE / "ThesisLogExtraction.con"
+        path = PATH_SCENE / "ThesisLogExtraction.con"
         lines = ""
         with open(path, "r") as f:
             lines = f.readlines()
@@ -88,32 +95,15 @@ class Simulator:
                 if not line.startswith("sl LOG "):
                     f.write(line)
 
-    # ---------- Properties
+    # ---------- logger config modification
+    def _reset_replay_scene_parameters(self):
+        self._set_replay_scene_parameters(12500, 10000, 1425, 7.5)
 
-    @property
-    def path(self) -> Path:
-        return self._PATH
-
-    @property
-    def path_logger_config(self) -> Path:
-        return self._PATH_LOGGER_CONFIG
-
-    @property
-    def path_field_logs(self) -> Path:
-        return self._PATH_FIELD_LOGS
-
-    @property
-    def path_logs_as_csvs(self) -> Path:
-        return self._PATH_LOGS_AS_CSVS
-
-    @property
-    def path_replays(self) -> Path:
-        return self._PATH_REPLAYS
-
-    @property
-    def path_executable(self) -> Path:
-        return self._PATH_EXECUTABLE
-
-    @property
-    def path_scene(self) -> Path:
-        return self._PATH_SCENE
+    #Kp="12500" Kd="10000" contactKp="1425" contactKd="7.5
+    def _set_replay_scene_parameters(self, kp : float, kd : float, contact_kp : float, contact_kd : float):
+        element = self._replay_scene.getroot().find("Scene")
+        element.set("Kp",str(kp))
+        element.set("Kd",str(kd))
+        element.set("contactKp",str(contact_kp))
+        element.set("ContactKd",str(contact_kd))
+        self._replay_scene.write(PATH_SCENE / "ThesisCSVReplay.ros2")

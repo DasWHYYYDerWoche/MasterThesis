@@ -8,6 +8,7 @@ TODO:
     create scenes
     autoclose simulator after replaying a log
     load csvs and calculate the simulation gab
+    multithreading ?
 
 
 
