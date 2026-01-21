@@ -1,11 +1,12 @@
 from __future__ import annotations
+
 from pathlib import Path
 import subprocess
 import xml.etree.ElementTree as ET
 
 PATH : Path = Path.home() / "source" / "repos" / "NDevils2015"
 # path to the config of the loggerT module
-PATH_LOGGER_CONFIG : Path = PATH / "Config" / "loggerT.cfg"
+PATH_LOGGER_CFG : Path = PATH / "Config" / "loggerT.cfg"
 # path to the logs recorded on the field
 PATH_FIELD_LOGS : Path = PATH / "Config" / "Logs" / "ThesisFieldLogs"
 # path to csv files extracted from the logs
@@ -17,9 +18,19 @@ PATH_EXECUTABLE : Path = PATH / "Build" / "simulator-multiconfig" / "Release" / 
 # path to scenes
 PATH_SCENE : Path = PATH / "Config" / "Scenes"
 
+HINGE_NAMES = [
+"HeadYaw","HeadPitch",
+"LShoulderPitch","LShoulderRoll","LElbowYaw","LElbowRoll","LWristYaw",
+"RShoulderPitch","RShoulderRoll","RElbowYaw","RElbowRoll","RWristYaw",
+"LHipYawPitch","LHipRoll","LHipPitch","LKneePitch","LAnklePitch","LAnkleRoll",
+"RHipYawPitch","RHipRoll","RHipPitch","RKneePitch","RAnklePitch","RAnkleRoll"
+]
+
 class Simulator:
     def __init__(self):
         self._replay_scene = ET.parse(PATH_SCENE / "ThesisCSVReplay.ros2")
+        self._nao_config = ET.parse(PATH_SCENE / "Includes" / "NaoV6H25.rsi2")
+        self._nao_config_backup = ET.parse(PATH_SCENE / "Includes" / "NaoV6H25_BACKUP.rsi2")
 
     def run_extraction(self, action_name : str, log_folder : str, log_index : int, csv_name : str):
         self.set_logger_cfg_extract(action_name, log_folder, log_index, csv_name)
@@ -66,7 +77,7 @@ class Simulator:
         text += "logFolder = \"" + log_folder + "\";\n"
         text += "logIndex = " + str(log_index) + ";\n"
         text += "csvName = \"" + csv_name + "\";\n"
-        with open(PATH_LOGGER_CONFIG, "w") as f:
+        with open(PATH_LOGGER_CFG, "w") as f:
             f.write(text)
 
     # ---------- ThesisLogExtraction scene modification
@@ -95,11 +106,11 @@ class Simulator:
                 if not line.startswith("sl LOG "):
                     f.write(line)
 
-    # ---------- logger config modification
-    def _reset_replay_scene_parameters(self):
-        self._set_replay_scene_parameters(12500, 10000, 1425, 7.5)
+    # ---------- replay scene modification
 
-    #Kp="12500" Kd="10000" contactKp="1425" contactKd="7.5
+    def _reset_replay_scene_parameters(self):
+        self._set_replay_scene_parameters(kp=12500, kd=10000, contact_kp=1425, contact_kd=7.5)
+
     def _set_replay_scene_parameters(self, kp : float, kd : float, contact_kp : float, contact_kd : float):
         element = self._replay_scene.getroot().find("Scene")
         element.set("Kp",str(kp))
@@ -107,3 +118,75 @@ class Simulator:
         element.set("contactKp",str(contact_kp))
         element.set("ContactKd",str(contact_kd))
         self._replay_scene.write(PATH_SCENE / "ThesisCSVReplay.ros2")
+
+    # ---------- nao config modification
+
+    def _reset_nao_rsi2(self):
+        hinges = [hinge.find("Axis").find("ServoMotor") for hinge in list(self._nao_config.getroot().iter("Hinge"))]
+        defaults = [hinge.find("Axis").find("ServoMotor") for hinge in list(self._nao_config_backup.getroot().iter("Hinge"))]
+        for hinge, default in zip(hinges, defaults):
+            for attribute in default.keys():
+                hinge.set(attribute, default.get(attribute))
+
+    def _set_nao_rsi2(self):
+        r = self._nao_config.getroot()
+        for hinge in r.iter("Hinge"):
+            print(hinge.get("name"))
+
+
+
+
+class ReplayScene:
+    def __init__(self):
+        pass
+
+
+
+
+class Hinge:
+    def __init__(self, max_velocity : float, max_force : float, p : float, i : float, d : float):
+        self._max_velocity = max_velocity
+        self._max_force = max_force
+        self._p = p
+        self._i = i
+        self._d = d
+
+    @property
+    def max_velocity(self) -> float:
+        return self._max_velocity
+
+    @property
+    def max_force(self) -> float:
+        return self._max_force
+
+    @property
+    def p(self) -> float:
+        return self._p
+
+    @property
+    def i(self) -> float:
+        return self._i
+
+    @property
+    def d(self) -> float:
+        return self._d
+
+    @max_velocity.setter
+    def max_velocity(self, value: float) -> None:
+        self._max_velocity = value
+
+    @max_force.setter
+    def max_force(self, value: float) -> None:
+        self._max_force = value
+
+    @p.setter
+    def p(self, value: float) -> None:
+        self._p = value
+
+    @i.setter
+    def i(self, value: float) -> None:
+        self._i = value
+
+    @d.setter
+    def d(self, value: float) -> None:
+        self._d = value
