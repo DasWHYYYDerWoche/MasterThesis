@@ -3,20 +3,22 @@ from __future__ import annotations
 from pathlib import Path
 import subprocess
 import xml.etree.ElementTree as ET
+from .FileHandler import LoggerHandler, NaoV6H25Handler, ThesisCSVReplayHandler
 
 PATH : Path = Path.home() / "source" / "repos" / "NDevils2015"
 # path to the config of the loggerT module
-PATH_LOGGER_CFG : Path = PATH / "Config" / "loggerT.cfg"
+PATH_CONFIG : Path = PATH / "Config"
+# path to scenes
+PATH_SCENE : Path = PATH_CONFIG / "Scenes"
 # path to the logs recorded on the field
-PATH_FIELD_LOGS : Path = PATH / "Config" / "Logs" / "ThesisFieldLogs"
+PATH_FIELD_LOGS : Path = PATH_CONFIG / "Logs" / "ThesisFieldLogs"
 # path to csv files extracted from the logs
-PATH_LOGS_AS_CSVS : Path = PATH / "Config" / "Logs" / "CSVLogger" / "logsAsCSVs"
+PATH_LOGS_AS_CSVS : Path = PATH_CONFIG / "Logs" / "CSVLogger" / "logsAsCSVs"
 # path to the replays of the extracted csv files
-PATH_REPLAYS : Path = PATH / "Config" / "Logs" / "CSVLogger" / "replays"
+PATH_REPLAYS : Path = PATH_CONFIG / "Logs" / "CSVLogger" / "replays"
 # path to the executable
 PATH_EXECUTABLE : Path = PATH / "Build" / "simulator-multiconfig" / "Release" / "SimRobot.exe"
-# path to scenes
-PATH_SCENE : Path = PATH / "Config" / "Scenes"
+
 
 HINGE_NAMES = [
 "HeadYaw","HeadPitch",
@@ -31,6 +33,14 @@ class Simulator:
         self._replay_scene = ET.parse(PATH_SCENE / "ThesisCSVReplay.ros2")
         self._nao_config = ET.parse(PATH_SCENE / "Includes" / "NaoV6H25.rsi2")
         self._nao_config_backup = ET.parse(PATH_SCENE / "Includes" / "NaoV6H25_BACKUP.rsi2")
+
+        self._loggerHandler = LoggerHandler(PATH_CONFIG)
+        self._naoV6H25Handler = NaoV6H25Handler(PATH_SCENE)
+
+        for key, value in self._naoV6H25Handler._data.items():
+            print(key + " : " + str(value))
+
+        self._thesisCSVReplayHandler = ThesisCSVReplayHandler(PATH_SCENE)
 
     def run_extraction(self, action_name : str, log_folder : str, log_index : int, csv_name : str):
         self.set_logger_cfg_extract(action_name, log_folder, log_index, csv_name)
@@ -77,7 +87,7 @@ class Simulator:
         text += "logFolder = \"" + log_folder + "\";\n"
         text += "logIndex = " + str(log_index) + ";\n"
         text += "csvName = \"" + csv_name + "\";\n"
-        with open(PATH_LOGGER_CFG, "w") as f:
+        with open(PATH_CONFIG, "w") as f:
             f.write(text)
 
     # ---------- ThesisLogExtraction scene modification
@@ -134,59 +144,3 @@ class Simulator:
             print(hinge.get("name"))
 
 
-
-
-class ReplayScene:
-    def __init__(self):
-        pass
-
-
-
-
-class Hinge:
-    def __init__(self, max_velocity : float, max_force : float, p : float, i : float, d : float):
-        self._max_velocity = max_velocity
-        self._max_force = max_force
-        self._p = p
-        self._i = i
-        self._d = d
-
-    @property
-    def max_velocity(self) -> float:
-        return self._max_velocity
-
-    @property
-    def max_force(self) -> float:
-        return self._max_force
-
-    @property
-    def p(self) -> float:
-        return self._p
-
-    @property
-    def i(self) -> float:
-        return self._i
-
-    @property
-    def d(self) -> float:
-        return self._d
-
-    @max_velocity.setter
-    def max_velocity(self, value: float) -> None:
-        self._max_velocity = value
-
-    @max_force.setter
-    def max_force(self, value: float) -> None:
-        self._max_force = value
-
-    @p.setter
-    def p(self, value: float) -> None:
-        self._p = value
-
-    @i.setter
-    def i(self, value: float) -> None:
-        self._i = value
-
-    @d.setter
-    def d(self, value: float) -> None:
-        self._d = value

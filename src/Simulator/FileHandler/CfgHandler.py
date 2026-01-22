@@ -5,7 +5,6 @@ from re import compile as re_compile
 from pathlib import Path
 
 from .FileHandler import  FileHandler
-from ..Simulator import PATH_LOGGER_CFG
 
 class CfgHandler(FileHandler, ABC):
     def __init__(self, path: Path):
@@ -31,7 +30,8 @@ class CfgHandler(FileHandler, ABC):
                     try:
                         value = int(value)
                     except ValueError:
-                        pass  # leave as string if not int
+                        #leave value as string
+                        pass
 
                 self._data[key] = value
 
@@ -46,14 +46,14 @@ class CfgHandler(FileHandler, ABC):
             else:
                 val_str = str(value)
             text += f"{key} = {val_str};\n"
-        with open(PATH_LOGGER_CFG, "w") as f:
+        with open(self._path, "w") as f:
             f.write(text)
 
 
 
 class LoggerHandler(CfgHandler):
-    def __init__(self):
-        super().__init__(PATH_LOGGER_CFG)
+    def __init__(self, path_config: Path):
+        super().__init__(path_config / "loggerT.cfg")
 
     @override
     def get_default(self) -> dict:
