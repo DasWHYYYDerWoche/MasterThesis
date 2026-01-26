@@ -1,11 +1,11 @@
 from __future__ import annotations
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 from typing import override
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
 from .FileHandler import FileHandler
-from ..Utils import Hinge
+from ...Utils import Hinge, PATH_SCENE
 
 
 class XmlHandler(FileHandler):
@@ -32,8 +32,8 @@ class XmlHandler(FileHandler):
 
 
 class ThesisCSVReplayHandler(XmlHandler):
-    def __init__(self, path_scene: Path):
-        super().__init__(path_scene / "ThesisCSVReplay.ros2")
+    def __init__(self):
+        super().__init__(PATH_SCENE / "ThesisCSVReplay.ros2")
 
     @override
     def _xml_to_dict(self):
@@ -64,8 +64,8 @@ class ThesisCSVReplayHandler(XmlHandler):
 
 
 class NaoV6H25Handler(XmlHandler):
-    def __init__(self, path_config: Path):
-        self._partial_path = path_config / "Includes"
+    def __init__(self):
+        self._partial_path = PATH_SCENE / "Includes"
         super().__init__(self._partial_path / "NaoV6H25.rsi2")
 
     def _xml_to_dict(self):

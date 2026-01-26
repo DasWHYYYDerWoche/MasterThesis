@@ -1,5 +1,13 @@
 from __future__ import annotations
 
+HINGE_NAMES = [
+"HeadYaw","HeadPitch",
+"LShoulderPitch","LShoulderRoll","LElbowYaw","LElbowRoll","LWristYaw",
+"RShoulderPitch","RShoulderRoll","RElbowYaw","RElbowRoll","RWristYaw",
+"LHipYawPitch","LHipRoll","LHipPitch","LKneePitch","LAnklePitch","LAnkleRoll",
+"RHipYawPitch","RHipRoll","RHipPitch","RKneePitch","RAnklePitch","RAnkleRoll"
+]
+
 class Hinge:
     def __init__(self, max_velocity : float, max_force : float, p : float, i : float, d : float):
         self._max_velocity = max_velocity

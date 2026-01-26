@@ -5,6 +5,7 @@ from re import compile as re_compile
 from pathlib import Path
 
 from .FileHandler import  FileHandler
+from ...Utils import PATH_CONFIG
 
 class CfgHandler(FileHandler, ABC):
     def __init__(self, path: Path):
@@ -52,8 +53,8 @@ class CfgHandler(FileHandler, ABC):
 
 
 class LoggerHandler(CfgHandler):
-    def __init__(self, path_config: Path):
-        super().__init__(path_config / "loggerT.cfg")
+    def __init__(self):
+        super().__init__(PATH_CONFIG / "loggerT.cfg")
 
     @override
     def get_default(self) -> dict:
