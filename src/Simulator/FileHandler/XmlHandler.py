@@ -46,7 +46,7 @@ class ThesisCSVReplayHandler(XmlHandler):
     @override
     def _dict_to_xml(self):
         element: ET.Element = self._xml_tree.getroot().find("Scene")
-        for key,value in self._data:
+        for key,value in self._data.items():
             element.set(key, str(value))
 
     @override
@@ -65,11 +65,16 @@ class ThesisCSVReplayHandler(XmlHandler):
 
 class NaoV6H25Handler(XmlHandler):
     def __init__(self, path_config: Path):
-        super().__init__(path_config / "Includes" / "NaoV6H25.rsi2")
+        self._partial_path = path_config / "Includes"
+        super().__init__(self._partial_path / "NaoV6H25.rsi2")
 
     def _xml_to_dict(self):
-        root: ET.Element = self._xml_tree.getroot()
+        self._data = self._convert(self._xml_tree)
 
+    @staticmethod
+    def _convert(xml_tree : ET.ElementTree) -> dict:
+        root: ET.Element = xml_tree.getroot()
+        data = {}
         for hinge_element in root.iter("Hinge"):
             servo_element = hinge_element.find("Axis").find("ServoMotor")
             try:
@@ -79,15 +84,23 @@ class NaoV6H25Handler(XmlHandler):
                 i = float(servo_element.get("i", "0"))
                 d = float(servo_element.get("d", "0"))
                 hinge = Hinge(max_velocity, max_force, p, i, d)
-                self._data[hinge_element.get("name")] = hinge
+                data[hinge_element.get("name")] = hinge
             except ValueError:
                 raise ValueError
+        return data
 
     def _dict_to_xml(self):
         root: ET.Element = self._xml_tree.getroot()
         for hinge_element in root.iter("Hinge"):
-
+            hinge = self._data[hinge_element.get("name")]
+            servo_element = hinge_element.find("Axis").find("ServoMotor")
+            servo_element.set("maxVelocity", str(hinge.max_velocity))
+            servo_element.set("maxForce", str(hinge.max_force))
+            servo_element.set("p", str(hinge.p))
+            servo_element.set("i", str(hinge.i))
+            servo_element.set("d", str(hinge.d))
             pass
 
     def get_default(self) -> dict:
-        pass
+        default_tree = ET.parse(self._partial_path / "NaoV6H25_BACKUP.rsi2")
+        return self._convert(default_tree)

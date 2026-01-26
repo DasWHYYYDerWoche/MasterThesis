@@ -36,10 +36,6 @@ class Simulator:
 
         self._loggerHandler = LoggerHandler(PATH_CONFIG)
         self._naoV6H25Handler = NaoV6H25Handler(PATH_SCENE)
-
-        for key, value in self._naoV6H25Handler._data.items():
-            print(key + " : " + str(value))
-
         self._thesisCSVReplayHandler = ThesisCSVReplayHandler(PATH_SCENE)
 
     def run_extraction(self, action_name : str, log_folder : str, log_index : int, csv_name : str):

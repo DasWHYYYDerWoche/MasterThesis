@@ -40,7 +40,7 @@ class FileHandler(ABC):
             return False
         any_different: bool = False
         for key, value in zip(keys, values):
-            if not value.__equals__(self._data[key]):
+            if not value is self._data[key]:
                 any_different = True
                 self._data[key] = value
         if any_different:
