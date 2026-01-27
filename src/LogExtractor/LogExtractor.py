@@ -2,10 +2,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Optional
 
-from ..Simulator import simulator
-from ..Utils import PATH_FIELD_LOGS
-
-class CSVExtractor:
+class LogExtractor:
     def __init__(self):
         pass
 

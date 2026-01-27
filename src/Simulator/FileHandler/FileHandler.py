@@ -29,7 +29,7 @@ class FileHandler(ABC):
         self._different_from_file = False
 
     def set_value(self, key: str, value: Any) -> bool:
-        if value.__equals__(self._data[key]):
+        if value is self._data[key]:
             return True
         self._data[key] = value
         self._different_from_file = True
