@@ -4,10 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b8d71ec4-48b2-4ec5-b1a5-6fe6d26ab8b8" name="Changes" comment="feature:&#10;- added additional logging to set_value and set_values methods in FileHandler&#10;- made methods set_values and set_value private">
+    <list default="true" id="b8d71ec4-48b2-4ec5-b1a5-6fe6d26ab8b8" name="Changes" comment="fix:&#10;-changed logging level for file loading to info&#10;-changed logging level for set_value(s) to warning when the key does not exist">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/main.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Simulator/FileHandler/FileHandler.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Simulator/FileHandler/FileHandler.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/notes.txt" beforeDir="false" afterPath="$PROJECT_DIR$/notes.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/CSVReplayer/CSVReplayer.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/CSVReplayer/CSVReplayer.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Simulator/Simulator.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Simulator/Simulator.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Simulator/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Simulator/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Utils/Paths.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Utils/Paths.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -183,7 +187,15 @@
       <option name="project" value="LOCAL" />
       <updated>1769684468121</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="fix:&#10;-changed logging level for file loading to info&#10;-changed logging level for set_value(s) to warning when the key does not exist">
+      <option name="closed" value="true" />
+      <created>1769684755180</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1769684755180</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -200,6 +212,7 @@
     <MESSAGE value="feature:&#10;- updated simulator to use new file loading structure&#10;- added method to run log extraction for a list of files which are then run in parallel" />
     <MESSAGE value="feature:&#10;- changed logging structure so all logs happen in FileHanlder" />
     <MESSAGE value="feature:&#10;- added additional logging to set_value and set_values methods in FileHandler&#10;- made methods set_values and set_value private" />
-    <option name="LAST_COMMIT_MESSAGE" value="feature:&#10;- added additional logging to set_value and set_values methods in FileHandler&#10;- made methods set_values and set_value private" />
+    <MESSAGE value="fix:&#10;-changed logging level for file loading to info&#10;-changed logging level for set_value(s) to warning when the key does not exist" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix:&#10;-changed logging level for file loading to info&#10;-changed logging level for set_value(s) to warning when the key does not exist" />
   </component>
 </project>

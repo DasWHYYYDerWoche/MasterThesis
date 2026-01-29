@@ -1,7 +1,7 @@
 from __future__ import annotations
 from pathlib import Path
 
-from ..Simulator import simulator
+from ..Simulator import Simulator
 
 class CSVReplayer:
     def __init__(self):

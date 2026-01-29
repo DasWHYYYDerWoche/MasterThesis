@@ -6,6 +6,8 @@ PATH : Path = Path.home() / "source" / "repos" / "NDevils2015"
 PATH_CONFIG : Path = PATH / "Config"
 # path to scenes
 PATH_SCENE : Path = PATH_CONFIG / "Scenes"
+# path to the scene used for log extraction
+PATH_LOG_EXTRACTION_SCENE = PATH_SCENE / "ThesisLogExtraction"
 # path to the logs recorded on the field
 PATH_FIELD_LOGS : Path = PATH_CONFIG / "Logs" / "ThesisFieldLogs"
 # path to csv files extracted from the logs
