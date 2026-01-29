@@ -78,7 +78,7 @@ class LoggerHandler(CfgHandler):
         }
 
     def set(self, logging: bool, log_extraction: bool, csv_replay: bool, action_name: str, log_folder: str, log_index: int, csv_name: str):
-        self.set_values(keys=self.keys, values=[logging, log_extraction, csv_replay, action_name, log_folder, log_index, csv_name])
+        self._set_values(keys=self.keys, values=[logging, log_extraction, csv_replay, action_name, log_folder, log_index, csv_name])
 
     def set_extract(self, action_name: str, log_folder: str, log_index: int, csv_name: str):
         self.set(logging=True, log_extraction=True, csv_replay=False, action_name=action_name,

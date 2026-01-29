@@ -60,7 +60,7 @@ class ThesisCSVReplayHandler(XmlHandler):
         }
 
     def set(self, kp: float, kd: float, contact_kp: float, contact_kd: float):
-        self.set_values(keys=self.keys, values=[kp,kd,contact_kp,contact_kd])
+        self._set_values(keys=self.keys, values=[kp, kd, contact_kp, contact_kd])
 
 
 

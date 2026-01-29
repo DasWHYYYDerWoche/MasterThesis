@@ -24,6 +24,9 @@ class FileHandler(ABC):
     def load_from_file(self):
         try:
             self._load_from_file()
+            if len(self._data.keys()) is not len(self.get_default().keys()):
+                raise ValueError("Inconsistent number of keys")
+            self._initial_data = self._data.copy()
             logger.debug("%s loaded from %s", type(self).__name__, self._path)
         except Exception as e:
             logger.exception("%s failed to load due to %s", type(self).__name__, type(e).__name__)
@@ -39,23 +42,40 @@ class FileHandler(ABC):
     def get_default(self) -> dict:
         pass
 
-    def set_value(self, key: str, value: Any):
-        logger.debug("%s set \"%s\" to \"%s\"", type(self).__name__, key, value)
-        self._data[key] = value
+    def _set_value(self, key: str, value: Any):
+        if self._data.keys().__contains__(key):
+            self._data[key] = value
+            logger.debug("%s set \"%s\" to \"%s\"", type(self).__name__, key, value)
+        else:
+            logger.info("%s does not contain key \"%s\"", type(self).__name__, key)
 
-    def set_values(self, keys: list[str], values: list[Any]):
+    def _set_values(self, keys: list[str], values: list[Any]):
         if len(keys) != len(values):
             logger.debug("%s values \"%s\" and keys \"%s\" have different length", type(self).__name__, keys, values)
-            return False
-        logger.debug("%s set \"%s\" to \"%s\"", type(self).__name__, keys, values)
+            return
+        contained_keys = []
+        contained_values = []
+        not_contained_keys = []
         for key, value in zip(keys, values):
-            self._data[key] = value
-        return True
+            if self._data.keys().__contains__(key):
+                self._data[key] = value
+                contained_keys.append(key)
+                contained_values.append(value)
+            else:
+                not_contained_keys.append(key)
+        if len(contained_keys) > 0:
+            logger.debug("%s set \"%s\" to \"%s\"", type(self).__name__, contained_keys, contained_values)
+        if len(not_contained_keys) > 0:
+            logger.info("%s does not contain key(s) \"%s\"", type(self).__name__, not_contained_keys)
 
     def set_default(self):
         logger.debug("%s set to default", type(self).__name__)
         default = self.get_default()
-        self.set_values(list(default.keys()), list(default.values()))
+        self._set_values(list(default.keys()), list(default.values()))
+
+    def set_to_initial_values(self):
+        logger.debug("%s set to initial values", type(self).__name__)
+        self._data = self._initial_data.copy()
 
     @property
     def keys(self) -> list[str]:

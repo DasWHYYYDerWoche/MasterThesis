@@ -50,4 +50,4 @@ class ThesisLogExtractionHandler(FileHandler):
         return {"path" : "${Logfile:,../Logs/*Combined.log}"}
 
     def set(self, path : str):
-        self.set_value("path", path)
+        self._set_value("path", path)
