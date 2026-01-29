@@ -1,74 +1,81 @@
 from __future__ import annotations
 
-from pathlib import Path
 import subprocess
 import time
-import xml.etree.ElementTree as ET
 from .FileHandler import LoggerHandler, NaoV6H25Handler, ThesisCSVReplayHandler, ThesisLogExtractionHandler
 from ..Utils import PATH_SCENE, PATH_EXECUTABLE, ExtractionData
 
-
+import logging
+logger = logging.getLogger("global_logger")
 
 class Simulator:
     def __init__(self):
         self.MAX_INSTANCES = 5
+        self._log_extraction_scene = "ThesisLogExtraction"
 
         self._loggerHandler = LoggerHandler()
         self._naoV6H25Handler = NaoV6H25Handler()
         self._thesisCSVReplayHandler = ThesisCSVReplayHandler()
         self._thesisLogExtractionHandler = ThesisLogExtractionHandler()
 
-    def run_log_extraction(self, extraction_datas : list[ExtractionData], scene : str, max_wait_for_ready : int = 10, max_run_duration : int = 20, num_instances : int = 1, gui : bool = True) -> bool:
+    def _set_log_extraction_parameters(self, extraction_data : ExtractionData):
+        self._loggerHandler.set(logging=True, log_extraction=True, csv_replay=False,
+                                action_name=extraction_data.action_name, log_folder=extraction_data.log_folder,
+                                log_index=extraction_data.log_index,
+                                csv_name="")
+        self._loggerHandler.write_to_file()
+        relative_path = ".." + "/Logs/ThesisFieldLogs/" + extraction_data.action_name + "/" + extraction_data.log_folder + "/" + (str(extraction_data.log_index) + ".log")
+        self._thesisLogExtractionHandler.set(relative_path)
+        self._thesisLogExtractionHandler.write_to_file()
+
+    def _reset_log_extraction_parameters(self):
+        self._loggerHandler.set_default()
+        self._loggerHandler.write_to_file()
+        self._thesisLogExtractionHandler.set_default()
+        self._thesisLogExtractionHandler.write_to_file()
+
+    def run_log_extraction(self, extraction_datas : list[ExtractionData], max_wait_for_ready : float = 10, max_run_duration : float = 20, gui : bool = True) -> bool:
         if len(extraction_datas) > self.MAX_INSTANCES:
             return False
         if max_wait_for_ready < 0 or max_run_duration < 0:
             return False
         process_list : list[subprocess.Popen[str]] = []
-        process_start_time : list[float] = []
-        process_ready_time : list[float] = []
+        process_start_time : list[float] = [0 for _ in extraction_datas]
+        process_ready_time : list[float] = [0 for _ in extraction_datas]
         try:
-            for i in range(num_instances):
-                process_list.append(subprocess.Popen(str(PATH_EXECUTABLE) + " " + str(PATH_SCENE / scene) + ".ros2",
+            for i in range(len(extraction_datas)):
+                self._set_log_extraction_parameters(extraction_datas[i])
+                process_list.append(subprocess.Popen(str(PATH_EXECUTABLE) + " " + str(PATH_SCENE / self._log_extraction_scene) + ".ros2",
                                  stdout=subprocess.PIPE, text=True))
-
+                process_start_time[i] = time.time()
+                #wait for process to have started (and loaded all parameters from logs) before updating parameters for next process
+                for line in process_list[i].stdout:
+                    if line.strip() == "READY":
+                        process_ready_time[i] = time.time()
+                        break
+                    if time.time() - process_start_time[i] > max_wait_for_ready:
+                        process_list[i].terminate()
+                        break
+            self._reset_log_extraction_parameters()
+            #wait for processes to finish
+            any_running = True
+            while any_running:
+                for i in range(len(process_list)):
+                    if process_list[i].poll() is None:
+                        if time.time() - process_ready_time[i] > max_run_duration:
+                            process_list[i].terminate()
+                any_running = any([True if process.poll() is None else False for process in process_list])
         except Exception as exception:
-            pass
-
+            return False
         return True
-        p1,p2 = None, None
-        try:
-            simulator._loggerHandler.set_value("logIndex", 0)
-            simulator._loggerHandler.write_to_file()
-            p1 = subprocess.Popen(str(PATH_EXECUTABLE) + " " + str(PATH_SCENE / scene) + ".ros2",
-                                 stdout=subprocess.PIPE, text=True)
-            for line in p1.stdout:
-                print(line)
-                if line.strip() == "READY":
-                    break
-            simulator._loggerHandler.set_value("logIndex", 1)
-            simulator._loggerHandler.write_to_file()
-            p2 = subprocess.Popen(str(PATH_EXECUTABLE) + " " + str(PATH_SCENE / scene) + ".ros2",
-                                 stdout=subprocess.PIPE, text=True)
-            for line in p2.stdout:
-                print(line)
-                if line.strip() == "READY":
-                    break
-        except Exception as e:
-            if isinstance(e, subprocess.TimeoutExpired):
-                print("Process ran for longer than the given max_duration of " + str(max_run_duration) + " second(s)")
-            else:
-                print("Error during subprocess creation:\n" + str(e))
-            if p1:
-                p1.terminate()
-            if p2:
-                p2.terminate()
 
-    def _set_log_extraction_parameters(self, extraction_data : ExtractionData):
-        self._loggerHandler.set(logging=True, log_extraction=True, csv_replay=False,
-                                action_name=extraction_data.action_name, log_folder=extraction_data.log_folder, log_index=extraction_data.log_index,
-                                csv_name="")
+    def _set_csv_replay_parameters(self):
+        pass
+
+    def _reset_csv_replay_parameters(self):
+        self._loggerHandler.set_default()
         self._loggerHandler.write_to_file()
-        self._thesisCSVReplayHandler
+
 
 
 simulator = Simulator()
