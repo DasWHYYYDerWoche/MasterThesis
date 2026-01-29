@@ -27,14 +27,14 @@ class FileHandler(ABC):
             if len(self._data.keys()) is not len(self.get_default().keys()):
                 raise ValueError("Inconsistent number of keys")
             self._initial_data = self._data.copy()
-            logger.debug("%s loaded from %s", type(self).__name__, self._path)
+            logger.info("%s loaded from %s", type(self).__name__, self._path)
         except Exception as e:
             logger.exception("%s failed to load due to %s", type(self).__name__, type(e).__name__)
 
     def write_to_file(self):
         try:
             self._write_to_file()
-            logger.debug("%s written to %s", type(self).__name__, self._path)
+            logger.info("%s written to %s", type(self).__name__, self._path)
         except Exception as e:
             logger.exception("%s failed to write due to %s", type(self).__name__, type(e).__name__)
 
@@ -47,7 +47,7 @@ class FileHandler(ABC):
             self._data[key] = value
             logger.debug("%s set \"%s\" to \"%s\"", type(self).__name__, key, value)
         else:
-            logger.info("%s does not contain key \"%s\"", type(self).__name__, key)
+            logger.warning("%s does not contain key \"%s\"", type(self).__name__, key)
 
     def _set_values(self, keys: list[str], values: list[Any]):
         if len(keys) != len(values):
@@ -66,7 +66,7 @@ class FileHandler(ABC):
         if len(contained_keys) > 0:
             logger.debug("%s set \"%s\" to \"%s\"", type(self).__name__, contained_keys, contained_values)
         if len(not_contained_keys) > 0:
-            logger.info("%s does not contain key(s) \"%s\"", type(self).__name__, not_contained_keys)
+            logger.warning("%s does not contain key(s) \"%s\"", type(self).__name__, not_contained_keys)
 
     def set_default(self):
         logger.debug("%s set to default", type(self).__name__)
