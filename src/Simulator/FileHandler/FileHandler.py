@@ -3,15 +3,17 @@ from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import Any
 
+import logging
+logger = logging.getLogger("global_logger")
+
 class FileHandler(ABC):
     def __init__(self, path: Path):
         self._path = path
         self._data: dict = {}
-        self._different_from_file = False
-        self._load()
+        self._load_from_file()
 
     @abstractmethod
-    def _load(self):
+    def _load_from_file(self):
         pass
 
     @abstractmethod
@@ -19,35 +21,24 @@ class FileHandler(ABC):
         pass
 
     @abstractmethod
-    def _write_to_file(self):
+    def write_to_file(self):
         pass
 
-    def write_to_file(self):
-        if not self._different_from_file:
-            return
-        self._write_to_file()
-        self._different_from_file = False
-
-    def set_value(self, key: str, value: Any) -> bool:
-        if value is self._data[key]:
-            return True
+    def set_value(self, key: str, value: Any):
+        logger.debug("%s set \"%s\" to \"%s\"", type(self).__name__, key, value)
         self._data[key] = value
-        self._different_from_file = True
-        return True
 
     def set_values(self, keys: list[str], values: list[Any]):
         if len(keys) != len(values):
+            logger.debug("%s values \"%s\" and keys \"%s\" have different length", type(self).__name__, keys, values)
             return False
-        any_different: bool = False
+        logger.debug("%s set \"%s\" to \"%s\"", type(self).__name__, keys, values)
         for key, value in zip(keys, values):
-            if not value is self._data[key]:
-                any_different = True
-                self._data[key] = value
-        if any_different:
-            self._different_from_file = True
+            self._data[key] = value
         return True
 
     def set_default(self):
+        logger.debug("%s set to default", type(self).__name__)
         default = self.get_default()
         self.set_values(list(default.keys()), list(default.values()))
 
