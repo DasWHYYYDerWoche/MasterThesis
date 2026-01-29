@@ -1,14 +1,13 @@
 TODO:
     create simulator class
-        change config
-        change scene
-        extract csv from log
-        replay csv
+        make sure set_default deletes added key/value pairs correctly
+        make set_value/set_values functions private
+        check correctness of dictonaries after loading files
+        reset to initial values function
     load csvs and calculate simulation gap
     create scenes
     autoclose simulator after replaying a log
     load csvs and calculate the simulation gab
-    multithreading ?
 
 
 

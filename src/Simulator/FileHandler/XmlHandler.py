@@ -7,16 +7,17 @@ from pathlib import Path
 from .FileHandler import FileHandler
 from ...Utils import Hinge, PATH_SCENE
 
-
 class XmlHandler(FileHandler):
     def __init__(self, path: Path):
         self._xml_tree: ET.ElementTree = ET.ElementTree()
         super().__init__(path)
 
-    def _load(self):
+    @override
+    def _load_from_file(self):
         self._xml_tree = ET.parse(self._path)
         self._xml_to_dict()
 
+    @override
     def _write_to_file(self):
         self._dict_to_xml()
         self._xml_tree.write(self._path)
@@ -68,6 +69,7 @@ class NaoV6H25Handler(XmlHandler):
         self._partial_path = PATH_SCENE / "Includes"
         super().__init__(self._partial_path / "NaoV6H25.rsi2")
 
+    @override
     def _xml_to_dict(self):
         self._data = self._convert(self._xml_tree)
 
@@ -89,6 +91,7 @@ class NaoV6H25Handler(XmlHandler):
                 raise ValueError
         return data
 
+    @override
     def _dict_to_xml(self):
         root: ET.Element = self._xml_tree.getroot()
         for hinge_element in root.iter("Hinge"):
@@ -101,6 +104,7 @@ class NaoV6H25Handler(XmlHandler):
             servo_element.set("d", str(hinge.d))
             pass
 
+    @override
     def get_default(self) -> dict:
         default_tree = ET.parse(self._partial_path / "NaoV6H25_BACKUP.rsi2")
         return self._convert(default_tree)

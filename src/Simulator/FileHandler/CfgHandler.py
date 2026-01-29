@@ -1,6 +1,6 @@
 from __future__ import annotations
 from abc import ABC
-from typing import override
+from typing import override, Optional
 from re import compile as re_compile
 from pathlib import Path
 
@@ -12,14 +12,14 @@ class CfgHandler(FileHandler, ABC):
         super().__init__(path)
 
     @override
-    def _load(self):
-        with open(self._path, "r") as f:
+    def _load_from_file(self):
+        f = None
+        try:
+            f = open(self._path, "r")
             text = f.read()
             pattern = re_compile(r'(\w+)\s*=\s*(.+?);')
-
             for key, raw_value in pattern.findall(text):
                 value = raw_value.strip()
-
                 # Convert value to appropriate Python type
                 if value.lower() == "true":
                     value = True
@@ -31,10 +31,14 @@ class CfgHandler(FileHandler, ABC):
                     try:
                         value = int(value)
                     except ValueError:
-                        #leave value as string
+                        # leave value as string
                         pass
-
                 self._data[key] = value
+        except Exception as e:
+            raise e
+        finally:
+            if f is not None:
+                f.close()
 
     @override
     def _write_to_file(self):
@@ -47,10 +51,15 @@ class CfgHandler(FileHandler, ABC):
             else:
                 val_str = str(value)
             text += f"{key} = {val_str};\n"
-        with open(self._path, "w") as f:
+        f = None
+        try:
+            f = open(self._path, "w")
             f.write(text)
-
-
+        except Exception as e:
+            raise e
+        finally:
+            if f is not None:
+                f.close()
 
 class LoggerHandler(CfgHandler):
     def __init__(self):
@@ -69,7 +78,7 @@ class LoggerHandler(CfgHandler):
         }
 
     def set(self, logging: bool, log_extraction: bool, csv_replay: bool, action_name: str, log_folder: str, log_index: int, csv_name: str):
-        self.set_values(keys=self.keys, values=[logging, log_extraction, csv_replay, action_name, log_folder, log_index, csv_name ])
+        self.set_values(keys=self.keys, values=[logging, log_extraction, csv_replay, action_name, log_folder, log_index, csv_name])
 
     def set_extract(self, action_name: str, log_folder: str, log_index: int, csv_name: str):
         self.set(logging=True, log_extraction=True, csv_replay=False, action_name=action_name,

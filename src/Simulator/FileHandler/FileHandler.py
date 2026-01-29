@@ -10,18 +10,33 @@ class FileHandler(ABC):
     def __init__(self, path: Path):
         self._path = path
         self._data: dict = {}
-        self._load_from_file()
+        self._initial_data: dict = {}
+        self.load_from_file()
 
     @abstractmethod
     def _load_from_file(self):
         pass
 
     @abstractmethod
-    def get_default(self) -> dict:
+    def _write_to_file(self):
         pass
 
-    @abstractmethod
+    def load_from_file(self):
+        try:
+            self._load_from_file()
+            logger.debug("%s loaded from %s", type(self).__name__, self._path)
+        except Exception as e:
+            logger.exception("%s failed to load due to %s", type(self).__name__, type(e).__name__)
+
     def write_to_file(self):
+        try:
+            self._write_to_file()
+            logger.debug("%s written to %s", type(self).__name__, self._path)
+        except Exception as e:
+            logger.exception("%s failed to write due to %s", type(self).__name__, type(e).__name__)
+
+    @abstractmethod
+    def get_default(self) -> dict:
         pass
 
     def set_value(self, key: str, value: Any):
