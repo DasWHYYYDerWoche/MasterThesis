@@ -16,3 +16,7 @@ PATH_LOGS_AS_CSVS : Path = PATH_CONFIG / "Logs" / "CSVLogger" / "logsAsCSVs"
 PATH_REPLAYS : Path = PATH_CONFIG / "Logs" / "CSVLogger" / "replays"
 # path to the executable
 PATH_EXECUTABLE : Path = PATH / "Build" / "simulator-multiconfig" / "Release" / "SimRobot.exe"
+
+
+
+ACTIONS = ["kick", "sidestep", "turn", "walk"]
