@@ -72,7 +72,7 @@ class LoggerHandler(CfgHandler):
             'logExtraction': False,
             'csvReplay': False,
             'actionName': '',
-            'recording_date': '',
+            'recordingDate': '',
             'logIndex': -1,
             'csvName': ''
         }
