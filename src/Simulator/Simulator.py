@@ -32,11 +32,11 @@ class Simulator:
 
     def _set_log_extraction_parameters(self, extraction_data : ExtractionData):
         self._loggerHandler.set(logging=True, log_extraction=True, csv_replay=False,
-                                action_name=extraction_data.action_name, log_folder=extraction_data.date,
+                                action_name=extraction_data.action_name, recording_date=extraction_data.recording_date,
                                 log_index=extraction_data.log_index,
                                 csv_name="")
         self._loggerHandler.write_to_file()
-        relative_path = ".." + "/Logs/ThesisFieldLogs/" + extraction_data.action_name + "/" + extraction_data.date + "/" + (str(extraction_data.log_index) + ".log")
+        relative_path = ".." + "/Logs/ThesisFieldLogs/" + extraction_data.action_name + "/" + extraction_data.recording_date + "/" + (str(extraction_data.log_index) + ".log")
         self._thesisLogExtractionHandler.set(relative_path)
         self._thesisLogExtractionHandler.write_to_file()
 

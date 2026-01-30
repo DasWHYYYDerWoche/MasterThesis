@@ -21,11 +21,11 @@ folders:
     LOGS
         ThesisFieldLogs
             kick
-                log_date 0
+                date 0
                     0.log (date of when the original log was recorded)
                     1.log
                     ...
-                log_date 1
+                date 1
                     0.log
                     1.log
                     ...
@@ -33,11 +33,11 @@ folders:
         CSVLogger
             logExtraction (csv with both)
                 kick
-                    log_date 0 (date in the name of the .log file)
+                    date 0 (date in the name of the .log file)
                         0_extracted_time.csv (time when the csv was recorded, e = extracted)
                         1_extracted_time.csv
                         ...
-                    log_date 1
+                    date 1
                         0_extracted_time.csv
                         1_extracted_time.csv
                         ...
@@ -45,7 +45,7 @@ folders:
                 Etc
             csvReplay (csv with only JSD)
                 kick
-                    log_date 0 (date in the name of the .log file)
+                    date 0 (date in the name of the .log file)
                         0_extracted_time (time when the replayed csv was recorded)
                             replayed_time.csv (date when the replay was performed, r = replay)
                             replayed_time.csv

@@ -13,23 +13,26 @@ class LogExtractor:
     def _run(self, extraction_datas : list[ExtractionData]):
         pass
 
-    def extract(self, action_name : Optional[str] = None, date : Optional[str] = None, log_index : Optional[int] = None):
-        eds = LogExtractor._get_log_files(action_name, date, log_index)
-
+    def extract(self, action_name : Optional[str] = None, recording_date : Optional[str] = None, log_index : Optional[int] = None):
+        eds = LogExtractor._get_log_files(action_name, recording_date, log_index)
 
 
     @staticmethod
-    def _get_log_files(action_name : Optional[str] = None, date : Optional[str] = None, log_index : Optional[int] = None) -> list[ExtractionData]:
+    def _delete_existing_extractions(extraction_datas : list[ExtractionData]):
+        pass
+
+    @staticmethod
+    def _get_log_files(action_name : Optional[str] = None, recording_date : Optional[str] = None, log_index : Optional[int] = None) -> list[ExtractionData]:
         if action_name is None:
-            if date is None:
+            if recording_date is None:
                 return LogExtractor._get_ed_all()
             else:
-                return LogExtractor._get_ed_date(date)
-        if date is None:
+                return LogExtractor._get_ed_date(recording_date)
+        if recording_date is None:
             return LogExtractor._get_ed_action(action_name)
         if log_index is None:
-            return LogExtractor._get_ed_action_date(action_name, date)
-        return [ExtractionData(action_name, date, log_index)]
+            return LogExtractor._get_ed_action_date(action_name, recording_date)
+        return [ExtractionData(action_name, recording_date, log_index)]
 
     @staticmethod
     def _get_ed_all() -> list[ExtractionData]:
@@ -39,11 +42,11 @@ class LogExtractor:
         return eds
 
     @staticmethod
-    def _get_ed_date(date : str):
+    def _get_ed_date(recording_date : str):
         eds = []
         for action_name in ACTIONS:
-            for file in (PATH_FIELD_LOGS / action_name / date).iterdir():
-                eds.append(ExtractionData(action_name, date, int(file.stem)))
+            for file in (PATH_FIELD_LOGS / action_name / recording_date).iterdir():
+                eds.append(ExtractionData(action_name, recording_date, int(file.stem)))
         return eds
 
     @staticmethod
@@ -54,9 +57,9 @@ class LogExtractor:
         return eds
 
     @staticmethod
-    def _get_ed_action_date(action_name : str, date : str) -> list[ExtractionData]:
+    def _get_ed_action_date(action_name : str, recording_date : str) -> list[ExtractionData]:
         eds = []
-        for file in (PATH_FIELD_LOGS / action_name / date).iterdir():
+        for file in (PATH_FIELD_LOGS / action_name / recording_date).iterdir():
             if file.suffix == ".log":
-              eds.append(ExtractionData(action_name, date, int(file.stem)))
+              eds.append(ExtractionData(action_name, recording_date, int(file.stem)))
         return eds
