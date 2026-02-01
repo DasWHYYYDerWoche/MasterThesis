@@ -17,7 +17,7 @@ class Simulator:
     def __init__(self):
         if self._initialized:
             return
-
+        self._initialized = True
         self.MAX_INSTANCES = 5
         self._loggerHandler = LoggerHandler()
         self._naoV6H25Handler = NaoV6H25Handler()
