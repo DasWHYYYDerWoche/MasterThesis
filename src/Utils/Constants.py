@@ -1,6 +1,8 @@
 from __future__ import annotations
 from pathlib import Path
 
+from tornado.log import access_log
+
 PATH : Path = Path.home() / "source" / "repos" / "NDevils2015"
 # path to the config of the loggerT module
 PATH_CONFIG : Path = PATH / "Config"
@@ -18,5 +20,4 @@ PATH_REPLAYS : Path = PATH_CONFIG / "Logs" / "CSVLogger" / "replays"
 PATH_EXECUTABLE : Path = PATH / "Build" / "simulator-multiconfig" / "Release" / "SimRobot.exe"
 
 
-
-ACTIONS = ["kick", "sidestep", "turn", "walk"]
+ACTION_NAMES = [action_folder.name for action_folder in PATH_FIELD_LOGS.iterdir()]
