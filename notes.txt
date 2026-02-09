@@ -45,10 +45,12 @@ folders:
                 Etc
             csvReplay (csv with only JSD)
                 kick
-                    date 0 (date in the name of the .log file)
-                        0_extracted_time (time when the replayed csv was recorded)
-                            replayed_time.csv (date when the replay was performed, r = replay)
-                            replayed_time.csv
-                        1_extracted_time
-                            replayed_time.csv (date when the replay was performed, r = replay)
-                            replayed_time.csv
+                    parameter_set_1
+                        parameter file
+                        date 0 (date in the name of the .log file)
+                            0_extracted_time (time when the replayed csv was recorded)
+                                replayed_time.csv (date when the replay was performed, r = replay)
+                                replayed_time.csv
+                            1_extracted_time
+                                replayed_time.csv (date when the replay was performed, r = replay)
+                                replayed_time.csv

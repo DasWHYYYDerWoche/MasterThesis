@@ -6,7 +6,7 @@ from typing import Optional
 import math
 
 from ..Simulator import Simulator
-from..Utils import PATH_FIELD_LOGS, PATH_LOGS_AS_CSVS, ExtractionData
+from..Utils import PATH_FIELD_LOGS, PATH_LOGS_AS_CSVS, ExperimentData
 
 import logging
 logger = logging.getLogger("global_logger")
@@ -15,7 +15,7 @@ class LogExtractor:
     def __init__(self):
         self._simulator : Simulator = Simulator()
 
-    def _run(self, extraction_datas : list[ExtractionData]):
+    def _run(self, experiment_datas : list[ExperimentData]):
         pass
 
     def extract(self, mode : int = 1, batch_size : int = 5, action_names : Optional[list[str]] = None, recording_dates : Optional[list[str]] = None, log_indices : Optional[list[int]] = None):
@@ -35,18 +35,17 @@ class LogExtractor:
         try:
             eds = LogExtractor._get_all(action_names, recording_dates, log_indices)
             if mode == 1:
-                eds = LogExtractor._filter_extraction_datas(eds)
+                eds = LogExtractor._filter_experiment_datas(eds)
             elif mode == 2:
                 LogExtractor._delete_existing_csv(eds)
             logger.info("Starting extraction of %s logs", len(eds))
-            for i in range(0,math.ceil(len(eds)/batch_size)*batch_size, batch_size):
-                self._simulator.run_log_extraction(eds[i : min(i+batch_size, len(eds))])
+            self._simulator.run(eds, batch_size)
         except Exception as e:
             logger.exception("%s failed to run due to %s", type(self).__name__, type(e).__name__)
 
     @staticmethod
-    def _delete_existing_csv(extraction_datas : list[ExtractionData]):
-        for ed in extraction_datas:
+    def _delete_existing_csv(experiment_datas : list[ExperimentData]):
+        for ed in experiment_datas:
             folder = PATH_LOGS_AS_CSVS / ed.action_name / ed.recording_date
             if folder.exists():
                 for file in folder.iterdir():
@@ -55,9 +54,9 @@ class LogExtractor:
                         file.unlink()
 
     @staticmethod
-    def _filter_extraction_datas(extraction_datas : list [ExtractionData]) -> list[ExtractionData]:
+    def _filter_experiment_datas(experiment_datas : list [ExperimentData]) -> list[ExperimentData]:
         filtered_eds = []
-        for ed in extraction_datas:
+        for ed in experiment_datas:
             folder = PATH_LOGS_AS_CSVS / ed.action_name / ed.recording_date
             if folder.exists():
                 found = False
@@ -80,7 +79,7 @@ class LogExtractor:
         return eds
 
     @staticmethod
-    def get_for_action(action_name : str, recording_dates : Optional[list[str]], log_indices : Optional[list[int]]) -> list[ExtractionData]:
+    def get_for_action(action_name : str, recording_dates : Optional[list[str]], log_indices : Optional[list[int]]) -> list[ExperimentData]:
         eds = []
         if recording_dates is None:
             recording_dates = [file.name for file in (PATH_FIELD_LOGS / action_name).iterdir()]
@@ -89,10 +88,10 @@ class LogExtractor:
         return eds
 
     @staticmethod
-    def _get_for_action_date(action_name : str, recording_date : str, log_indices : Optional[list[int]]) -> list[ExtractionData]:
+    def _get_for_action_date(action_name : str, recording_date : str, log_indices : Optional[list[int]]) -> list[ExperimentData]:
         eds = []
         if log_indices is None:
             log_indices = [int(file.stem) for file in (PATH_FIELD_LOGS / action_name / recording_date).iterdir()]
         for log_index in log_indices:
-            eds.append(ExtractionData(action_name, recording_date, log_index))
+            eds.append(ExperimentData.get_extraction_data(action_name, recording_date, log_index))
         return eds
