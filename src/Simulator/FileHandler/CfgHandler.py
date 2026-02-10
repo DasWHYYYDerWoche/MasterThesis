@@ -71,21 +71,21 @@ class LoggerHandler(CfgHandler):
             'logging': False,
             'logExtraction': False,
             'csvReplay': False,
+            'parameterSet': -1,
             'actionName': '',
-            'parameterSet': '',
             'recordingDate': '',
             'logIndex': -1,
             'csvName': ''
         }
 
-    def set(self, logging: bool, log_extraction: bool, csv_replay: bool, action_name: str, parameter_set : str, recording_date: str, log_index: int, csv_name: str):
-        self._set_values(keys=['logging', 'logExtraction', 'csvReplay', 'actionName', 'parameterSet', 'recordingDate', 'logIndex', 'csvName'],
-                         values=[logging, log_extraction, csv_replay, action_name, parameter_set, recording_date, log_index, csv_name])
+    def set(self, logging: bool, log_extraction: bool, csv_replay: bool,  parameter_set : int, action_name: str,recording_date: str, log_index: int, csv_name: str):
+        self._set_values(keys=['logging', 'logExtraction', 'csvReplay', 'parameterSet', 'actionName', 'recordingDate', 'logIndex', 'csvName'],
+                         values=[logging, log_extraction, csv_replay, parameter_set, action_name, recording_date, log_index, csv_name])
 
     def set_extract(self, action_name: str, recording_date: str, log_index: int):
-        self.set(logging=True, log_extraction=True, csv_replay=False, action_name=action_name, parameter_set="",
+        self.set(logging=True, log_extraction=True, csv_replay=False,  parameter_set=-1,action_name=action_name,
                              recording_date=recording_date, log_index=log_index, csv_name="")
 
-    def set_replay(self, action_name: str, parameter_set: str, recording_date: str, log_index: int, csv_name: str):
-        self.set(logging=True, log_extraction=False, csv_replay=True, action_name=action_name, parameter_set=parameter_set,
+    def set_replay(self, parameter_set: int, action_name: str, recording_date: str, log_index: int, csv_name: str):
+        self.set(logging=True, log_extraction=False, csv_replay=True,parameter_set=parameter_set, action_name=action_name,
                              recording_date=recording_date, log_index=log_index, csv_name=csv_name)

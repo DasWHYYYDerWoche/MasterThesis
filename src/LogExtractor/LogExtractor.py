@@ -1,9 +1,6 @@
 from __future__ import annotations
 
-import logging
-from pathlib import Path
 from typing import Optional
-import math
 
 from ..Simulator import Simulator
 from..Utils import PATH_FIELD_LOGS, PATH_LOGS_AS_CSVS, ExperimentData
@@ -14,9 +11,6 @@ logger = logging.getLogger("global_logger")
 class LogExtractor:
     def __init__(self):
         self._simulator : Simulator = Simulator()
-
-    def _run(self, experiment_datas : list[ExperimentData]):
-        pass
 
     def extract(self, mode : int = 1, batch_size : int = 5, action_names : Optional[list[str]] = None, recording_dates : Optional[list[str]] = None, log_indices : Optional[list[int]] = None):
         """
@@ -38,7 +32,6 @@ class LogExtractor:
                 eds = LogExtractor._filter_experiment_datas(eds)
             elif mode == 2:
                 LogExtractor._delete_existing_csv(eds)
-            logger.info("Starting extraction of %s logs", len(eds))
             self._simulator.run(eds, batch_size)
         except Exception as e:
             logger.exception("%s failed to run due to %s", type(self).__name__, type(e).__name__)

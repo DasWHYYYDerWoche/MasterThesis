@@ -6,7 +6,7 @@ from typing import Optional
 import math
 
 from .FileHandler import LoggerHandler, NaoV6H25Handler, ThesisCSVReplayHandler, ThesisLogExtractionHandler
-from ..Utils import PATH_LOG_EXTRACTION_SCENE, PATH_EXECUTABLE, ExperimentData
+from ..Utils import PATH_LOG_EXTRACTION_SCENE, PATH_EXECUTABLE, ExperimentData, ExperimentType
 
 import logging
 logger = logging.getLogger("global_logger")
@@ -31,9 +31,7 @@ class Simulator:
         return cls._instance
 
     def _set_experiment_parameters(self, experiment_data : ExperimentData) -> bool:
-        if not experiment_data.logging:
-            return False
-        if experiment_data.log_extraction:
+        if experiment_data.experiment_type is ExperimentType.LOG_EXTRACTION:
             self._loggerHandler.set_extract(experiment_data.action_name, experiment_data.recording_date, experiment_data.log_index)
             self._loggerHandler.write_to_file()
             relative_path = ".." + "/Logs/ThesisFieldLogs/" + experiment_data.action_name + "/" + experiment_data.recording_date + "/" + (
@@ -41,8 +39,8 @@ class Simulator:
             self._thesisLogExtractionHandler.set(relative_path)
             self._thesisLogExtractionHandler.write_to_file()
             return True
-        elif experiment_data.csv_replay:
-            self._loggerHandler.set_replay(experiment_data.action_name, experiment_data.parameter_set,
+        elif experiment_data.experiment_type is ExperimentType.CSV_REPLAY:
+            self._loggerHandler.set_replay(experiment_data.parameter_set, experiment_data.action_name,
                                            experiment_data.recording_date, experiment_data.log_index, experiment_data.csv_name)
             self._loggerHandler.write_to_file()
             return True
@@ -64,7 +62,6 @@ class Simulator:
         if batch_size > self._MAX_INSTANCES:
             logger.warning("batch_size (%s) was larger than the maximum number of allowed instances (%s)", batch_size, self._MAX_INSTANCES)
             batch_size = self._MAX_INSTANCES
-        # TODO: set global parameters like kd/kp value that dont change within one run in practice
         logger.info("Extracting %s logs with a batch size of %s",len(experiment_datas), batch_size)
         for i in range(0, math.ceil(len(experiment_datas) / batch_size) * batch_size, batch_size):
             self._run_batch(experiment_datas[i : min(i+batch_size, len(experiment_datas))])

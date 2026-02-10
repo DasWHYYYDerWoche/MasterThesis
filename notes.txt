@@ -1,6 +1,9 @@
 TODO:
-    create simulator class
-        check correctness of dictonaries after loading files
+    create parameter for opened scene and load correct scene based on replay/extraction
+    create and implement SimulatorData for kp/kd values
+    implement Replay class
+
+
     load csvs and calculate simulation gap
     create scenes
 
@@ -44,9 +47,9 @@ folders:
                 Walk
                 Etc
             csvReplay (csv with only JSD)
-                kick
-                    parameter_set_1
-                        parameter file
+                parameter_set_1
+                    parameter file
+                    kick
                         date 0 (date in the name of the .log file)
                             0_extracted_time (time when the replayed csv was recorded)
                                 replayed_time.csv (date when the replay was performed, r = replay)

@@ -1,43 +1,30 @@
 from __future__ import annotations
+from typing import Optional
+from enum import Enum
+from .Constants import PATH_FIELD_LOGS, PATH_LOGS_AS_CSVS
 
+class ExperimentType(Enum):
+    LOG_EXTRACTION = 0
+    CSV_REPLAY = 1
 
 class ExperimentData:
-    def __init__(self, logging : bool = False, log_extraction : bool = False, csv_replay : bool = False, action_name : str = "", parameter_set : str = "", recording_date : str = "", log_index : int = -1, csv_name : str = ""):
-        self._logging: bool = logging
-        self._log_extraction: bool = log_extraction
-        self._csv_replay: bool = csv_replay
+    def __init__(self, experiment_type : ExperimentType, action_name : str = "", parameter_set : int = -1, recording_date : str = "", log_index : int = -1, csv_name : str = ""):
+        self._experiment_type = experiment_type
         self._action_name: str = action_name
-        self._parameter_set: str = parameter_set
+        self._parameter_set: int = parameter_set
         self._recording_date: str = recording_date
         self._log_index: int = log_index
         self._csv_name: str = csv_name
 
-    @staticmethod
-    def get_extraction_data(action_name : str, recording_date : str, log_index : int):
-        return ExperimentData(logging = True, log_extraction=True, action_name=action_name, recording_date=recording_date, log_index=log_index)
-
-    @staticmethod
-    def get_replay_data(action_name : str, parameter_set : str, recording_date : str, log_index : int, csv_name : str):
-        return ExperimentData(logging = True, csv_replay=True, action_name=action_name, parameter_set=parameter_set, recording_date=recording_date, log_index=log_index, csv_name=csv_name)
-
     @property
-    def logging(self) -> bool:
-        return self._logging
-
-    @property
-    def log_extraction(self) -> bool:
-        return self._log_extraction
-
-    @property
-    def csv_replay(self) -> bool:
-        return self._csv_replay
-
+    def experiment_type(self) -> ExperimentType:
+        return self._experiment_type
     @property
     def action_name(self) -> str:
         return self._action_name
 
     @property
-    def parameter_set(self) -> str:
+    def parameter_set(self) -> int:
         return self._parameter_set
 
     @property
@@ -53,10 +40,17 @@ class ExperimentData:
         return self._csv_name
 
     def __str__(self):
-        if not self._logging:
-            return "ExperimentData: [logging = False]"
-        if self._log_extraction and not self._csv_replay:
+        if self._experiment_type is ExperimentType.LOG_EXTRACTION:
             return "ExtractionData: [" + self._action_name + "," + self._recording_date + "," + str(self.log_index) + "]"
-        if self._csv_replay and not self._log_extraction:
-            return "ReplayData: [" + self._action_name + "," + self._parameter_set + "," + self._recording_date + "," + str(self.log_index) + "," + self._csv_name + "]"
+        if self._experiment_type is ExperimentType.CSV_REPLAY:
+            return "ReplayData: [" + self._action_name + "," + str(self._parameter_set) + "," + self._recording_date + "," + str(self.log_index) + "," + self._csv_name + "]"
         return "ShittyData"
+
+
+    @staticmethod
+    def get_extraction_data(action_name : str, recording_date : str, log_index : int):
+        return ExperimentData(experiment_type=ExperimentType.LOG_EXTRACTION, action_name=action_name, recording_date=recording_date, log_index=log_index)
+
+    @staticmethod
+    def get_replay_data(action_name : str, parameter_set : int, recording_date : str, csv_name : str):
+        return ExperimentData(experiment_type=ExperimentType.CSV_REPLAY, action_name=action_name, parameter_set=parameter_set, recording_date=recording_date, csv_name=csv_name)
