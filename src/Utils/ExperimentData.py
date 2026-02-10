@@ -43,7 +43,7 @@ class ExperimentData:
         if self._experiment_type is ExperimentType.LOG_EXTRACTION:
             return "ExtractionData: [" + self._action_name + "," + self._recording_date + "," + str(self.log_index) + "]"
         if self._experiment_type is ExperimentType.CSV_REPLAY:
-            return "ReplayData: [" + self._action_name + "," + str(self._parameter_set) + "," + self._recording_date + "," + str(self.log_index) + "," + self._csv_name + "]"
+            return "ReplayData: [" + str(self._parameter_set) + "," + self._action_name + "," + self._recording_date + "," + str(self.log_index) + "," + self._csv_name + "]"
         return "ShittyData"
 
 

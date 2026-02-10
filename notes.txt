@@ -1,7 +1,7 @@
 TODO:
-    create parameter for opened scene and load correct scene based on replay/extraction
-    create and implement SimulatorData for kp/kd values
-    implement Replay class
+    #rename parameters, paths etc and merge where possible
+    # USE LONGER NAMES GODDAMN
+    # further work on csv replayer
 
 
     load csvs and calculate simulation gap

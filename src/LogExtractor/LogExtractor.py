@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Optional
 
 from ..Simulator import Simulator
-from..Utils import PATH_FIELD_LOGS, PATH_LOGS_AS_CSVS, ExperimentData
+from..Utils import PATH_FIELD_LOGS, PATH_LOGS_AS_CSVS, ExperimentData, PATH_LOG_EXTRACTION_SCENE
 
 import logging
 logger = logging.getLogger("global_logger")
@@ -32,7 +32,7 @@ class LogExtractor:
                 eds = LogExtractor._filter_experiment_datas(eds)
             elif mode == 2:
                 LogExtractor._delete_existing_csv(eds)
-            self._simulator.run(eds, batch_size)
+            self._simulator.run(PATH_LOG_EXTRACTION_SCENE, eds, batch_size)
         except Exception as e:
             logger.exception("%s failed to run due to %s", type(self).__name__, type(e).__name__)
 
@@ -63,16 +63,17 @@ class LogExtractor:
         return filtered_eds
 
     @staticmethod
-    def _get_all(action_names : Optional[list[str]], recording_dates : Optional[list[str]], log_indices : Optional[list[int]]):
+    def _get_all(action_names : Optional[list[str]], recording_dates : Optional[list[str]], log_indices : Optional[list[int]]) -> \
+    list[ExperimentData]:
         eds = []
         if action_names is None:
             action_names = [file.name for file in PATH_FIELD_LOGS.iterdir()]
         for action_name in action_names:
-                eds.extend(LogExtractor.get_for_action(action_name, recording_dates, log_indices))
+                eds.extend(LogExtractor._get_for_action(action_name, recording_dates, log_indices))
         return eds
 
     @staticmethod
-    def get_for_action(action_name : str, recording_dates : Optional[list[str]], log_indices : Optional[list[int]]) -> list[ExperimentData]:
+    def _get_for_action(action_name : str, recording_dates : Optional[list[str]], log_indices : Optional[list[int]]) -> list[ExperimentData]:
         eds = []
         if recording_dates is None:
             recording_dates = [file.name for file in (PATH_FIELD_LOGS / action_name).iterdir()]

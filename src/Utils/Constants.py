@@ -1,8 +1,6 @@
 from __future__ import annotations
 from pathlib import Path
 
-from tornado.log import access_log
-
 PATH : Path = Path.home() / "source" / "repos" / "NDevils2015"
 # path to the config of the loggerT module
 PATH_CONFIG : Path = PATH / "Config"
@@ -10,6 +8,8 @@ PATH_CONFIG : Path = PATH / "Config"
 PATH_SCENE : Path = PATH_CONFIG / "Scenes"
 # path to the scene used for log extraction
 PATH_LOG_EXTRACTION_SCENE = PATH_SCENE / "ThesisLogExtraction"
+# path to the scene used for csv replaying
+PATH_CSV_REPLAY_SCENE = PATH_SCENE / "ThesisCSVReplay"
 # path to the logs recorded on the field
 PATH_FIELD_LOGS : Path = PATH_CONFIG / "Logs" / "ThesisFieldLogs"
 # path to csv files extracted from the logs
