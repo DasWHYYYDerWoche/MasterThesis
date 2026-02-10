@@ -1,6 +1,8 @@
 from __future__ import annotations
 from typing import Optional
 from enum import Enum
+from pathlib import Path
+from datetime import datetime
 from .Constants import PATH_FIELD_LOGS, PATH_LOGS_AS_CSVS
 
 class ExperimentType(Enum):
@@ -19,6 +21,7 @@ class ExperimentData:
     @property
     def experiment_type(self) -> ExperimentType:
         return self._experiment_type
+
     @property
     def action_name(self) -> str:
         return self._action_name
@@ -39,11 +42,24 @@ class ExperimentData:
     def csv_name(self) -> str:
         return self._csv_name
 
+    @property
+    def log_path(self) -> Path:
+        return Path("..") / "Logs" / "ThesisFieldLogs"/ self._action_name /  self._recording_date / (str(self._log_index) + ".log")
+
+    @property
+    def log_extraction_path(self) -> Path:
+        return Path("/logsAsCSVs") / self._action_name / self._recording_date / str(self._log_index)
+
+    @property
+    def csv_replay_path(self) -> Path:
+        return Path("/replays") / str(self._parameter_set) / self._action_name / self._recording_date / self._csv_name / ("_replayed_" + datetime.now().strftime("%Y%m%d%H%M%S"))
+
+
     def __str__(self):
         if self._experiment_type is ExperimentType.LOG_EXTRACTION:
-            return "ExtractionData: [" + self._action_name + "," + self._recording_date + "," + str(self.log_index) + "]"
+            return "ExtractionData: [" + self._action_name + "," + self._recording_date + "," + str(self._log_index) + "]"
         if self._experiment_type is ExperimentType.CSV_REPLAY:
-            return "ReplayData: [" + str(self._parameter_set) + "," + self._action_name + "," + self._recording_date + "," + str(self.log_index) + "," + self._csv_name + "]"
+            return "ReplayData: [" + str(self._parameter_set) + "," + self._action_name + "," + self._recording_date + "," + str(self._log_index) + "," + self._csv_name + "]"
         return "ShittyData"
 
 

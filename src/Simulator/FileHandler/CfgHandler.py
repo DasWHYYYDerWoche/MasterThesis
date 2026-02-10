@@ -68,24 +68,23 @@ class LoggerHandler(CfgHandler):
     @override
     def get_default(self) -> dict:
         return {
-            'logging': False,
-            'logExtraction': False,
-            'csvReplay': False,
-            'parameterSet': -1,
-            'actionName': '',
-            'recordingDate': '',
-            'logIndex': -1,
-            'csvName': ''
+            'loggingActive' : False,
+            'logExtractionActive' : False,
+            'csvReplayActive' : False,
+            'logExtractionPath' : "",
+            'csvReplayPath' : ""
         }
 
-    def set(self, logging: bool, log_extraction: bool, csv_replay: bool,  parameter_set : int, action_name: str,recording_date: str, log_index: int, csv_name: str):
-        self._set_values(keys=['logging', 'logExtraction', 'csvReplay', 'parameterSet', 'actionName', 'recordingDate', 'logIndex', 'csvName'],
-                         values=[logging, log_extraction, csv_replay, parameter_set, action_name, recording_date, log_index, csv_name])
+    def set(self, logging_active: bool, log_extraction_active: bool, csv_replay_active: bool,
+            log_extraction_path: str, csv_replay_path: str):
+        self._set_values(keys=list(self.get_default().keys()),
+                         values=[logging_active, log_extraction_active, csv_replay_active,
+                                 log_extraction_path, csv_replay_path])
 
-    def set_extract(self, action_name: str, recording_date: str, log_index: int):
-        self.set(logging=True, log_extraction=True, csv_replay=False,  parameter_set=-1,action_name=action_name,
-                             recording_date=recording_date, log_index=log_index, csv_name="")
+    def set_extract(self, log_extraction_folder_name: str):
+        self.set(logging_active=True, log_extraction_active=True, csv_replay_active=False,
+                 log_extraction_path=log_extraction_folder_name, csv_replay_path="")
 
-    def set_replay(self, parameter_set: int, action_name: str, recording_date: str, log_index: int, csv_name: str):
-        self.set(logging=True, log_extraction=False, csv_replay=True,parameter_set=parameter_set, action_name=action_name,
-                             recording_date=recording_date, log_index=log_index, csv_name=csv_name)
+    def set_replay(self, log_extraction_folder_name : str, csv_replay_folder_name: str):
+        self.set(logging_active=True, log_extraction_active=True, csv_replay_active=False,
+                 log_extraction_path=log_extraction_folder_name, csv_replay_path=csv_replay_folder_name)

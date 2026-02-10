@@ -57,3 +57,39 @@ folders:
                             1_extracted_time
                                 replayed_time.csv (date when the replay was performed, r = replay)
                                 replayed_time.csv
+
+folders:
+    LOGS
+        ThesisFieldLogs
+            kick
+                date 0
+                    0.log (date of when the original log was recorded)
+                    1.log
+                    ...
+                date 1
+                    0.log
+                    1.log
+                    ...
+            Etc
+        CSVLogger
+            logExtraction (csv with both)
+                kick
+                    date 0 (date in the name of the .log file)
+                        0.csv (time when the csv was recorded, e = extracted)
+                        1.csv
+                        ...
+                    date 1
+                        0.csv
+                        1.csv
+                        ...
+                Walk
+                Etc
+            csvReplay (csv with only JSD)
+                parameter_set_1
+                    parameter file
+                    kick
+                        date 0 (date in the name of the .log file)
+                            0_replayed_time.csv (date when the replay was performed, r = replay)
+                            0_replayed_time.csv
+                            1_replayed_time.csv (date when the replay was performed, r = replay)
+                            1_replayed_time.csv
