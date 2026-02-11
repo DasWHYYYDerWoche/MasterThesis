@@ -48,11 +48,11 @@ class ExperimentData:
 
     @property
     def log_extraction_path(self) -> Path:
-        return Path("/logsAsCSVs") / self._action_name / self._recording_date / str(self._log_index)
+        return Path("logsAsCSVs") / self._action_name / self._recording_date / str(self._log_index)
 
     @property
     def csv_replay_path(self) -> Path:
-        return Path("/replays") / str(self._parameter_set) / self._action_name / self._recording_date / self._csv_name / ("_replayed_" + datetime.now().strftime("%Y%m%d%H%M%S"))
+        return Path("replays") / str(self._parameter_set) / self._action_name / self._recording_date / self._csv_name / ("_replayed_" + datetime.now().strftime("%Y%m%d%H%M%S"))
 
 
     def __str__(self):

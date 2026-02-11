@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Optional
 
 from ..Simulator import Simulator
-from..Utils import PATH_FIELD_LOGS, PATH_LOGS_AS_CSVS, ExperimentData, PATH_LOG_EXTRACTION_SCENE
+from..Utils import PATH_FIELD_LOGS, PATH_CSV_LOGGER, PATH_LOGS_AS_CSVS, ExperimentData, PATH_LOG_EXTRACTION_SCENE
 
 import logging
 logger = logging.getLogger("global_logger")
@@ -33,33 +33,27 @@ class LogExtractor:
             elif mode == 2:
                 LogExtractor._delete_existing_csv(eds)
             self._simulator.run(PATH_LOG_EXTRACTION_SCENE, eds, batch_size)
+            return eds
         except Exception as e:
             logger.exception("%s failed to run due to %s", type(self).__name__, type(e).__name__)
 
     @staticmethod
     def _delete_existing_csv(experiment_datas : list[ExperimentData]):
         for ed in experiment_datas:
-            folder = PATH_LOGS_AS_CSVS / ed.action_name / ed.recording_date
-            if folder.exists():
-                for file in folder.iterdir():
-                    if file.name.startswith(str(ed.log_index)) and file.suffix == ".csv":
-                        logger.info("Deleted existing csv %s", file.name)
-                        file.unlink()
+            file = (PATH_CSV_LOGGER / ed.log_extraction_path).with_suffix(".csv")
+            if file.exists():
+                logger.info("Deleted existing csv %s", file)
+                file.unlink()
 
     @staticmethod
     def _filter_experiment_datas(experiment_datas : list [ExperimentData]) -> list[ExperimentData]:
         filtered_eds = []
         for ed in experiment_datas:
-            folder = PATH_LOGS_AS_CSVS / ed.action_name / ed.recording_date
-            if folder.exists():
-                found = False
-                for file in folder.iterdir():
-                    if file.name.startswith(str(ed.log_index)) and file.suffix == ".csv":
-                        logger.info("Found existing csv %s and removed corresponding ExtractionData", file.name)
-                        found = True
-                        break
-                if not found:
-                    filtered_eds.append(ed)
+            file = (PATH_CSV_LOGGER / ed.log_extraction_path).with_suffix(".csv")
+            if file.exists():
+                logger.info("Found existing csv %s and removed corresponding ExtractionData", file)
+            else:
+                filtered_eds.append(ed)
         return filtered_eds
 
     @staticmethod
