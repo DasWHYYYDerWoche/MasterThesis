@@ -33,13 +33,13 @@ class Simulator:
 
     def _set_experiment_parameters(self, experiment_data : ExperimentData) -> bool:
         if experiment_data.experiment_type is ExperimentType.LOG_EXTRACTION:
-            self._loggerHandler.set_extract(experiment_data.log_extraction_path.as_posix())
+            self._loggerHandler.set_extract(experiment_data.log_extraction_path_relative.as_posix())
             self._loggerHandler.write_to_file()
             self._thesisLogExtractionHandler.set(experiment_data.log_path.as_posix())
             self._thesisLogExtractionHandler.write_to_file()
             return True
         elif experiment_data.experiment_type is ExperimentType.CSV_REPLAY:
-            self._loggerHandler.set_replay(experiment_data.log_extraction_path.as_posix(), experiment_data.csv_replay_path.as_posix())
+            self._loggerHandler.set_replay(experiment_data.log_extraction_path_relative.as_posix(), experiment_data.csv_replay_path_relative.as_posix())
             self._loggerHandler.write_to_file()
             return True
         else:

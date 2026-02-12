@@ -27,59 +27,11 @@ class LogExtractor:
                     "all" if recording_dates is None else recording_dates,
                     "all" if log_indices is None else log_indices)
         try:
-            eds = LogExtractor._get_all(action_names, recording_dates, log_indices)
+            eds = ExperimentData.get_extraction_data(action_names, recording_dates, log_indices)
             if mode == 1:
-                eds = LogExtractor._filter_experiment_datas(eds)
+                eds = ExperimentData.delete_redundant_eds(eds)
             elif mode == 2:
-                LogExtractor._delete_existing_csv(eds)
+                ExperimentData.delete_existing_csvs(eds)
             self._simulator.run(PATH_LOG_EXTRACTION_SCENE, eds, batch_size)
-            return eds
         except Exception as e:
             logger.exception("%s failed to run due to %s", type(self).__name__, type(e).__name__)
-
-    @staticmethod
-    def _delete_existing_csv(experiment_datas : list[ExperimentData]):
-        for ed in experiment_datas:
-            file = (PATH_CSV_LOGGER / ed.log_extraction_path).with_suffix(".csv")
-            if file.exists():
-                logger.info("Deleted existing csv %s", file)
-                file.unlink()
-
-    @staticmethod
-    def _filter_experiment_datas(experiment_datas : list [ExperimentData]) -> list[ExperimentData]:
-        filtered_eds = []
-        for ed in experiment_datas:
-            file = (PATH_CSV_LOGGER / ed.log_extraction_path).with_suffix(".csv")
-            if file.exists():
-                logger.info("Found existing csv %s and removed corresponding ExtractionData", file)
-            else:
-                filtered_eds.append(ed)
-        return filtered_eds
-
-    @staticmethod
-    def _get_all(action_names : Optional[list[str]], recording_dates : Optional[list[str]], log_indices : Optional[list[int]]) -> \
-    list[ExperimentData]:
-        eds = []
-        if action_names is None:
-            action_names = [file.name for file in PATH_FIELD_LOGS.iterdir()]
-        for action_name in action_names:
-                eds.extend(LogExtractor._get_for_action(action_name, recording_dates, log_indices))
-        return eds
-
-    @staticmethod
-    def _get_for_action(action_name : str, recording_dates : Optional[list[str]], log_indices : Optional[list[int]]) -> list[ExperimentData]:
-        eds = []
-        if recording_dates is None:
-            recording_dates = [file.name for file in (PATH_FIELD_LOGS / action_name).iterdir()]
-        for recording_date in recording_dates:
-            eds.extend(LogExtractor._get_for_action_date(action_name, recording_date, log_indices))
-        return eds
-
-    @staticmethod
-    def _get_for_action_date(action_name : str, recording_date : str, log_indices : Optional[list[int]]) -> list[ExperimentData]:
-        eds = []
-        if log_indices is None:
-            log_indices = [int(file.stem) for file in (PATH_FIELD_LOGS / action_name / recording_date).iterdir()]
-        for log_index in log_indices:
-            eds.append(ExperimentData.get_extraction_data(action_name, recording_date, log_index))
-        return eds
