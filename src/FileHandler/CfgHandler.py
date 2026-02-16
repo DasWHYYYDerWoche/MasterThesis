@@ -1,11 +1,11 @@
 from __future__ import annotations
 from abc import ABC
-from typing import override, Optional
+from typing import override
 from re import compile as re_compile
 from pathlib import Path
 
 from .FileHandler import  FileHandler
-from ...Utils import PATH_CONFIG
+from ..Utils import PATH_CONFIG
 
 class CfgHandler(FileHandler, ABC):
     def __init__(self, path: Path):

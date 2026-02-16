@@ -5,7 +5,7 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 from .FileHandler import FileHandler
-from ...Utils import Hinge, PATH_SCENE
+from ..Utils import Hinge, PATH_SCENE
 
 class XmlHandler(FileHandler):
     def __init__(self, path: Path):

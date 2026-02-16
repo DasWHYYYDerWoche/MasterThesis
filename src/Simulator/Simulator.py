@@ -8,7 +8,7 @@ import math
 from pathlib import Path
 from datetime import datetime
 
-from .FileHandler import LoggerHandler, NaoV6H25Handler, ThesisCSVReplayHandler, ThesisLogExtractionHandler
+from ..FileHandler import LoggerHandler, NaoV6H25Handler, ThesisCSVReplayHandler, ThesisLogExtractionHandler
 from ..Utils import PATH_EXECUTABLE, ExperimentData, ExperimentType, PATH_LOG_EXTRACTION_SCENE, PATH_CSV_REPLAY_SCENE
 
 import logging

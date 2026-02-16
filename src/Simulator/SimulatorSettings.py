@@ -1,7 +1,7 @@
 from copy import copy
 
 from ..Utils import Hinge, HINGE_NAMES, PATH_REPLAYS
-from .FileHandler import NaoV6H25Handler
+from ..FileHandler import NaoV6H25Handler
 from typing import Optional
 from pathlib import Path
 
