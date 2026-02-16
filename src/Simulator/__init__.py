@@ -1,2 +1,2 @@
 from .FileHandler import *
-from .Simulator import Simulator
+from .Simulator import *

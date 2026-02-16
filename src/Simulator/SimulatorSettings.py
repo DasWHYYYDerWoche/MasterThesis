@@ -1,7 +1,43 @@
-from .Hinge import HINGE_NAMES, Hinge
+from copy import copy
+
+from ..Utils import Hinge, HINGE_NAMES, PATH_REPLAYS
+from .FileHandler import NaoV6H25Handler
 from typing import Optional
+from pathlib import Path
 
 class SimulatorData:
+
+    def __int__(self, param_set_id : str):
+        self._param_set_id : str = param_set_id
+        self._kp = 0
+        self._kd = 0
+        self._contact_kp = 0
+        self._contact_kd = 0
+        self._hinge_parameters: dict[str, Hinge] = {}
+        if self.exists():
+            pass
+        else:
+            pass
+
+    def exists(self) -> bool:
+        return self.path_settings.exists()
+
+    def _load_from_file(self):
+        pass
+
+    def _load_default(self):
+        self._hinge_parameters = copy(NaoV6H25Handler.get_default())
+
+
+    @property
+    def path(self) -> Path:
+        return PATH_REPLAYS / ("paramSet_" + self._param_set_id)
+
+    @property
+    def path_settings(self) -> Path:
+        return PATH_REPLAYS / ("paramSet_" + self._param_set_id) / "settings.txt"
+
+
     def __init__(self, kp : float = 12500, kd = 10000, contact_kp = 1425, contact_kd = 7.5, hinge_parameters : dict[str, Hinge] | None = None):
         self._kp = kp
         self._kd = kd

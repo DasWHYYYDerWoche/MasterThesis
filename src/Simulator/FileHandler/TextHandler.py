@@ -45,8 +45,9 @@ class ThesisLogExtractionHandler(FileHandler):
             if f is not None:
                 f.close()
 
+    @staticmethod
     @override
-    def get_default(self) -> dict:
+    def get_default() -> dict:
         return {"path" : "${Logfile:,../Logs/*Combined.log}"}
 
     def set(self, path : str):

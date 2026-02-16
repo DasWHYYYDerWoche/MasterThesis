@@ -65,8 +65,9 @@ class LoggerHandler(CfgHandler):
     def __init__(self):
         super().__init__(PATH_CONFIG / "loggerT.cfg")
 
+    @staticmethod
     @override
-    def get_default(self) -> dict:
+    def get_default() -> dict:
         return {
             'loggingActive' : False,
             'logExtractionActive' : False,

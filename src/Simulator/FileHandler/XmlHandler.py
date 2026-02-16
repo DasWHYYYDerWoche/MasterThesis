@@ -66,8 +66,7 @@ class ThesisCSVReplayHandler(XmlHandler):
 
 class NaoV6H25Handler(XmlHandler):
     def __init__(self):
-        self._partial_path = PATH_SCENE / "Includes"
-        super().__init__(self._partial_path / "NaoV6H25.rsi2")
+        super().__init__(PATH_SCENE / "Includes" / "NaoV6H25.rsi2")
 
     @override
     def _xml_to_dict(self):
@@ -104,7 +103,8 @@ class NaoV6H25Handler(XmlHandler):
             servo_element.set("d", str(hinge.d))
             pass
 
+    @staticmethod
     @override
-    def get_default(self) -> dict:
-        default_tree = ET.parse(self._partial_path / "NaoV6H25_BACKUP.rsi2")
-        return self._convert(default_tree)
+    def get_default() -> dict:
+        default_tree = ET.parse(PATH_SCENE / "Includes" / "NaoV6H25_BACKUP.rsi2")
+        return NaoV6H25Handler._convert(default_tree)

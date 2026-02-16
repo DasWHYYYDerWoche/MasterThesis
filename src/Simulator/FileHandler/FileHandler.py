@@ -38,8 +38,9 @@ class FileHandler(ABC):
         except Exception as e:
             logger.exception("%s failed to write due to %s", type(self).__name__, type(e).__name__)
 
+    @staticmethod
     @abstractmethod
-    def get_default(self) -> dict:
+    def get_default() -> dict:
         pass
 
     def _set_value(self, key: str, value: Any):

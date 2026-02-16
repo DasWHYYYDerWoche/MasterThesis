@@ -4,18 +4,23 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b8d71ec4-48b2-4ec5-b1a5-6fe6d26ab8b8" name="Changes" comment="feature:&#10;- moved filter methods for eds to ExtractionData">
-      <change afterPath="$PROJECT_DIR$/src/ExperimentPerformer/ExperimentPerformer.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/ExperimentPerformer/__init__.py" afterDir="false" />
+    <list default="true" id="b8d71ec4-48b2-4ec5-b1a5-6fe6d26ab8b8" name="Changes" comment="feature:&#10;- combined CSVReplayer and LogExtractor into ExperimentPerformer">
+      <change afterPath="$PROJECT_DIR$/src/Optimizer/SimulationGapHandler.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Utils/SimulationGapF.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/main.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/notes.txt" beforeDir="false" afterPath="$PROJECT_DIR$/notes.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CSVReplayer/CSVReplayer.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CSVReplayer/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/LogExtractor/LogExtractor.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/LogExtractor/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ExperimentPerformer/ExperimentPerformer.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ExperimentPerformer/__init__.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Simulator/FileHandler/CfgHandler.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Simulator/FileHandler/CfgHandler.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Utils/ExperimentData.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Utils/ExperimentData.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Simulator/FileHandler/FileHandler.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Simulator/FileHandler/FileHandler.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Simulator/FileHandler/TextHandler.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Simulator/FileHandler/TextHandler.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Simulator/FileHandler/XmlHandler.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Simulator/FileHandler/XmlHandler.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Simulator/Simulator.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Simulator/Simulator.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Simulator/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Simulator/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Utils/Constants.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Utils/Constants.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Utils/Hinge.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Utils/Hinge.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Utils/SimulatorData.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Simulator/SimulatorSettings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Utils/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Utils/__init__.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/__init__.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -69,9 +74,9 @@
 }</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\felix\PycharmProjects\Thesis\src\Simulator" />
       <recent name="C:\Users\felix\PycharmProjects\Thesis\src\Utils" />
       <recent name="C:\Users\felix\PycharmProjects\Thesis\src\Simulator\FIleHandler" />
-      <recent name="C:\Users\felix\PycharmProjects\Thesis\src\Simulator" />
     </key>
   </component>
   <component name="SharedIndexes">
@@ -305,11 +310,18 @@
       <option name="project" value="LOCAL" />
       <updated>1770892965960</updated>
     </task>
-    <option name="localTasksCounter" value="28" />
+    <task id="LOCAL-00028" summary="feature:&#10;- combined CSVReplayer and LogExtractor into ExperimentPerformer">
+      <option name="closed" value="true" />
+      <created>1771239565228</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1771239565228</updated>
+    </task>
+    <option name="localTasksCounter" value="29" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="feature: created simulator class" />
     <MESSAGE value="feature: created properties in simulator, removed prints and removed unused code in core" />
     <MESSAGE value="feature: added ability to modify ThesisCSVReplay.ros2 file via the Simulator class" />
     <MESSAGE value="feature: updated project structure and started moving code out of the simulator class" />
@@ -334,6 +346,7 @@
     <MESSAGE value="feature:&#10;- update cfg handler and experiment data to handle path construction and removed path construction from cpp code&#10;- this does not yet work !" />
     <MESSAGE value="feature:&#10;- finalized new path structure by updating deletion and filter methods in LogExtractor" />
     <MESSAGE value="feature:&#10;- moved filter methods for eds to ExtractionData" />
-    <option name="LAST_COMMIT_MESSAGE" value="feature:&#10;- moved filter methods for eds to ExtractionData" />
+    <MESSAGE value="feature:&#10;- combined CSVReplayer and LogExtractor into ExperimentPerformer" />
+    <option name="LAST_COMMIT_MESSAGE" value="feature:&#10;- combined CSVReplayer and LogExtractor into ExperimentPerformer" />
   </component>
 </project>

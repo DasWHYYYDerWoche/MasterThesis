@@ -3,14 +3,22 @@ from __future__ import annotations
 import subprocess
 import time
 from typing import Optional
+from enum import Enum
 import math
 from pathlib import Path
+from datetime import datetime
 
 from .FileHandler import LoggerHandler, NaoV6H25Handler, ThesisCSVReplayHandler, ThesisLogExtractionHandler
-from ..Utils import PATH_EXECUTABLE, ExperimentData, ExperimentType
+from ..Utils import PATH_EXECUTABLE, ExperimentData, ExperimentType, PATH_LOG_EXTRACTION_SCENE, PATH_CSV_REPLAY_SCENE
 
 import logging
 logger = logging.getLogger("global_logger")
+
+class ExperimentMode(Enum):
+    FULL = 0
+    PARTIAL = 1
+    DEL_EXISTING = 2
+
 
 class Simulator:
     _instance = None
@@ -104,5 +112,62 @@ class Simulator:
         except Exception as e:
             logger.exception("Exception %s occurred during log extraction. Argument list:\n %s, %s, %s, %s",
                              type(e).__name__, experiment_datas, max_wait_for_ready, max_run_duration, gui)
+
+    def extract(self, action_names: Optional[list[str]] = None,
+                recording_dates: Optional[list[str]] = None, log_indices: Optional[list[int]] = None, mode: ExperimentMode = ExperimentMode.PARTIAL, batch_size: int = 5, ):
+        """
+
+        :param action_names:
+        :param recording_dates:
+        :param log_indices:
+        :param mode: FULL: extract all given logs, PARTIAL: extract only logs without csv, DEL_EXISTING: delete existing csv of given logs and reextract all
+        :param batch_size:
+        :return:
+        """
+        logger.info("Extracting logs to csvs, action_names: %s, recording_dates: %s, log_indices: %s",
+                    "all" if action_names is None else action_names,
+                    "all" if recording_dates is None else recording_dates,
+                    "all" if log_indices is None else log_indices)
+        eds = ExperimentData.get_extraction_data(action_names, recording_dates, log_indices)
+        if mode == ExperimentMode.PARTIAL:
+            eds = ExperimentData.delete_redundant_eds(eds)
+        elif mode == ExperimentMode.DEL_EXISTING:
+            ExperimentData.delete_existing_csvs(eds)
+        ExperimentData.create_directories(eds)
+        try:
+            self.run(PATH_LOG_EXTRACTION_SCENE, eds, batch_size)
+        except Exception as e:
+            logger.exception("%s failed to run due to %s", type(self).__name__, type(e).__name__)
+
+    def replay(self, action_names : Optional[list[str]] = None, recording_dates : Optional[list[str]] = None, log_indices : Optional[list[int]] = None, mode: ExperimentMode = ExperimentMode.PARTIAL, batch_size : int = 5, num_copies : int = 1):
+        """
+
+        :param action_names:
+        :param recording_dates:
+        :param log_indices:
+        :param mode: FULL: extract all given logs, PARTIAL: extract only logs with missing csvs, DEL_EXISTING: delete existing csv of given logs and reextract all
+        :param batch_size:
+        :param num_copies:
+        :return:
+        """
+        if num_copies < 0:
+            return
+        logger.info("Replaying logs to csvs, action_names: %s, recording_dates: %s, log_indices: %s",
+                    "all" if action_names is None else action_names,
+                    "all" if recording_dates is None else recording_dates,
+                    "all" if log_indices is None else log_indices)
+        param_set_id = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
+        eds = ExperimentData.get_replay_data(param_set_id, action_names, recording_dates, log_indices, num_copies)
+        if mode == ExperimentMode.PARTIAL:
+            eds = ExperimentData.delete_redundant_eds(eds)
+        elif mode == ExperimentMode.DEL_EXISTING:
+            ExperimentData.delete_existing_csvs(eds)
+        ExperimentData.create_directories(eds)
+        try:
+            for _ in range(num_copies):
+                self.run(PATH_CSV_REPLAY_SCENE, eds, batch_size)
+        except Exception as e:
+            logger.exception("%s failed to run due to %s", type(self).__name__, type(e).__name__)
+
 
 instance : Optional[Simulator] = None
