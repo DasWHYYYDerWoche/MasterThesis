@@ -1,3 +1,4 @@
-from .CfgHandler import LoggerHandler
-from .TextHandler import ThesisLogExtractionHandler
-from .XmlHandler import NaoV6H25Handler, ThesisCSVReplayHandler
+from .LoggerCfgHandler import LoggerCfgHandler
+from .ThesisCSVReplayHandler import ThesisCSVReplayHandler
+from .ThesisLogExtractionHandler import ThesisLogExtractionHandler
+from .NaoV6H25Handler import NaoV6H25Handler

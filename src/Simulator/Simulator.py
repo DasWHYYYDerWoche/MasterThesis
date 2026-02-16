@@ -8,7 +8,7 @@ import math
 from pathlib import Path
 from datetime import datetime
 
-from ..FileHandler import LoggerHandler, NaoV6H25Handler, ThesisCSVReplayHandler, ThesisLogExtractionHandler
+from ..FileHandler import LoggerCfgHandler, NaoV6H25Handler, ThesisCSVReplayHandler, ThesisLogExtractionHandler
 from ..Utils import PATH_EXECUTABLE, ExperimentData, ExperimentType, PATH_LOG_EXTRACTION_SCENE, PATH_CSV_REPLAY_SCENE
 
 import logging
@@ -29,7 +29,7 @@ class Simulator:
             return
         self._initialized = True
         self._MAX_INSTANCES = 5
-        self._loggerHandler = LoggerHandler()
+        self._loggerCfgHandler = LoggerCfgHandler()
         self._naoV6H25Handler = NaoV6H25Handler()
         self._thesisCSVReplayHandler = ThesisCSVReplayHandler()
         self._thesisLogExtractionHandler = ThesisLogExtractionHandler()
@@ -41,21 +41,21 @@ class Simulator:
 
     def _set_experiment_parameters(self, experiment_data : ExperimentData) -> bool:
         if experiment_data.experiment_type is ExperimentType.LOG_EXTRACTION:
-            self._loggerHandler.set_extract(experiment_data.log_extraction_path_relative.as_posix())
-            self._loggerHandler.write_to_file()
+            self._loggerCfgHandler.set_extract(experiment_data.log_extraction_path_relative.as_posix())
+            self._loggerCfgHandler.write_to_file()
             self._thesisLogExtractionHandler.set(experiment_data.log_path.as_posix())
             self._thesisLogExtractionHandler.write_to_file()
             return True
         elif experiment_data.experiment_type is ExperimentType.CSV_REPLAY:
-            self._loggerHandler.set_replay(experiment_data.log_extraction_path_relative.as_posix(), experiment_data.csv_replay_path_relative.as_posix())
-            self._loggerHandler.write_to_file()
+            self._loggerCfgHandler.set_replay(experiment_data.log_extraction_path_relative.as_posix(), experiment_data.csv_replay_path_relative.as_posix())
+            self._loggerCfgHandler.write_to_file()
             return True
         else:
             return False
 
     def _reset_simulator(self):
-        self._loggerHandler.set_default()
-        self._loggerHandler.write_to_file()
+        self._loggerCfgHandler.set_default()
+        self._loggerCfgHandler.write_to_file()
         self._naoV6H25Handler.set_default()
         self._naoV6H25Handler.write_to_file()
         self._thesisLogExtractionHandler.set_default()
