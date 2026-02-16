@@ -2,10 +2,10 @@ from __future__ import annotations
 from typing import override
 import xml.etree.ElementTree as ElementTree
 
-from .XmlHandler import XmlHandler
-from ..Utils import PATH_SCENE
+from ...Utils import XmlHandler, PATH_SCENE
 
 class ThesisCSVReplayHandler(XmlHandler):
+
     def __init__(self):
         super().__init__(PATH_SCENE / "ThesisCSVReplay.ros2")
 

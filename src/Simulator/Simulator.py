@@ -8,7 +8,7 @@ import math
 from pathlib import Path
 from datetime import datetime
 
-from ..FileHandler import LoggerCfgHandler, NaoV6H25Handler, ThesisCSVReplayHandler, ThesisLogExtractionHandler
+from .ConfigurationHandler import LoggerCfgHandler, NaoV6H25Handler, ThesisCSVReplayHandler, ThesisLogExtractionHandler
 from ..Utils import PATH_EXECUTABLE, ExperimentData, ExperimentType, PATH_LOG_EXTRACTION_SCENE, PATH_CSV_REPLAY_SCENE
 
 import logging
@@ -19,10 +19,14 @@ class ExperimentMode(Enum):
     PARTIAL = 1
     DEL_EXISTING = 2
 
-
 class Simulator:
     _instance = None
     _initialized = False
+
+    def __new__(cls, *args, **kwargs):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+        return cls._instance
 
     def __init__(self):
         if self._initialized:
@@ -33,11 +37,6 @@ class Simulator:
         self._naoV6H25Handler = NaoV6H25Handler()
         self._thesisCSVReplayHandler = ThesisCSVReplayHandler()
         self._thesisLogExtractionHandler = ThesisLogExtractionHandler()
-
-    def __new__(cls, *args, **kwargs):
-        if cls._instance is None:
-            cls._instance = super().__new__(cls)
-        return cls._instance
 
     def _set_experiment_parameters(self, experiment_data : ExperimentData) -> bool:
         if experiment_data.experiment_type is ExperimentType.LOG_EXTRACTION:
@@ -168,6 +167,3 @@ class Simulator:
                 self.run(PATH_CSV_REPLAY_SCENE, eds, batch_size)
         except Exception as e:
             logger.exception("%s failed to run due to %s", type(self).__name__, type(e).__name__)
-
-
-instance : Optional[Simulator] = None

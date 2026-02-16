@@ -2,10 +2,10 @@ from __future__ import annotations
 from typing import override
 import xml.etree.ElementTree as ElementTree
 
-from .XmlHandler import XmlHandler
-from ..Utils import Hinge, PATH_SCENE
+from ...Utils import XmlHandler, Hinge, PATH_SCENE
 
 class NaoV6H25Handler(XmlHandler):
+
     def __init__(self):
         super().__init__(PATH_SCENE / "Includes" / "NaoV6H25.rsi2")
 

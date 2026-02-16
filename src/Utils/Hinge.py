@@ -8,6 +8,25 @@ class Hinge:
         self._i = i
         self._d = d
 
+    def to_dict(self) -> dict:
+        return {
+            "max_velocity": self._max_velocity,
+            "max_force": self._max_force,
+            "p": self._p,
+            "i": self._i,
+            "d": self._d,
+        }
+
+    @classmethod
+    def from_dict(cls, data: dict) -> "Hinge":
+        return cls(
+            max_velocity=data["max_velocity"],
+            max_force=data["max_force"],
+            p=data["p"],
+            i=data["i"],
+            d=data["d"],
+        )
+
     @property
     def max_velocity(self) -> float:
         return self._max_velocity

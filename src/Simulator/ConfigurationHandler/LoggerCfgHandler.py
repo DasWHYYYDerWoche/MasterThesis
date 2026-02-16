@@ -1,10 +1,10 @@
 from __future__ import annotations
 from typing import override
 
-from .CfgHandler import  CfgHandler
-from ..Utils import PATH_CONFIG
+from ...Utils import  CfgHandler, PATH_CONFIG
 
 class LoggerCfgHandler(CfgHandler):
+
     def __init__(self):
         super().__init__(PATH_CONFIG / "loggerT.cfg")
 

@@ -2,10 +2,10 @@ from __future__ import annotations
 
 from typing import override
 
-from .FileHandler import  FileHandler
-from ..Utils import PATH_SCENE
+from ...Utils import FileHandler, PATH_SCENE
 
 class ThesisLogExtractionHandler(FileHandler):
+
     def __init__(self):
         super().__init__(PATH_SCENE / "ThesisLogExtraction.con")
 
