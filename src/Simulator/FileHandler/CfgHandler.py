@@ -86,5 +86,5 @@ class LoggerHandler(CfgHandler):
                  log_extraction_path=log_extraction_folder_name, csv_replay_path="")
 
     def set_replay(self, log_extraction_folder_name : str, csv_replay_folder_name: str):
-        self.set(logging_active=True, log_extraction_active=True, csv_replay_active=False,
+        self.set(logging_active=True, log_extraction_active=False, csv_replay_active=True,
                  log_extraction_path=log_extraction_folder_name, csv_replay_path=csv_replay_folder_name)

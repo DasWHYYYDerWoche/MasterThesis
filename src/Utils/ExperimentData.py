@@ -51,6 +51,15 @@ class ExperimentData:
                     logger.info("Deleted existing csv %s", file)
                     file.unlink()
 
+    def create_directory(self):
+        folder = None
+        if self._experiment_type is ExperimentType.LOG_EXTRACTION:
+            folder = self.log_extraction_path_full.parent
+        elif self._experiment_type is ExperimentType.CSV_REPLAY:
+            folder = self.csv_replay_path_full.parent
+        if folder and not folder.exists():
+            folder.mkdir(parents=True)
+
     @property
     def experiment_type(self) -> ExperimentType:
         return self._experiment_type
@@ -172,3 +181,8 @@ class ExperimentData:
             if ed.num_missing_copies > 0:
                 filtered_eds.append(ed)
         return filtered_eds
+
+    @staticmethod
+    def create_directories(eds : list[ExperimentData]):
+        for ed in eds:
+            ed.create_directory()

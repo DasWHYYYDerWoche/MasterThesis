@@ -1,7 +1,6 @@
 TODO:
-    #rename parameters, paths etc and merge where possible
-    # USE LONGER NAMES GODDAMN
-    # further work on csv replayer
+    # fix csv loader in c++
+        # next line is not loaded correctly
 
 
     load csvs and calculate simulation gap
@@ -17,46 +16,6 @@ replay function:
     load file names from loading / current experiment
     change configs into replay state
     replay each file x times
-
-
-
-folders:
-    LOGS
-        ThesisFieldLogs
-            kick
-                date 0
-                    0.log (date of when the original log was recorded)
-                    1.log
-                    ...
-                date 1
-                    0.log
-                    1.log
-                    ...
-            Etc
-        CSVLogger
-            logExtraction (csv with both)
-                kick
-                    date 0 (date in the name of the .log file)
-                        0_extracted_time.csv (time when the csv was recorded, e = extracted)
-                        1_extracted_time.csv
-                        ...
-                    date 1
-                        0_extracted_time.csv
-                        1_extracted_time.csv
-                        ...
-                Walk
-                Etc
-            csvReplay (csv with only JSD)
-                parameter_set_1
-                    parameter file
-                    kick
-                        date 0 (date in the name of the .log file)
-                            0_extracted_time (time when the replayed csv was recorded)
-                                replayed_time.csv (date when the replay was performed, r = replay)
-                                replayed_time.csv
-                            1_extracted_time
-                                replayed_time.csv (date when the replay was performed, r = replay)
-                                replayed_time.csv
 
 folders:
     LOGS
