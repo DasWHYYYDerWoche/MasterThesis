@@ -42,10 +42,13 @@ class NaoV6H25Handler(XmlHandler):
             servo_element.set("p", str(hinge.p))
             servo_element.set("i", str(hinge.i))
             servo_element.set("d", str(hinge.d))
-            pass
 
     @staticmethod
     @override
     def get_default() -> dict:
         default_tree = ElementTree.parse(PATH_SCENE / "Includes" / "NaoV6H25_BACKUP.rsi2")
         return NaoV6H25Handler._convert(default_tree)
+
+    def set_hinge_parameters(self, hinge_name : str, hinge : Hinge):
+        if hinge_name in self._data.keys():
+            self._data[hinge_name] = hinge

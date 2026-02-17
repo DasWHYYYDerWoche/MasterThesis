@@ -58,7 +58,7 @@ class FileHandler(ABC):
         contained_values = []
         not_contained_keys = []
         for key, value in zip(keys, values):
-            if self._data.keys().__contains__(key):
+            if key and value and self._data.keys().__contains__(key):
                 self._data[key] = value
                 contained_keys.append(key)
                 contained_values.append(value)

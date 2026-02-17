@@ -32,5 +32,21 @@ class ThesisCSVReplayHandler(XmlHandler):
             "contactKd": 7.5
         }
 
+    @property
+    def kp(self) -> float:
+        return self._data["Kp"]
+
+    @property
+    def kd(self) -> float:
+        return self._data["Kd"]
+
+    @property
+    def contact_kp(self) -> float:
+        return self._data["contactKp"]
+
+    @property
+    def contact_kd(self) -> float:
+        return self._data["contactKd"]
+
     def set(self, kp: float, kd: float, contact_kp: float, contact_kd: float):
         self._set_values(keys=self.keys, values=[kp, kd, contact_kp, contact_kd])

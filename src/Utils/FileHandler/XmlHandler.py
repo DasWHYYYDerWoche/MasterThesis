@@ -8,7 +8,7 @@ from .FileHandler import FileHandler
 
 class XmlHandler(FileHandler):
     def __init__(self, path: Path):
-        self._xml_tree: ET.ElementTree = ET.ElementTree()
+        self._xml_tree: ET.ElementTree = ET.ElementTree() #TODO maybe not keep reference permanently
         super().__init__(path)
 
     @override

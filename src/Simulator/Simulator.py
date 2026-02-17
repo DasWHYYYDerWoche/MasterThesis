@@ -8,6 +8,7 @@ import math
 from pathlib import Path
 from datetime import datetime
 
+from .SimulatorSettings import SimulatorSettings
 from .ConfigurationHandler import LoggerCfgHandler, NaoV6H25Handler, ThesisCSVReplayHandler, ThesisLogExtractionHandler
 from ..Utils import PATH_EXECUTABLE, ExperimentData, ExperimentType, PATH_LOG_EXTRACTION_SCENE, PATH_CSV_REPLAY_SCENE
 
@@ -29,6 +30,7 @@ class Simulator:
         return cls._instance
 
     def __init__(self):
+        self._param_set_id = ""
         if self._initialized:
             return
         self._initialized = True
@@ -37,6 +39,23 @@ class Simulator:
         self._naoV6H25Handler = NaoV6H25Handler()
         self._thesisCSVReplayHandler = ThesisCSVReplayHandler()
         self._thesisLogExtractionHandler = ThesisLogExtractionHandler()
+
+    def _set_simulator_settings(self, settings : SimulatorSettings):
+        self._thesisCSVReplayHandler.set( settings.kd, settings.kp, settings.contact_kd, settings.contact_kp)
+        """
+        if settings.kd:
+            self._thesisCSVReplayHandler.kd = settings.kd
+        if settings.kp:
+            self._thesisCSVReplayHandler.kp = settings.kp
+        if settings.contact_kd:
+            self._thesisCSVReplayHandler.contact_kd = settings.contact_kd
+        if settings.contact_kp:
+            self._thesisCSVReplayHandler.contact_kp = settings.contact_kp
+        """
+        self._thesisCSVReplayHandler.write_to_file()
+        for hinge_name, hinge in settings.hinge_parameters.items():
+            self._naoV6H25Handler.set_hinge_parameters(hinge_name, hinge)
+        self._naoV6H25Handler.write_to_file()
 
     def _set_experiment_parameters(self, experiment_data : ExperimentData) -> bool:
         if experiment_data.experiment_type is ExperimentType.LOG_EXTRACTION:
@@ -48,6 +67,8 @@ class Simulator:
         elif experiment_data.experiment_type is ExperimentType.CSV_REPLAY:
             self._loggerCfgHandler.set_replay(experiment_data.log_extraction_path_relative.as_posix(), experiment_data.csv_replay_path_relative.as_posix())
             self._loggerCfgHandler.write_to_file()
+            self._thesisLogExtractionHandler.set_default()
+            self._thesisLogExtractionHandler.write_to_file()
             return True
         else:
             return False
@@ -55,6 +76,8 @@ class Simulator:
     def _reset_simulator(self):
         self._loggerCfgHandler.set_default()
         self._loggerCfgHandler.write_to_file()
+        self._thesisCSVReplayHandler.set_default()
+        self._thesisCSVReplayHandler.write_to_file()
         self._naoV6H25Handler.set_default()
         self._naoV6H25Handler.write_to_file()
         self._thesisLogExtractionHandler.set_default()
@@ -70,7 +93,6 @@ class Simulator:
         logger.info("Extracting %s logs with a batch size of %s",len(experiment_datas), batch_size)
         for i in range(0, math.ceil(len(experiment_datas) / batch_size) * batch_size, batch_size):
             self._run_batch(scene_path, experiment_datas[i : min(i+batch_size, len(experiment_datas))])
-        self._reset_simulator()
 
     def _run_batch(self,  scene_path : Path, experiment_datas : list[ExperimentData], max_wait_for_ready : float = 10, max_run_duration : float = 20, gui : bool = True):
         process_list: list[subprocess.Popen[str]] = []
@@ -127,6 +149,7 @@ class Simulator:
                     "all" if action_names is None else action_names,
                     "all" if recording_dates is None else recording_dates,
                     "all" if log_indices is None else log_indices)
+
         eds = ExperimentData.get_extraction_data(action_names, recording_dates, log_indices)
         if mode == ExperimentMode.PARTIAL:
             eds = ExperimentData.delete_redundant_eds(eds)
@@ -137,10 +160,12 @@ class Simulator:
             self.run(PATH_LOG_EXTRACTION_SCENE, eds, batch_size)
         except Exception as e:
             logger.exception("%s failed to run due to %s", type(self).__name__, type(e).__name__)
+        self._reset_simulator()
 
-    def replay(self, action_names : Optional[list[str]] = None, recording_dates : Optional[list[str]] = None, log_indices : Optional[list[int]] = None, mode: ExperimentMode = ExperimentMode.PARTIAL, batch_size : int = 5, num_copies : int = 1):
+    def replay(self, settings : SimulatorSettings, action_names : Optional[list[str]] = None, recording_dates : Optional[list[str]] = None, log_indices : Optional[list[int]] = None, mode: ExperimentMode = ExperimentMode.PARTIAL, batch_size : int = 5, num_copies : int = 1):
         """
 
+        :param settings:
         :param action_names:
         :param recording_dates:
         :param log_indices:
@@ -155,8 +180,9 @@ class Simulator:
                     "all" if action_names is None else action_names,
                     "all" if recording_dates is None else recording_dates,
                     "all" if log_indices is None else log_indices)
-        param_set_id = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
-        eds = ExperimentData.get_replay_data(param_set_id, action_names, recording_dates, log_indices, num_copies)
+        if settings:
+            self._set_simulator_settings(settings)
+        eds = ExperimentData.get_replay_data(settings.target_param_set_id, action_names, recording_dates, log_indices, num_copies)
         if mode == ExperimentMode.PARTIAL:
             eds = ExperimentData.delete_redundant_eds(eds)
         elif mode == ExperimentMode.DEL_EXISTING:
@@ -167,3 +193,4 @@ class Simulator:
                 self.run(PATH_CSV_REPLAY_SCENE, eds, batch_size)
         except Exception as e:
             logger.exception("%s failed to run due to %s", type(self).__name__, type(e).__name__)
+        self._reset_simulator()
