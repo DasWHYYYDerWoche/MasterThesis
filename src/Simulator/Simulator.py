@@ -90,7 +90,7 @@ class Simulator:
         if batch_size > self._MAX_INSTANCES:
             logger.warning("batch_size (%s) was larger than the maximum number of allowed instances (%s)", batch_size, self._MAX_INSTANCES)
             batch_size = self._MAX_INSTANCES
-        logger.info("Extracting %s logs with a batch size of %s",len(experiment_datas), batch_size)
+        logger.info("Running %s experiments with a batch size of %s",len(experiment_datas), batch_size)
         for i in range(0, math.ceil(len(experiment_datas) / batch_size) * batch_size, batch_size):
             self._run_batch(scene_path, experiment_datas[i : min(i+batch_size, len(experiment_datas))])
 
@@ -156,6 +156,7 @@ class Simulator:
         elif mode == ExperimentMode.DEL_EXISTING:
             ExperimentData.delete_existing_csvs(eds)
         ExperimentData.create_directories(eds)
+        self._reset_simulator()
         try:
             self.run(PATH_LOG_EXTRACTION_SCENE, eds, batch_size)
         except Exception as e:
@@ -188,6 +189,7 @@ class Simulator:
         elif mode == ExperimentMode.DEL_EXISTING:
             ExperimentData.delete_existing_csvs(eds)
         ExperimentData.create_directories(eds)
+        self._reset_simulator()
         try:
             for _ in range(num_copies):
                 self.run(PATH_CSV_REPLAY_SCENE, eds, batch_size)
