@@ -7,12 +7,14 @@ from enum import Enum
 import math
 from pathlib import Path
 from datetime import datetime
+from ..Simulator import SimulationParameters
 
 from ..Utils import JOINT_DEFLECTIONS, HINGE_NAMES
-from ..Utils import PATH_EXECUTABLE, ExperimentData, ExperimentType, PATH_LOG_EXTRACTION_SCENE, PATH_CSV_REPLAY_SCENE
+from ..Utils import PATH_EXECUTABLE, ExperimentParameters, ExperimentType, PATH_LOG_EXTRACTION_SCENE, PATH_CSV_REPLAY_SCENE
 
 class SimulationGapHandler:
     def __init__(self):
         pass
 
-
+    def calculate_gap(self, ):
+        pass

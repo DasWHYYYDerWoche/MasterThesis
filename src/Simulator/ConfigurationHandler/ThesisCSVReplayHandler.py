@@ -5,8 +5,18 @@ import xml.etree.ElementTree as ElementTree
 from ...Utils import XmlHandler, PATH_SCENE
 
 class ThesisCSVReplayHandler(XmlHandler):
+    _instance = None
+    _initialized = False
+
+    def __new__(cls, *args, **kwargs):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+        return cls._instance
 
     def __init__(self):
+        if self._initialized:
+            return
+        self._initialized = True
         super().__init__(PATH_SCENE / "ThesisCSVReplay.ros2")
 
     @override

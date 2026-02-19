@@ -4,11 +4,21 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b8d71ec4-48b2-4ec5-b1a5-6fe6d26ab8b8" name="Changes" comment="feature:&#10;created simulator settings class and added it to simulator">
+    <list default="true" id="b8d71ec4-48b2-4ec5-b1a5-6fe6d26ab8b8" name="Changes" comment="fix:&#10;deleted prints from filehandler">
+      <change afterPath="$PROJECT_DIR$/src/Simulator/ConfigurationHandler/ConfigurationHandler.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/main.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Optimizer/SimulationGapHandler.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Optimizer/SimulationGapHandler.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Simulator/ConfigurationHandler/LoggerCfgHandler.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Simulator/ConfigurationHandler/LoggerCfgHandler.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Simulator/ConfigurationHandler/NaoV6H25Handler.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Simulator/ConfigurationHandler/NaoV6H25Handler.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Simulator/ConfigurationHandler/ThesisCSVReplayHandler.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Simulator/ConfigurationHandler/ThesisCSVReplayHandler.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Simulator/ConfigurationHandler/ThesisLogExtractionHandler.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Simulator/ConfigurationHandler/ThesisLogExtractionHandler.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Simulator/ConfigurationHandler/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Simulator/ConfigurationHandler/__init__.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Simulator/Simulator.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Simulator/Simulator.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Utils/FileHandler/FileHandler.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Utils/FileHandler/FileHandler.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Simulator/SimulatorSettings.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Utils/SimulationParameters.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Utils/ExperimentData.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Utils/ExperimentParameters.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Utils/SimulationGapF.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Utils/SimulationGapData.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Utils/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Utils/__init__.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -347,12 +357,26 @@
       <option name="project" value="LOCAL" />
       <updated>1771340319418</updated>
     </task>
-    <option name="localTasksCounter" value="34" />
+    <task id="LOCAL-00034" summary="fix:&#10;fixed error during file reading that did not allow booleans to be changed once they where set to false&#10;updated logger text">
+      <option name="closed" value="true" />
+      <created>1771420249915</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1771420249915</updated>
+    </task>
+    <task id="LOCAL-00035" summary="fix:&#10;deleted prints from filehandler">
+      <option name="closed" value="true" />
+      <created>1771425168549</created>
+      <option name="number" value="00035" />
+      <option name="presentableId" value="LOCAL-00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1771425168549</updated>
+    </task>
+    <option name="localTasksCounter" value="36" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="feature:&#10;- added TextHandler to change ThesisLogExtraction.con&#10;- created LogExtractor and ExtractionData to start automatic log extraction" />
-    <MESSAGE value="feature:&#10;- added logging functionality and error handling to TextHandler and FileHandler" />
     <MESSAGE value="feature:&#10;- updated simulator to use new file loading structure&#10;- added method to run log extraction for a list of files which are then run in parallel" />
     <MESSAGE value="feature:&#10;- changed logging structure so all logs happen in FileHanlder" />
     <MESSAGE value="feature:&#10;- added additional logging to set_value and set_values methods in FileHandler&#10;- made methods set_values and set_value private" />
@@ -376,6 +400,8 @@
     <MESSAGE value="fix:&#10;moved filehandlers from simulator into separate files" />
     <MESSAGE value="fix:&#10;moved files again and again help me pls&#10;feature:&#10;SimulatorSettings can now be saved to a file and loaded" />
     <MESSAGE value="feature:&#10;created simulator settings class and added it to simulator" />
-    <option name="LAST_COMMIT_MESSAGE" value="feature:&#10;created simulator settings class and added it to simulator" />
+    <MESSAGE value="fix:&#10;fixed error during file reading that did not allow booleans to be changed once they where set to false&#10;updated logger text" />
+    <MESSAGE value="fix:&#10;deleted prints from filehandler" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix:&#10;deleted prints from filehandler" />
   </component>
 </project>

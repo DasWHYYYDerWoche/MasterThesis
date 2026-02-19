@@ -12,7 +12,7 @@ class ExperimentType(Enum):
     LOG_EXTRACTION = 0
     CSV_REPLAY = 1
 
-class ExperimentData:
+class ExperimentParameters:
     def __init__(self, experiment_type : ExperimentType, param_set_id : str = "", action_name : str = "", recording_date : str = "", log_index : int = -1, num_copies : int = 1):
         self._experiment_type = experiment_type
         self._action_name: str = action_name
@@ -34,7 +34,7 @@ class ExperimentData:
                 if file.name.startswith(str(self._log_index) + "_") and file.suffix == ".csv":
                     existing_files += 1
             return self._num_copies - existing_files
-        return False
+        return 0
 
     def delete_existing_csv(self):
         if self._experiment_type is ExperimentType.LOG_EXTRACTION:
@@ -119,15 +119,15 @@ class ExperimentData:
 
     @staticmethod
     def get_extraction_data(action_names: Optional[list[str]], recording_dates: Optional[list[str]], log_indices : Optional[list[int]]):
-        return ExperimentData._get_all(ExperimentType.LOG_EXTRACTION, "", action_names, recording_dates, log_indices, 1)
+        return ExperimentParameters._get_all(ExperimentType.LOG_EXTRACTION, "", action_names, recording_dates, log_indices, 1)
 
     @staticmethod
     def get_replay_data(param_set_id : str, action_names: Optional[list[str]], recording_dates: Optional[list[str]], log_indices : Optional[list[int]], num_copies : int):
-        return ExperimentData._get_all(ExperimentType.CSV_REPLAY, param_set_id, action_names, recording_dates, log_indices, num_copies)
+        return ExperimentParameters._get_all(ExperimentType.CSV_REPLAY, param_set_id, action_names, recording_dates, log_indices, num_copies)
 
     @staticmethod
     def _get_all(experiment_type : ExperimentType, param_set_id : str, action_names: Optional[list[str]], recording_dates: Optional[list[str]], log_indices : Optional[list[int]], num_copies : int) -> \
-    list[ExperimentData]:
+    list[ExperimentParameters]:
         eds = []
         if action_names is None:
             if experiment_type is ExperimentType.LOG_EXTRACTION:
@@ -135,12 +135,12 @@ class ExperimentData:
             elif experiment_type is ExperimentType.CSV_REPLAY:
                 action_names = [file.name for file in PATH_LOGS_AS_CSVS.iterdir()]
         for action_name in action_names:
-            eds.extend(ExperimentData._get_for_action(experiment_type, param_set_id, action_name, recording_dates, log_indices, num_copies))
+            eds.extend(ExperimentParameters._get_for_action(experiment_type, param_set_id, action_name, recording_dates, log_indices, num_copies))
         return eds
 
     @staticmethod
     def _get_for_action(experiment_type : ExperimentType, param_set_id : str, action_name: str, recording_dates: Optional[list[str]], log_indices : Optional[list[int]], num_copies : int) -> \
-    list[ExperimentData]:
+    list[ExperimentParameters]:
         eds = []
         if recording_dates is None:
             if experiment_type is ExperimentType.LOG_EXTRACTION:
@@ -148,11 +148,11 @@ class ExperimentData:
             elif experiment_type is ExperimentType.CSV_REPLAY:
                 recording_dates = [file.name for file in (PATH_LOGS_AS_CSVS / action_name).iterdir()]
         for recording_date in recording_dates:
-            eds.extend(ExperimentData._get_for_action_date(experiment_type, param_set_id, action_name, recording_date, log_indices, num_copies))
+            eds.extend(ExperimentParameters._get_for_action_date(experiment_type, param_set_id, action_name, recording_date, log_indices, num_copies))
         return eds
 
     @staticmethod
-    def _get_for_action_date(experiment_type : ExperimentType, param_set_id : str, action_name : str, recording_date : str, log_indices : Optional[list[int]], num_copies : int) -> list[ExperimentData]:
+    def _get_for_action_date(experiment_type : ExperimentType, param_set_id : str, action_name : str, recording_date : str, log_indices : Optional[list[int]], num_copies : int) -> list[ExperimentParameters]:
         eds = []
         if log_indices is None:
             if experiment_type is ExperimentType.LOG_EXTRACTION:
@@ -161,21 +161,21 @@ class ExperimentData:
                 log_indices = [file.name for file in (PATH_LOGS_AS_CSVS / action_name / recording_date).iterdir()]
         if experiment_type is ExperimentType.LOG_EXTRACTION:
             for log_index in log_indices:
-                eds.append(ExperimentData(experiment_type=ExperimentType.LOG_EXTRACTION, action_name=action_name, recording_date=recording_date, log_index=log_index))
+                eds.append(ExperimentParameters(experiment_type=ExperimentType.LOG_EXTRACTION, action_name=action_name, recording_date=recording_date, log_index=log_index))
         elif experiment_type is ExperimentType.CSV_REPLAY:
             for log_index in log_indices:
-                eds.append(ExperimentData(experiment_type=ExperimentType.CSV_REPLAY, param_set_id=param_set_id,action_name=action_name,  recording_date=recording_date, log_index=log_index, num_copies=num_copies))
+                eds.append(ExperimentParameters(experiment_type=ExperimentType.CSV_REPLAY, param_set_id=param_set_id, action_name=action_name, recording_date=recording_date, log_index=log_index, num_copies=num_copies))
         return eds
 
     # -------- modifying extraction data lists --------
 
     @staticmethod
-    def delete_existing_csvs(eds : list[ExperimentData]):
+    def delete_existing_csvs(eds : list[ExperimentParameters]):
         for ed in eds:
             ed.delete_existing_csv()
 
     @staticmethod
-    def delete_redundant_eds(eds : list[ExperimentData]) -> list[ExperimentData]:
+    def delete_redundant_eds(eds : list[ExperimentParameters]) -> list[ExperimentParameters]:
         filtered_eds = []
         for ed in eds:
             if ed.num_missing_copies > 0:
@@ -183,6 +183,6 @@ class ExperimentData:
         return filtered_eds
 
     @staticmethod
-    def create_directories(eds : list[ExperimentData]):
+    def create_directories(eds : list[ExperimentParameters]):
         for ed in eds:
             ed.create_directory()

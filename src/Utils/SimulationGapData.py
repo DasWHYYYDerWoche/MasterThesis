@@ -9,12 +9,12 @@ from pathlib import Path
 from datetime import datetime
 
 from .Constants import JOINT_DEFLECTIONS, HINGE_NAMES
-from ..Utils import PATH_EXECUTABLE, ExperimentData, ExperimentType, PATH_LOG_EXTRACTION_SCENE, PATH_CSV_REPLAY_SCENE
+from ..Utils import PATH_EXECUTABLE, ExperimentParameters, ExperimentType, PATH_LOG_EXTRACTION_SCENE, PATH_CSV_REPLAY_SCENE
 
 import logging
 logger = logging.getLogger("global_logger")
 
-class SimulationGapF:
+class SimulationGapData:
     """
     Simulation gap between a single replay file and the corresponding log
     """

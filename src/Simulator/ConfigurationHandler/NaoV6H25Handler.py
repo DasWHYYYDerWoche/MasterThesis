@@ -5,8 +5,18 @@ import xml.etree.ElementTree as ElementTree
 from ...Utils import XmlHandler, Hinge, PATH_SCENE
 
 class NaoV6H25Handler(XmlHandler):
+    _instance = None
+    _initialized = False
+
+    def __new__(cls, *args, **kwargs):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+        return cls._instance
 
     def __init__(self):
+        if self._initialized:
+            return
+        self._initialized = True
         super().__init__(PATH_SCENE / "Includes" / "NaoV6H25.rsi2")
 
     @override
@@ -50,5 +60,4 @@ class NaoV6H25Handler(XmlHandler):
         return NaoV6H25Handler._convert(default_tree)
 
     def set_hinge_parameters(self, hinge_name : str, hinge : Hinge):
-        if hinge_name in self._data.keys():
-            self._data[hinge_name] = hinge
+        self._set_value(hinge_name, hinge)

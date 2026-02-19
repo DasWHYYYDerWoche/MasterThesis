@@ -4,8 +4,18 @@ from typing import override
 from ...Utils import  CfgHandler, PATH_CONFIG
 
 class LoggerCfgHandler(CfgHandler):
+    _instance = None
+    _initialized = False
+
+    def __new__(cls, *args, **kwargs):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+        return cls._instance
 
     def __init__(self):
+        if self._initialized:
+            return
+        self._initialized = True
         super().__init__(PATH_CONFIG / "loggerT.cfg")
 
     @staticmethod
