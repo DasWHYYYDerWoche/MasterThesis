@@ -24,19 +24,11 @@ PATH_REPLAYS : Path = PATH_CSV_LOGGER / "replays"
 PATH_EXECUTABLE : Path = PATH / "Build" / "simulator-multiconfig" / "Release" / "SimRobot.exe"
 
 HINGE_NAMES = [
-"HeadYaw","HeadPitch",
-"LShoulderPitch","LShoulderRoll","LElbowYaw","LElbowRoll","LWristYaw",
-"RShoulderPitch","RShoulderRoll","RElbowYaw","RElbowRoll","RWristYaw",
-"LHipYawPitch","LHipRoll","LHipPitch","LKneePitch","LAnklePitch","LAnkleRoll",
-"RHipYawPitch","RHipRoll","RHipPitch","RKneePitch","RAnklePitch","RAnkleRoll"
-]
-
-HINGE_RANGE = [
-"HeadYaw","HeadPitch",
-"LShoulderPitch","LShoulderRoll","LElbowYaw","LElbowRoll","LWristYaw",
-"RShoulderPitch","RShoulderRoll","RElbowYaw","RElbowRoll","RWristYaw",
-"LHipYawPitch","LHipRoll","LHipPitch","LKneePitch","LAnklePitch","LAnkleRoll",
-"RHipYawPitch","RHipRoll","RHipPitch","RKneePitch","RAnklePitch","RAnkleRoll"
+"headYaw","headPitch",
+"lShoulderPitch","lShoulderRoll","lElbowYaw","lElbowRoll","lWristYaw","lHand",
+"rShoulderPitch","rShoulderRoll","rElbowYaw","rElbowRoll","rWristYaw","rHand",
+"lHipYawPitch","lHipRoll","lHipPitch","lKneePitch","lAnklePitch","lAnkleRoll",
+"rHipYawPitch","rHipRoll","rHipPitch","rKneePitch","rAnklePitch","rAnkleRoll",
 ]
 
 JOINT_DEFLECTIONS = {
@@ -75,4 +67,17 @@ JOINT_DEFLECTIONS = {
     "RAnkleRoll": (-44.06, 22.80),
 }
 
-ACTION_NAMES = [action_folder.name for action_folder in PATH_FIELD_LOGS.iterdir()]
+def get_extraction_path_partial(action_name : str, recording_date : str, log_index : int) -> Path:
+    return Path("logsAsCSVs") / action_name / recording_date / str(log_index)
+
+def get_extraction_path_full(action_name : str, recording_date : str, log_index : int) -> Path:
+    return PATH_CSV_LOGGER / get_extraction_path_partial(action_name, recording_date, log_index)
+
+def get_replay_path_partial(param_set_id : str, action_name : str, recording_date : str, log_index : int, replay_date : str) -> Path:
+    return Path("replays") / ("paramSet_" + param_set_id) / action_name / recording_date / (str(log_index) + "_replayed_" + replay_date)
+
+def get_replay_path_full(param_set_id : str, action_name : str, recording_date : str, log_index : int, replay_date : str) -> Path:
+    return PATH_CSV_LOGGER / get_replay_path_partial(param_set_id, action_name, recording_date, log_index, replay_date)
+
+def get_field_logs_path(action_name : str, recording_date : str, log_index : int) -> Path:
+    return Path("..") / "Logs" / "ThesisFieldLogs"/ action_name /  recording_date / (str(log_index) + ".log")

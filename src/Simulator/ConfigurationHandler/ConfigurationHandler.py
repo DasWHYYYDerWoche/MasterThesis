@@ -25,14 +25,14 @@ class ConfigurationHandler:
 
     def set_experiment_parameters(self, parameters : ExperimentParameters) -> bool:
         if parameters.experiment_type is ExperimentType.LOG_EXTRACTION:
-            self._loggerCfgHandler.set_extract(parameters.log_extraction_path_relative.as_posix())
+            self._loggerCfgHandler.set_extract(parameters.extraction_path_relative.as_posix())
             self._loggerCfgHandler.write_to_file()
             self._thesisLogExtractionHandler.set(parameters.log_path.as_posix())
             self._thesisLogExtractionHandler.write_to_file()
             return True
         elif parameters.experiment_type is ExperimentType.CSV_REPLAY:
-            self._loggerCfgHandler.set_replay(parameters.log_extraction_path_relative.as_posix(),
-                                              parameters.csv_replay_path_relative.as_posix())
+            self._loggerCfgHandler.set_replay(parameters.extraction_path_relative.as_posix(),
+                                              parameters.replay_path_relative.as_posix())
             self._loggerCfgHandler.write_to_file()
             self._thesisLogExtractionHandler.set_default()
             self._thesisLogExtractionHandler.write_to_file()

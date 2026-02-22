@@ -4,20 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b8d71ec4-48b2-4ec5-b1a5-6fe6d26ab8b8" name="Changes" comment="fix:&#10;deleted prints from filehandler">
-      <change afterPath="$PROJECT_DIR$/src/Simulator/ConfigurationHandler/ConfigurationHandler.py" afterDir="false" />
+    <list default="true" id="b8d71ec4-48b2-4ec5-b1a5-6fe6d26ab8b8" name="Changes" comment="feature:&#10;moved file handling from simulator to configuration handler">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/main.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Optimizer/SimulationGapHandler.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Optimizer/SimulationGapHandler.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Simulator/ConfigurationHandler/LoggerCfgHandler.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Simulator/ConfigurationHandler/LoggerCfgHandler.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Simulator/ConfigurationHandler/NaoV6H25Handler.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Simulator/ConfigurationHandler/NaoV6H25Handler.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Simulator/ConfigurationHandler/ThesisCSVReplayHandler.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Simulator/ConfigurationHandler/ThesisCSVReplayHandler.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Simulator/ConfigurationHandler/ThesisLogExtractionHandler.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Simulator/ConfigurationHandler/ThesisLogExtractionHandler.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Simulator/ConfigurationHandler/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Simulator/ConfigurationHandler/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Simulator/Simulator.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Simulator/Simulator.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Simulator/SimulatorSettings.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Utils/SimulationParameters.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Utils/ExperimentData.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Utils/ExperimentParameters.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Utils/SimulationGapF.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Utils/SimulationGapData.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Simulator/ConfigurationHandler/ConfigurationHandler.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Simulator/ConfigurationHandler/ConfigurationHandler.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Utils/Constants.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Utils/Constants.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Utils/ExperimentParameters.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Utils/ExperimentParameters.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Utils/SimulationGapData.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Utils/SimulationGapData.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Utils/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Utils/__init__.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />

@@ -3,7 +3,8 @@ from typing import Optional
 from enum import Enum
 from pathlib import Path
 from datetime import datetime
-from .Constants import PATH_CSV_LOGGER, PATH_FIELD_LOGS, PATH_LOGS_AS_CSVS
+from .Constants import (PATH_CSV_LOGGER, PATH_FIELD_LOGS, PATH_LOGS_AS_CSVS,
+                        get_field_logs_path, get_replay_path_full, get_replay_path_partial,get_extraction_path_partial,get_extraction_path_full)
 
 import logging
 logger = logging.getLogger("global_logger")
@@ -24,9 +25,9 @@ class ExperimentParameters:
 
     def _count_missing_files(self) -> int:
         if self._experiment_type is ExperimentType.LOG_EXTRACTION:
-            return 0 if self.log_extraction_path_full.with_suffix(".csv").exists() else 1
+            return 0 if self.extraction_path_full.with_suffix(".csv").exists() else 1
         elif self._experiment_type is ExperimentType.CSV_REPLAY:
-            path = self.csv_replay_path_full.parent
+            path = self.replay_path_full.parent
             if not path.exists():
                 return self._num_copies
             existing_files = 0
@@ -38,12 +39,12 @@ class ExperimentParameters:
 
     def delete_existing_csv(self):
         if self._experiment_type is ExperimentType.LOG_EXTRACTION:
-            file = self.log_extraction_path_full.with_suffix(".csv")
+            file = self.extraction_path_full.with_suffix(".csv")
             if file.exists():
                 logger.info("Deleted existing csv %s", file)
                 file.unlink()
         elif self._experiment_type is ExperimentType.CSV_REPLAY:
-            path = self.csv_replay_path_full.parent
+            path = self.replay_path_full.parent
             if not path.exists():
                 return
             for file in path.iterdir():
@@ -54,9 +55,9 @@ class ExperimentParameters:
     def create_directory(self):
         folder = None
         if self._experiment_type is ExperimentType.LOG_EXTRACTION:
-            folder = self.log_extraction_path_full.parent
+            folder = self.extraction_path_full.parent
         elif self._experiment_type is ExperimentType.CSV_REPLAY:
-            folder = self.csv_replay_path_full.parent
+            folder = self.replay_path_full.parent
         if folder and not folder.exists():
             folder.mkdir(parents=True)
 
@@ -90,23 +91,25 @@ class ExperimentParameters:
 
     @property
     def log_path(self) -> Path:
-        return Path("..") / "Logs" / "ThesisFieldLogs"/ self._action_name /  self._recording_date / (str(self._log_index) + ".log")
+        return get_field_logs_path(self._action_name, self._recording_date, self._log_index)
 
     @property
-    def log_extraction_path_relative(self) -> Path:
-        return Path("logsAsCSVs") / self._action_name / self._recording_date / str(self._log_index)
+    def extraction_path_relative(self) -> Path:
+        return get_extraction_path_partial(self._action_name, self._recording_date, self._log_index)
 
     @property
-    def log_extraction_path_full(self) -> Path:
-        return PATH_CSV_LOGGER / self.log_extraction_path_relative
+    def extraction_path_full(self) -> Path:
+        return get_extraction_path_full(self._action_name, self._recording_date, self._log_index)
 
     @property
-    def csv_replay_path_relative(self) -> Path:
-        return Path("replays") / ("paramSet_" + self._param_set_id) / self._action_name / self._recording_date / (str(self._log_index) + "_replayed_" + datetime.now().strftime("%Y%m%d_%H%M%S_%f"))
+    def replay_path_relative(self) -> Path:
+        return get_replay_path_partial(self._param_set_id, self._action_name, self._recording_date, self._log_index,
+                                       datetime.now().strftime("%Y%m%d_%H%M%S_%f"))
 
     @property
-    def csv_replay_path_full(self) -> Path:
-        return PATH_CSV_LOGGER / self.csv_replay_path_relative
+    def replay_path_full(self) -> Path:
+        return get_replay_path_full(self._param_set_id, self._action_name, self._recording_date, self._log_index,
+                                       datetime.now().strftime("%Y%m%d_%H%M%S_%f"))
 
     def __str__(self):
         if self._experiment_type is ExperimentType.LOG_EXTRACTION:
