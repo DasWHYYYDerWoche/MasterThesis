@@ -4,14 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b8d71ec4-48b2-4ec5-b1a5-6fe6d26ab8b8" name="Changes" comment="feature:&#10;moved file handling from simulator to configuration handler">
+    <list default="true" id="b8d71ec4-48b2-4ec5-b1a5-6fe6d26ab8b8" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/main.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Simulator/ConfigurationHandler/ConfigurationHandler.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Simulator/ConfigurationHandler/ConfigurationHandler.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Utils/Constants.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Utils/Constants.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Utils/ExperimentParameters.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Utils/ExperimentParameters.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Utils/SimulationGapData.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Utils/SimulationGapData.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Utils/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Utils/__init__.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -366,11 +363,18 @@
       <option name="project" value="LOCAL" />
       <updated>1771425168549</updated>
     </task>
-    <option name="localTasksCounter" value="36" />
+    <task id="LOCAL-00036" summary="feature:&#10;moved path building into constants class&#10;started work on loading csvs to calculate sim gap">
+      <option name="closed" value="true" />
+      <created>1771765564369</created>
+      <option name="number" value="00036" />
+      <option name="presentableId" value="LOCAL-00036" />
+      <option name="project" value="LOCAL" />
+      <updated>1771765564369</updated>
+    </task>
+    <option name="localTasksCounter" value="37" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="feature:&#10;- updated simulator to use new file loading structure&#10;- added method to run log extraction for a list of files which are then run in parallel" />
     <MESSAGE value="feature:&#10;- changed logging structure so all logs happen in FileHanlder" />
     <MESSAGE value="feature:&#10;- added additional logging to set_value and set_values methods in FileHandler&#10;- made methods set_values and set_value private" />
     <MESSAGE value="fix:&#10;-changed logging level for file loading to info&#10;-changed logging level for set_value(s) to warning when the key does not exist" />
@@ -395,6 +399,7 @@
     <MESSAGE value="feature:&#10;created simulator settings class and added it to simulator" />
     <MESSAGE value="fix:&#10;fixed error during file reading that did not allow booleans to be changed once they where set to false&#10;updated logger text" />
     <MESSAGE value="fix:&#10;deleted prints from filehandler" />
-    <option name="LAST_COMMIT_MESSAGE" value="fix:&#10;deleted prints from filehandler" />
+    <MESSAGE value="feature:&#10;moved path building into constants class&#10;started work on loading csvs to calculate sim gap" />
+    <option name="LAST_COMMIT_MESSAGE" value="feature:&#10;moved path building into constants class&#10;started work on loading csvs to calculate sim gap" />
   </component>
 </project>

@@ -25,47 +25,51 @@ PATH_EXECUTABLE : Path = PATH / "Build" / "simulator-multiconfig" / "Release" / 
 
 HINGE_NAMES = [
 "headYaw","headPitch",
-"lShoulderPitch","lShoulderRoll","lElbowYaw","lElbowRoll","lWristYaw","lHand",
-"rShoulderPitch","rShoulderRoll","rElbowYaw","rElbowRoll","rWristYaw","rHand",
+"lShoulderPitch","lShoulderRoll","lElbowYaw","lElbowRoll","lWristYaw",
+"rShoulderPitch","rShoulderRoll","rElbowYaw","rElbowRoll","rWristYaw",
 "lHipYawPitch","lHipRoll","lHipPitch","lKneePitch","lAnklePitch","lAnkleRoll",
 "rHipYawPitch","rHipRoll","rHipPitch","rKneePitch","rAnklePitch","rAnkleRoll",
 ]
 
 JOINT_DEFLECTIONS = {
     # Head
-    "HeadYaw": (-119.5, 119.5),
-    "HeadPitch": (-38.5, 29.5),
+    "headYaw": (-119.5, 119.5),
+    "headPitch": (-38.5, 29.5),
 
     # Left Arm
-    "LShoulderPitch": (-119.5, 119.5),
-    "LShoulderRoll": (-18.0, 76.0),
-    "LElbowYaw": (-119.5, 119.5),
-    "LElbowRoll": (-88.5, -2.0),
-    "LWristYaw": (-104.5, 104.5),
+    "lShoulderPitch": (-119.5, 119.5),
+    "lShoulderRoll": (-18.0, 76.0),
+    "lElbowYaw": (-119.5, 119.5),
+    "lElbowRoll": (-88.5, -2.0),
+    "lWristYaw": (-104.5, 104.5),
+    "lHand" : (0,1),
 
     # Right Arm
-    "RShoulderPitch": (-119.5, 119.5),
-    "RShoulderRoll": (-76.0, 18.0),
-    "RElbowYaw": (-119.5, 119.5),
-    "RElbowRoll": (2.0, 88.5),
-    "RWristYaw": (-104.5, 104.5),
+    "rShoulderPitch": (-119.5, 119.5),
+    "rShoulderRoll": (-76.0, 18.0),
+    "rElbowYaw": (-119.5, 119.5),
+    "rElbowRoll": (2.0, 88.5),
+    "rWristYaw": (-104.5, 104.5),
+    "rHand" : (0,1),
 
     # Left Leg
-    "LHipYawPitch": (-65.62, 42.44),
-    "LHipRoll": (-21.74, 45.29),
-    "LHipPitch": (-88.0, 27.73),
-    "LKneePitch": (-5.29, 121.04),
-    "LAnklePitch": (-68.15, 52.86),
-    "LAnkleRoll": (-22.79, 44.06),
+    "lHipYawPitch": (-65.62, 42.44),
+    "lHipRoll": (-21.74, 45.29),
+    "lHipPitch": (-88.0, 27.73),
+    "lKneePitch": (-5.29, 121.04),
+    "lAnklePitch": (-68.15, 52.86),
+    "lAnkleRoll": (-22.79, 44.06),
 
     # Right Leg
-    "RHipYawPitch": (-65.62, 42.44),
-    "RHipRoll": (-45.29, 21.74),
-    "RHipPitch": (-88.0, 27.73),
-    "RKneePitch": (-5.90, 121.47),
-    "RAnklePitch": (-67.97, 53.40),
-    "RAnkleRoll": (-44.06, 22.80),
+    "rHipYawPitch": (-65.62, 42.44),
+    "rHipRoll": (-45.29, 21.74),
+    "rHipPitch": (-88.0, 27.73),
+    "rKneePitch": (-5.90, 121.47),
+    "rAnklePitch": (-67.97, 53.40),
+    "rAnkleRoll": (-44.06, 22.80),
 }
+
+JOINT_RANGES = {key : abs(value[0] - value[1]) for key, value in JOINT_DEFLECTIONS.items()}
 
 def get_extraction_path_partial(action_name : str, recording_date : str, log_index : int) -> Path:
     return Path("logsAsCSVs") / action_name / recording_date / str(log_index)
