@@ -41,8 +41,6 @@ class SimulationGapData:
             replay = replay.drop(columns=['time'])
             joined : pandas.DataFrame = pandas.merge(left=log, right=replay, left_on="time", right_on="replayed_frame", how='inner')
             joined = joined.drop(columns=['replayed_frame'])
-
-
             joined.to_csv(path_replays / ("_" + str(i) + ".csv"))
             for hinge_name in HINGE_NAMES:
                 joined["JSD_" + hinge_name + "__diff"] = (joined["JSD_" + hinge_name + "_y"] - joined["JSD_" + hinge_name + "_x"])
@@ -50,8 +48,6 @@ class SimulationGapData:
                 self._absolute[hinge_name][i] = joined["JSD_" + hinge_name + "__diff"].mean()
                 self._relative_to_target[hinge_name][i] = (joined["JSD_" + hinge_name + "__diff"] / joined["JSD_" + hinge_name + "_x"]).mean()
                 self._relative_to_range[hinge_name][i] = (joined["JSD_" + hinge_name + "__diff"] / JOINT_RANGES[hinge_name]).mean()
-
-            joined.to_csv(path_replays / ("_" + str(i) + ".csv"))
 
 
     def absolute(self, hinge_name : str) -> list[float]:

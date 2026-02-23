@@ -7,7 +7,7 @@ from enum import Enum
 import math
 from pathlib import Path
 from .ConfigurationHandler import ConfigurationHandler
-from ..Utils import PATH_EXECUTABLE, ExperimentParameters, SimulationParameters, ExperimentType, PATH_LOG_EXTRACTION_SCENE, PATH_CSV_REPLAY_SCENE
+from ..Utils import PATH_EXECUTABLE, ExperimentParameters, SimulationParameters, PATH_LOG_EXTRACTION_SCENE, PATH_CSV_REPLAY_SCENE
 
 import logging
 logger = logging.getLogger("global_logger")
@@ -100,15 +100,15 @@ class Simulator:
                     "all" if action_names is None else action_names,
                     "all" if recording_dates is None else recording_dates,
                     "all" if log_indices is None else log_indices)
-        eds = ExperimentParameters.get_extraction_data(action_names, recording_dates, log_indices)
+        eps = ExperimentParameters.get_extraction_data(action_names, recording_dates, log_indices)
         if mode == ExperimentMode.PARTIAL:
-            eds = ExperimentParameters.delete_redundant_eds(eds)
+            eps = ExperimentParameters.delete_redundant_eps(eps)
         elif mode == ExperimentMode.DEL_EXISTING:
-            ExperimentParameters.delete_existing_csvs(eds)
-        ExperimentParameters.create_directories(eds)
+            ExperimentParameters.delete_existing_csvs(eps)
+        ExperimentParameters.create_directories(eps)
         self._configurationHandler.reset_all()
         try:
-            self.run(PATH_LOG_EXTRACTION_SCENE, eds)
+            self.run(PATH_LOG_EXTRACTION_SCENE, eps)
         except Exception as e:
             logger.exception("%s failed to run due to %s", type(self).__name__, type(e).__name__)
         self._configurationHandler.reset_all()
@@ -130,19 +130,18 @@ class Simulator:
                     "all" if action_names is None else action_names,
                     "all" if recording_dates is None else recording_dates,
                     "all" if log_indices is None else log_indices)
+        self._configurationHandler.reset_all()
         if settings:
             self._configurationHandler.set_simulation_parameters(settings)
-        eds = ExperimentParameters.get_replay_data(settings.target_param_set_id, action_names, recording_dates, log_indices, num_copies)
+        eps = ExperimentParameters.get_replay_data(settings.target_param_set_id, action_names, recording_dates, log_indices, num_copies)
         if mode == ExperimentMode.PARTIAL:
-            eds = ExperimentParameters.delete_redundant_eds(eds)
+            eps = ExperimentParameters.delete_redundant_eps(eps)
         elif mode == ExperimentMode.DEL_EXISTING:
-            ExperimentParameters.delete_existing_csvs(eds)
-        ExperimentParameters.create_directories(eds)
-        self._configurationHandler.reset_all()
+            ExperimentParameters.delete_existing_csvs(eps)
+        ExperimentParameters.create_directories(eps)
+        eps = ExperimentParameters.split_eps(eps)
         try:
-            #TODO this is incorrect
-            for _ in range(num_copies):
-                self.run(PATH_CSV_REPLAY_SCENE, eds)
+            self.run(PATH_CSV_REPLAY_SCENE, eps)
         except Exception as e:
             logger.exception("%s failed to run due to %s", type(self).__name__, type(e).__name__)
         self._configurationHandler.reset_all()

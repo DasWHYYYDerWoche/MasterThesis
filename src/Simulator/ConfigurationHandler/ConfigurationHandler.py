@@ -41,7 +41,14 @@ class ConfigurationHandler:
             return False
 
     def set_simulation_parameters(self, parameters : SimulationParameters):
-        self._thesisCSVReplayHandler.set(parameters.kd, parameters.kp, parameters.contact_kd, parameters.contact_kp)
+        if parameters.kd:
+            self._thesisCSVReplayHandler.kd = parameters.kd
+        if parameters.kp:
+            self._thesisCSVReplayHandler.kp = parameters.kp
+        if parameters.contact_kd:
+            self._thesisCSVReplayHandler.contact_kd = parameters.contact_kd
+        if parameters.contact_kp:
+            self._thesisCSVReplayHandler.contact_kp = parameters.contact_kp
         self._thesisCSVReplayHandler.write_to_file()
         for hinge_name, hinge in parameters.hinge_parameters.items():
             self._naoV6H25Handler.set_hinge_parameters(hinge_name, hinge)

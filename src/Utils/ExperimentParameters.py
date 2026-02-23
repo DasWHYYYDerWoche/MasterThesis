@@ -1,9 +1,10 @@
 from __future__ import annotations
 from typing import Optional
 from enum import Enum
+from copy import copy
 from pathlib import Path
 from datetime import datetime
-from .Constants import (PATH_CSV_LOGGER, PATH_FIELD_LOGS, PATH_LOGS_AS_CSVS,
+from .Constants import (PATH_FIELD_LOGS, PATH_LOGS_AS_CSVS,
                         get_field_logs_path, get_replay_path_full, get_replay_path_partial,get_extraction_path_partial,get_extraction_path_full)
 
 import logging
@@ -60,6 +61,15 @@ class ExperimentParameters:
             folder = self.replay_path_full.parent
         if folder and not folder.exists():
             folder.mkdir(parents=True)
+
+    def split(self) -> list[ExperimentParameters]:
+        split = []
+        for _ in range(self._num_missing_copies):
+            c = copy(self)
+            c._num_missing_copies = 1
+            split.append(c)
+        return split
+
 
     @property
     def experiment_type(self) -> ExperimentType:
@@ -131,32 +141,32 @@ class ExperimentParameters:
     @staticmethod
     def _get_all(experiment_type : ExperimentType, param_set_id : str, action_names: Optional[list[str]], recording_dates: Optional[list[str]], log_indices : Optional[list[int]], num_copies : int) -> \
     list[ExperimentParameters]:
-        eds = []
+        eps = []
         if action_names is None:
             if experiment_type is ExperimentType.LOG_EXTRACTION:
                 action_names = [file.name for file in PATH_FIELD_LOGS.iterdir()]
             elif experiment_type is ExperimentType.CSV_REPLAY:
                 action_names = [file.name for file in PATH_LOGS_AS_CSVS.iterdir()]
         for action_name in action_names:
-            eds.extend(ExperimentParameters._get_for_action(experiment_type, param_set_id, action_name, recording_dates, log_indices, num_copies))
-        return eds
+            eps.extend(ExperimentParameters._get_for_action(experiment_type, param_set_id, action_name, recording_dates, log_indices, num_copies))
+        return eps
 
     @staticmethod
     def _get_for_action(experiment_type : ExperimentType, param_set_id : str, action_name: str, recording_dates: Optional[list[str]], log_indices : Optional[list[int]], num_copies : int) -> \
     list[ExperimentParameters]:
-        eds = []
+        eps = []
         if recording_dates is None:
             if experiment_type is ExperimentType.LOG_EXTRACTION:
                 recording_dates = [file.name for file in (PATH_FIELD_LOGS / action_name).iterdir()]
             elif experiment_type is ExperimentType.CSV_REPLAY:
                 recording_dates = [file.name for file in (PATH_LOGS_AS_CSVS / action_name).iterdir()]
         for recording_date in recording_dates:
-            eds.extend(ExperimentParameters._get_for_action_date(experiment_type, param_set_id, action_name, recording_date, log_indices, num_copies))
-        return eds
+            eps.extend(ExperimentParameters._get_for_action_date(experiment_type, param_set_id, action_name, recording_date, log_indices, num_copies))
+        return eps
 
     @staticmethod
     def _get_for_action_date(experiment_type : ExperimentType, param_set_id : str, action_name : str, recording_date : str, log_indices : Optional[list[int]], num_copies : int) -> list[ExperimentParameters]:
-        eds = []
+        eps = []
         if log_indices is None:
             if experiment_type is ExperimentType.LOG_EXTRACTION:
                 log_indices = [int(file.stem) for file in (PATH_FIELD_LOGS / action_name / recording_date).iterdir()]
@@ -164,28 +174,35 @@ class ExperimentParameters:
                 log_indices = [file.name for file in (PATH_LOGS_AS_CSVS / action_name / recording_date).iterdir()]
         if experiment_type is ExperimentType.LOG_EXTRACTION:
             for log_index in log_indices:
-                eds.append(ExperimentParameters(experiment_type=ExperimentType.LOG_EXTRACTION, action_name=action_name, recording_date=recording_date, log_index=log_index))
+                eps.append(ExperimentParameters(experiment_type=ExperimentType.LOG_EXTRACTION, action_name=action_name, recording_date=recording_date, log_index=log_index))
         elif experiment_type is ExperimentType.CSV_REPLAY:
             for log_index in log_indices:
-                eds.append(ExperimentParameters(experiment_type=ExperimentType.CSV_REPLAY, param_set_id=param_set_id, action_name=action_name, recording_date=recording_date, log_index=log_index, num_copies=num_copies))
-        return eds
+                eps.append(ExperimentParameters(experiment_type=ExperimentType.CSV_REPLAY, param_set_id=param_set_id, action_name=action_name, recording_date=recording_date, log_index=log_index, num_copies=num_copies))
+        return eps
 
     # -------- modifying extraction data lists --------
 
     @staticmethod
-    def delete_existing_csvs(eds : list[ExperimentParameters]):
-        for ed in eds:
-            ed.delete_existing_csv()
+    def delete_existing_csvs(eps : list[ExperimentParameters]):
+        for ep in eps:
+            ep.delete_existing_csv()
 
     @staticmethod
-    def delete_redundant_eds(eds : list[ExperimentParameters]) -> list[ExperimentParameters]:
-        filtered_eds = []
-        for ed in eds:
-            if ed.num_missing_copies > 0:
-                filtered_eds.append(ed)
-        return filtered_eds
+    def delete_redundant_eps(eps : list[ExperimentParameters]) -> list[ExperimentParameters]:
+        filtered_eps = []
+        for ep in eps:
+            if ep.num_missing_copies > 0:
+                filtered_eps.append(ep)
+        return filtered_eps
 
     @staticmethod
-    def create_directories(eds : list[ExperimentParameters]):
-        for ed in eds:
-            ed.create_directory()
+    def create_directories(eps : list[ExperimentParameters]):
+        for ep in eps:
+            ep.create_directory()
+
+    @staticmethod
+    def split_eps(eps : list[ExperimentParameters]) -> list[ExperimentParameters]:
+        split = []
+        for ep in eps:
+            split.extend(ep.split())
+        return split
