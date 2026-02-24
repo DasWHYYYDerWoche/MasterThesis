@@ -111,6 +111,9 @@ class Simulator:
         elif mode == ExperimentMode.DEL_EXISTING:
             ExperimentParameters.delete_existing_csvs(eps)
         ExperimentParameters.create_directories(eps)
+        self.extract_ep(eps)
+
+    def extract_ep(self, eps : list[ExperimentParameters]):
         try:
             self.run(PATH_LOG_EXTRACTION_SCENE, eps, None)
         except Exception as e:
@@ -131,13 +134,13 @@ class Simulator:
             ExperimentParameters.delete_existing_csvs(eps)
         ExperimentParameters.create_directories(eps)
         eps = ExperimentParameters.split_eps(eps)
+        self.replay_ep(settings, eps)
+
+    def replay_ep(self, settings : SimulationParameters, eps : list[ExperimentParameters]):
         try:
             self.run(PATH_CSV_REPLAY_SCENE, eps, settings)
         except Exception as e:
             logger.exception("%s failed to run due to %s", type(self).__name__, type(e).__name__)
-
-    def replay_ep(self, settings : SimulationParameters, eps : list[ExperimentParameters]):
-        pass
 
     def simulation_gap(self, settings : SimulationParameters, action_names : Optional[list[str]] = None, recording_dates : Optional[list[str]] = None, log_indices : Optional[list[int]] = None, mode: ExperimentMode = ExperimentMode.PARTIAL, num_copies : int = 1):
         pass
