@@ -2,13 +2,14 @@ from __future__ import annotations
 
 import subprocess
 import time
+from copy import copy
 from typing import Optional
 from enum import Enum
 import math
 from pathlib import Path
 from .ProcessContainer import ProcessContainer
 from .ConfigurationHandler import ConfigurationHandler
-from ..Utils import PATH_EXECUTABLE, ExperimentParameters, SimulationParameters, PATH_LOG_EXTRACTION_SCENE, PATH_CSV_REPLAY_SCENE, SimulationGapData, ExperimentMode
+from ..Utils import PATH_EXECUTABLE, ExperimentParameters, SimulationParameters, PATH_LOG_EXTRACTION_SCENE, PATH_CSV_REPLAY_SCENE, SimulationGapData, ExperimentMode, ExperimentType
 
 import logging
 logger = logging.getLogger("global_logger")
@@ -73,20 +74,23 @@ class Simulator:
                     p.terminate()
             time.sleep(self._max_wait_for_ready / 10)
 
-    def run(self, scene_path : Path, experiment_parameters : list[ExperimentParameters], simulator_parameters : Optional[SimulationParameters]):
+    def run(self,
+            scene_path : Path,
+            experiment_parameters : list[ExperimentParameters],
+            simulator_parameters : Optional[SimulationParameters]):
         self._configurationHandler.reset_all()
         if simulator_parameters:
             self._configurationHandler.set_simulation_parameters(simulator_parameters)
         logger.info("Running %s experiments with a batch size of %s",len(experiment_parameters), self._batch_size)
         process_list : list[ProcessContainer] = []
         for ep_index, ep in enumerate(experiment_parameters):
+            #wait for all processes to be ready
+            self._wait_for_ready(process_list)
+            #set parameters
+            if not self._configurationHandler.set_experiment_parameters(ep):
+                logger.warning("Experiment %s was skipped due to inconsistent experiment_parameter %s", ep_index, ep)
+                continue
             for _ in range(ep.num_missing_copies):
-                #wait for all processes to be ready
-                self._wait_for_ready(process_list)
-                #set parameters
-                if not self._configurationHandler.set_experiment_parameters(ep):
-                    logger.warning("Experiment %s was skipped due to inconsistent experiment_parameter %s", ep_index, ep)
-                    continue
                 #wait for a space so that the number of active processes does not exceed the batch_size
                 self._wait_for_spot(process_list)
                 process_list.append(ProcessContainer(subprocess.Popen(str(PATH_EXECUTABLE) + " " + str(scene_path) + ".ros2",
@@ -96,8 +100,11 @@ class Simulator:
         self._configurationHandler.reset_all()
         self._wait_for_finished(process_list)
 
-    def extract(self, action_names: Optional[list[str]] = None,
-                recording_dates: Optional[list[str]] = None, log_indices: Optional[list[int]] = None, mode: ExperimentMode = ExperimentMode.PARTIAL):
+    def extract(self,
+                action_names: Optional[list[str]] = None,
+                recording_dates: Optional[list[str]] = None,
+                log_indices: Optional[list[int]] = None,
+                mode: ExperimentMode = ExperimentMode.PARTIAL):
         logger.info("Extracting logs to csvs, action_names: %s, recording_dates: %s, log_indices: %s",
                     "all" if action_names is None else action_names,
                     "all" if recording_dates is None else recording_dates,
@@ -111,8 +118,13 @@ class Simulator:
         except Exception as e:
             logger.exception("%s failed to run due to %s", type(self).__name__, type(e).__name__)
 
-    def replay(self, settings : SimulationParameters, action_names : Optional[list[str]] = None, recording_dates : Optional[list[str]] = None,
-               log_indices : Optional[list[int]] = None, mode: ExperimentMode = ExperimentMode.PARTIAL, num_copies : int = 1):
+    def replay(self,
+               settings : SimulationParameters,
+               action_names : Optional[list[str]] = None,
+               recording_dates : Optional[list[str]] = None,
+               log_indices : Optional[list[int]] = None,
+               mode: ExperimentMode = ExperimentMode.PARTIAL,
+               num_copies : int = 1):
         if num_copies < 0:
             return
         logger.info("Replaying logs to csvs, action_names: %s, recording_dates: %s, log_indices: %s",
@@ -128,11 +140,27 @@ class Simulator:
         except Exception as e:
             logger.exception("%s failed to run due to %s", type(self).__name__, type(e).__name__)
 
-    def simulation_gap(self, settings : SimulationParameters,
-                       action_names : Optional[list[str]] = None, recording_dates : Optional[list[str]] = None, log_indices : Optional[list[int]] = None,
-                       mode: ExperimentMode = ExperimentMode.PARTIAL, num_replays : int = 1) -> list[SimulationGapData]:
-
-        pass
+    def simulation_gap(self,
+                       settings : SimulationParameters,
+                       action_names : Optional[list[str]] = None,
+                       recording_dates : Optional[list[str]] = None,
+                       log_indices : Optional[list[int]] = None,
+                       num_replays : int = 1,
+                       extraction_mode : ExperimentMode = ExperimentMode.PARTIAL,
+                       replay_mode : ExperimentMode = ExperimentMode.PARTIAL) -> list[SimulationGapData]:
+        extract_eps = ExperimentParameters.get_extraction_data(action_names,
+                                                               recording_dates,
+                                                               log_indices,
+                                                               extraction_mode)
+        self.extract_ep(extract_eps)
+        eps = ExperimentParameters.get_all(ExperimentType.CSV_REPLAY, settings.target_param_set_id, action_names, recording_dates, log_indices, num_replays)
+        replay_eps = copy(eps)
+        ExperimentParameters.prepare(replay_eps, replay_mode)
+        self.replay_ep(settings, replay_eps)
+        sim_gaps = []
+        for ep in eps:
+            sim_gaps.append(SimulationGapData(ep.param_set_id, ep.action_name, ep.recording_date, ep.log_index))
+        return sim_gaps
 
 
     @property

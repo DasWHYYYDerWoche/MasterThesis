@@ -134,8 +134,8 @@ class ExperimentParameters:
         if mode is ExperimentMode.FULL:
             logger.warning("Logs cannot be extracted multiple times. Chose an extraction mode other than FULL")
             return []
-        eps = ExperimentParameters._get_all(ExperimentType.LOG_EXTRACTION, "", action_names, recording_dates, log_indices, 1)
-        ExperimentParameters._prepare(eps, mode)
+        eps = ExperimentParameters.get_all(ExperimentType.LOG_EXTRACTION, "", action_names, recording_dates, log_indices, 1)
+        ExperimentParameters.prepare(eps, mode)
         return eps
 
     @staticmethod
@@ -145,17 +145,17 @@ class ExperimentParameters:
                         log_indices : Optional[list[int]] = None,
                         num_copies : int = 1,
                         mode: ExperimentMode = ExperimentMode.PARTIAL) -> list[ExperimentParameters]:
-        eps = ExperimentParameters._get_all(ExperimentType.CSV_REPLAY, param_set_id, action_names, recording_dates, log_indices, num_copies)
-        ExperimentParameters._prepare(eps, mode)
+        eps = ExperimentParameters.get_all(ExperimentType.CSV_REPLAY, param_set_id, action_names, recording_dates, log_indices, num_copies)
+        ExperimentParameters.prepare(eps, mode)
         return eps
 
     @staticmethod
-    def _get_all(experiment_type : ExperimentType,
-                 param_set_id : str,
-                 action_names: Optional[list[str]],
-                 recording_dates: Optional[list[str]],
-                 log_indices : Optional[list[int]],
-                 num_copies : int) -> list[ExperimentParameters]:
+    def get_all(experiment_type : ExperimentType,
+                param_set_id : str,
+                action_names: Optional[list[str]],
+                recording_dates: Optional[list[str]],
+                log_indices : Optional[list[int]],
+                num_copies : int) -> list[ExperimentParameters]:
         eps = []
         if action_names is None:
             if experiment_type is ExperimentType.LOG_EXTRACTION:
@@ -206,7 +206,7 @@ class ExperimentParameters:
     # -------- modifying extraction data lists --------
 
     @staticmethod
-    def _prepare(eps : list[ExperimentParameters], mode: ExperimentMode):
+    def prepare(eps : list[ExperimentParameters], mode: ExperimentMode):
         if mode == ExperimentMode.PARTIAL:
             for i, ep in enumerate(eps):
                 if ep._num_missing_copies < 1:

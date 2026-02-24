@@ -24,13 +24,13 @@ class SimulationGapData:
     """
     def __init__(self, param_set_id : str, action_name : str, recording_date : str, log_index : int):
 
-        path_replays: Path = get_replay_path_full(param_set_id, action_name, recording_date, log_index, "").parent
+        path_replays: Path = get_replay_path_full(param_set_id, action_name, recording_date, log_index).parent
         replays : list[pandas.DataFrame] = []
         for file in path_replays.iterdir():
             if file.name.startswith(str(log_index)):
                 replays.append(pandas.read_csv(path_replays / file.name, sep=None, engine="python"))
         if not replays:
-            logger.error("No replays at s% exist for log %s", path_replays, log_index)
+            logger.warning("No replays at s% exist for log %s", path_replays, log_index)
             return
         self._absolute = {hinge: [0] * len(replays) for hinge in HINGE_NAMES}# target - real
         self._relative_to_target = {hinge: [0] * len(replays) for hinge in HINGE_NAMES}# (target - real) / real
@@ -67,3 +67,6 @@ class SimulationGapData:
 
     def relative_to_range_avg(self, hinge_name : str) -> float:
         return fmean(self._relative_to_range[hinge_name])
+
+    def __str__(self):
+        return [str(self.absolute(hinge_name)) for hinge_name in HINGE_NAMES]
