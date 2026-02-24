@@ -8,15 +8,11 @@ import math
 from pathlib import Path
 from .ProcessContainer import ProcessContainer
 from .ConfigurationHandler import ConfigurationHandler
-from ..Utils import PATH_EXECUTABLE, ExperimentParameters, SimulationParameters, PATH_LOG_EXTRACTION_SCENE, PATH_CSV_REPLAY_SCENE
+from ..Utils import PATH_EXECUTABLE, ExperimentParameters, SimulationParameters, PATH_LOG_EXTRACTION_SCENE, PATH_CSV_REPLAY_SCENE, SimulationGapData, ExperimentMode
 
 import logging
 logger = logging.getLogger("global_logger")
 
-class ExperimentMode(Enum):
-    FULL = 0
-    PARTIAL = 1
-    DEL_EXISTING = 2
 
 class Simulator:
     _instance = None
@@ -84,16 +80,17 @@ class Simulator:
         logger.info("Running %s experiments with a batch size of %s",len(experiment_parameters), self._batch_size)
         process_list : list[ProcessContainer] = []
         for ep_index, ep in enumerate(experiment_parameters):
-            #wait for all processes to be ready
-            self._wait_for_ready(process_list)
-            #set parameters
-            if not self._configurationHandler.set_experiment_parameters(ep):
-                logger.warning("Experiment %s was skipped due to inconsistent experiment_parameter %s", ep_index, ep)
-                continue
-            #wait for a space so that the number of active processes does not exceed the batch_size
-            self._wait_for_spot(process_list)
-            process_list.append(ProcessContainer(subprocess.Popen(str(PATH_EXECUTABLE) + " " + str(scene_path) + ".ros2",
-                                         stdout=subprocess.PIPE, text=True), ep_index))
+            for _ in range(ep.num_missing_copies):
+                #wait for all processes to be ready
+                self._wait_for_ready(process_list)
+                #set parameters
+                if not self._configurationHandler.set_experiment_parameters(ep):
+                    logger.warning("Experiment %s was skipped due to inconsistent experiment_parameter %s", ep_index, ep)
+                    continue
+                #wait for a space so that the number of active processes does not exceed the batch_size
+                self._wait_for_spot(process_list)
+                process_list.append(ProcessContainer(subprocess.Popen(str(PATH_EXECUTABLE) + " " + str(scene_path) + ".ros2",
+                                             stdout=subprocess.PIPE, text=True), ep_index))
         #wait for all remaining processes to be ready
         self._wait_for_ready(process_list)
         self._configurationHandler.reset_all()
@@ -105,12 +102,7 @@ class Simulator:
                     "all" if action_names is None else action_names,
                     "all" if recording_dates is None else recording_dates,
                     "all" if log_indices is None else log_indices)
-        eps = ExperimentParameters.get_extraction_data(action_names, recording_dates, log_indices)
-        if mode == ExperimentMode.PARTIAL:
-            eps = ExperimentParameters.delete_redundant_eps(eps)
-        elif mode == ExperimentMode.DEL_EXISTING:
-            ExperimentParameters.delete_existing_csvs(eps)
-        ExperimentParameters.create_directories(eps)
+        eps = ExperimentParameters.get_extraction_data(action_names, recording_dates, log_indices, mode)
         self.extract_ep(eps)
 
     def extract_ep(self, eps : list[ExperimentParameters]):
@@ -127,13 +119,7 @@ class Simulator:
                     "all" if action_names is None else action_names,
                     "all" if recording_dates is None else recording_dates,
                     "all" if log_indices is None else log_indices)
-        eps = ExperimentParameters.get_replay_data(settings.target_param_set_id, action_names, recording_dates, log_indices, num_copies)
-        if mode == ExperimentMode.PARTIAL:
-            eps = ExperimentParameters.delete_redundant_eps(eps)
-        elif mode == ExperimentMode.DEL_EXISTING:
-            ExperimentParameters.delete_existing_csvs(eps)
-        ExperimentParameters.create_directories(eps)
-        eps = ExperimentParameters.split_eps(eps)
+        eps = ExperimentParameters.get_replay_data(settings.target_param_set_id, action_names, recording_dates, log_indices, num_copies, mode)
         self.replay_ep(settings, eps)
 
     def replay_ep(self, settings : SimulationParameters, eps : list[ExperimentParameters]):
@@ -142,7 +128,10 @@ class Simulator:
         except Exception as e:
             logger.exception("%s failed to run due to %s", type(self).__name__, type(e).__name__)
 
-    def simulation_gap(self, settings : SimulationParameters, action_names : Optional[list[str]] = None, recording_dates : Optional[list[str]] = None, log_indices : Optional[list[int]] = None, mode: ExperimentMode = ExperimentMode.PARTIAL, num_copies : int = 1):
+    def simulation_gap(self, settings : SimulationParameters,
+                       action_names : Optional[list[str]] = None, recording_dates : Optional[list[str]] = None, log_indices : Optional[list[int]] = None,
+                       mode: ExperimentMode = ExperimentMode.PARTIAL, num_replays : int = 1) -> list[SimulationGapData]:
+
         pass
 
 

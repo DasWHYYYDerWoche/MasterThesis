@@ -14,6 +14,12 @@ class ExperimentType(Enum):
     LOG_EXTRACTION = 0
     CSV_REPLAY = 1
 
+
+class ExperimentMode(Enum):
+    FULL = 0
+    PARTIAL = 1
+    DEL_EXISTING = 2
+
 class ExperimentParameters:
     def __init__(self, experiment_type : ExperimentType, param_set_id : str = "", action_name : str = "", recording_date : str = "", log_index : int = -1, num_copies : int = 1):
         self._experiment_type = experiment_type
@@ -63,15 +69,6 @@ class ExperimentParameters:
         if folder and not folder.exists():
             folder.mkdir(parents=True)
 
-    def split(self) -> list[ExperimentParameters]:
-        split = []
-        for _ in range(self._num_missing_copies):
-            c = copy(self)
-            c._num_missing_copies = 1
-            split.append(c)
-        return split
-
-
     @property
     def experiment_type(self) -> ExperimentType:
         return self._experiment_type
@@ -114,13 +111,11 @@ class ExperimentParameters:
 
     @property
     def replay_path_relative(self) -> Path:
-        return get_replay_path_partial(self._param_set_id, self._action_name, self._recording_date, self._log_index,
-                                       datetime.now().strftime("%Y%m%d_%H%M%S_%f"))
+        return get_replay_path_partial(self._param_set_id, self._action_name, self._recording_date, self._log_index)
 
     @property
     def replay_path_full(self) -> Path:
-        return get_replay_path_full(self._param_set_id, self._action_name, self._recording_date, self._log_index,
-                                       datetime.now().strftime("%Y%m%d_%H%M%S_%f"))
+        return get_replay_path_full(self._param_set_id, self._action_name, self._recording_date, self._log_index)
 
     def __str__(self):
         if self._experiment_type is ExperimentType.LOG_EXTRACTION:
@@ -132,16 +127,35 @@ class ExperimentParameters:
     # -------- creating extraction data lists from existing files --------
 
     @staticmethod
-    def get_extraction_data(action_names: Optional[list[str]], recording_dates: Optional[list[str]], log_indices : Optional[list[int]]):
-        return ExperimentParameters._get_all(ExperimentType.LOG_EXTRACTION, "", action_names, recording_dates, log_indices, 1)
+    def get_extraction_data(action_names: Optional[list[str]] = None,
+                            recording_dates: Optional[list[str]] = None,
+                            log_indices : Optional[list[int]] = None,
+                            mode: ExperimentMode = ExperimentMode.PARTIAL) -> list[ExperimentParameters]:
+        if mode is ExperimentMode.FULL:
+            logger.warning("Logs cannot be extracted multiple times. Chose an extraction mode other than FULL")
+            return []
+        eps = ExperimentParameters._get_all(ExperimentType.LOG_EXTRACTION, "", action_names, recording_dates, log_indices, 1)
+        ExperimentParameters._prepare(eps, mode)
+        return eps
 
     @staticmethod
-    def get_replay_data(param_set_id : str, action_names: Optional[list[str]], recording_dates: Optional[list[str]], log_indices : Optional[list[int]], num_copies : int):
-        return ExperimentParameters._get_all(ExperimentType.CSV_REPLAY, param_set_id, action_names, recording_dates, log_indices, num_copies)
+    def get_replay_data(param_set_id : str,
+                        action_names: Optional[list[str]] = None,
+                        recording_dates: Optional[list[str]] = None,
+                        log_indices : Optional[list[int]] = None,
+                        num_copies : int = 1,
+                        mode: ExperimentMode = ExperimentMode.PARTIAL) -> list[ExperimentParameters]:
+        eps = ExperimentParameters._get_all(ExperimentType.CSV_REPLAY, param_set_id, action_names, recording_dates, log_indices, num_copies)
+        ExperimentParameters._prepare(eps, mode)
+        return eps
 
     @staticmethod
-    def _get_all(experiment_type : ExperimentType, param_set_id : str, action_names: Optional[list[str]], recording_dates: Optional[list[str]], log_indices : Optional[list[int]], num_copies : int) -> \
-    list[ExperimentParameters]:
+    def _get_all(experiment_type : ExperimentType,
+                 param_set_id : str,
+                 action_names: Optional[list[str]],
+                 recording_dates: Optional[list[str]],
+                 log_indices : Optional[list[int]],
+                 num_copies : int) -> list[ExperimentParameters]:
         eps = []
         if action_names is None:
             if experiment_type is ExperimentType.LOG_EXTRACTION:
@@ -153,8 +167,12 @@ class ExperimentParameters:
         return eps
 
     @staticmethod
-    def _get_for_action(experiment_type : ExperimentType, param_set_id : str, action_name: str, recording_dates: Optional[list[str]], log_indices : Optional[list[int]], num_copies : int) -> \
-    list[ExperimentParameters]:
+    def _get_for_action(experiment_type : ExperimentType,
+                        param_set_id : str,
+                        action_name: str,
+                        recording_dates: Optional[list[str]],
+                        log_indices : Optional[list[int]],
+                        num_copies : int) -> list[ExperimentParameters]:
         eps = []
         if recording_dates is None:
             if experiment_type is ExperimentType.LOG_EXTRACTION:
@@ -166,7 +184,11 @@ class ExperimentParameters:
         return eps
 
     @staticmethod
-    def _get_for_action_date(experiment_type : ExperimentType, param_set_id : str, action_name : str, recording_date : str, log_indices : Optional[list[int]], num_copies : int) -> list[ExperimentParameters]:
+    def _get_for_action_date(experiment_type : ExperimentType,
+                             param_set_id : str, action_name : str,
+                             recording_date : str,
+                             log_indices : Optional[list[int]],
+                             num_copies : int) -> list[ExperimentParameters]:
         eps = []
         if log_indices is None:
             if experiment_type is ExperimentType.LOG_EXTRACTION:
@@ -184,26 +206,13 @@ class ExperimentParameters:
     # -------- modifying extraction data lists --------
 
     @staticmethod
-    def delete_existing_csvs(eps : list[ExperimentParameters]):
-        for ep in eps:
-            ep.delete_existing_csv()
-
-    @staticmethod
-    def delete_redundant_eps(eps : list[ExperimentParameters]) -> list[ExperimentParameters]:
-        filtered_eps = []
-        for ep in eps:
-            if ep.num_missing_copies > 0:
-                filtered_eps.append(ep)
-        return filtered_eps
-
-    @staticmethod
-    def create_directories(eps : list[ExperimentParameters]):
+    def _prepare(eps : list[ExperimentParameters], mode: ExperimentMode):
+        if mode == ExperimentMode.PARTIAL:
+            for i, ep in enumerate(eps):
+                if ep._num_missing_copies < 1:
+                    eps.pop(i)
+        elif mode == ExperimentMode.DEL_EXISTING:
+            for ep in eps:
+                ep.delete_existing_csv()
         for ep in eps:
             ep.create_directory()
-
-    @staticmethod
-    def split_eps(eps : list[ExperimentParameters]) -> list[ExperimentParameters]:
-        split = []
-        for ep in eps:
-            split.extend(ep.split())
-        return split
