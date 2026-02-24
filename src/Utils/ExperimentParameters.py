@@ -52,6 +52,7 @@ class ExperimentParameters:
                 if file.name.startswith(str(self._log_index) + "_"):
                     logger.info("Deleted existing csv %s", file)
                     file.unlink()
+        self._num_missing_copies = self._count_missing_files()
 
     def create_directory(self):
         folder = None

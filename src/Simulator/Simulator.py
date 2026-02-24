@@ -6,6 +6,7 @@ from typing import Optional
 from enum import Enum
 import math
 from pathlib import Path
+from .ProcessContainer import ProcessContainer
 from .ConfigurationHandler import ConfigurationHandler
 from ..Utils import PATH_EXECUTABLE, ExperimentParameters, SimulationParameters, PATH_LOG_EXTRACTION_SCENE, PATH_CSV_REPLAY_SCENE
 
@@ -36,66 +37,70 @@ class Simulator:
 
         self._batch_size = 2
         self._max_wait_for_ready = 10
+        self._max_wait_for_finish = 20
         self._show_ui = True #TODO
 
-    def run(self, scene_path : Path, experiment_parameters : list[ExperimentParameters], max_run_duration : float = 20):
-        if max_run_duration < 0:
-            logger.error("max_ready_for_wait (%s) and max_run_duration (%s) have to be greater than 0", self._max_wait_for_ready, max_run_duration)
-            return
-        logger.info("Running %s experiments with a batch size of %s",len(experiment_parameters), self._batch_size)
-        for i in range(0, math.ceil(len(experiment_parameters) / self._batch_size) * self._batch_size, self._batch_size):
-            self._run_batch(scene_path, experiment_parameters[i : min(i+self._batch_size, len(experiment_parameters))])
 
-    def _run_batch(self, scene_path : Path, experiment_parameters : list[ExperimentParameters], max_run_duration : float = 20):
-        process_list: list[subprocess.Popen[str]] = []
-        process_start_time: list[float] = [0 for _ in experiment_parameters]
-        process_ready_time: list[float] = [0 for _ in experiment_parameters]
-        logger.debug("Staring new batch")
-        try:
-            for i in range(len(experiment_parameters)):
-                if not self._configurationHandler.set_experiment_parameters(experiment_parameters[i]):
-                    logger.warning("Experiment %s was skipped due to inconsistent experiment_parameter %s", i, experiment_parameters[i])
-                    continue
-                process_list.append(
-                    subprocess.Popen(str(PATH_EXECUTABLE) + " " + str(scene_path) + ".ros2",
-                                     stdout=subprocess.PIPE, text=True))
-                process_start_time[i] = time.time()
-                # wait for process to have started (and loaded all parameters from logs) before updating parameters for next process
-                for line in process_list[i].stdout:
-                    if line.strip() == "READY":
-                        process_ready_time[i] = time.time()
-                        logger.debug("Process %s is ready", i)
-                        break
-                    if time.time() - process_start_time[i] > self._max_wait_for_ready:
-                        process_list[i].terminate()
-                        logger.warning("Process %s was terminated for not being ready after %s seconds", i,
-                                       self._max_wait_for_ready)
-                        break
-            # wait for processes to finish
-            any_running = True
-            while any_running:
-                for i in range(len(process_list)):
-                    if process_list[i].poll() is None:
-                        if time.time() - process_ready_time[i] > max_run_duration:
-                            process_list[i].terminate()
-                            logger.warning("Process %s was terminated for not being finished after %s seconds", i,
-                                           self._max_wait_for_ready)
-                any_running = any([True if process.poll() is None else False for process in process_list])
-                time.sleep(max_run_duration / 20)
-        except Exception as e:
-            logger.exception("Exception %s occurred during log extraction. Argument list:\n %s, %s, %s, %s",
-                             type(e).__name__, experiment_parameters, self._max_wait_for_ready, max_run_duration)
+    def _wait_for_ready(self, process_list : list[ProcessContainer]):
+        while any([not p.ready for p in process_list]):
+            for p_index, p in enumerate(process_list):
+                if p.ready_timed_out(self._max_wait_for_ready):
+                    process_list.pop(p_index)
+                    p.terminate()
+                    logger.warning("Process %s was terminated for not being ready after %s seconds", p.ep_index,
+                                   self._max_wait_for_ready)
+            time.sleep(self._max_wait_for_ready / 10)
+
+    def _wait_for_spot(self, process_list : list[ProcessContainer]):
+        while len(process_list) >= self._batch_size:
+            for p_index, p in enumerate(process_list):
+                if p.finished:
+                    logger.info("Process %s finished", p.ep_index)
+                    process_list.pop(p_index)
+                elif p.finished_timed_out(self._max_wait_for_finish):
+                    logger.info("Process %s was terminated after not finishing in %s", p.ep_index,
+                                self._max_wait_for_finish)
+                    process_list.pop(p_index)
+                    p.terminate()
+            time.sleep(self._max_wait_for_ready / 10)
+
+    def _wait_for_finished(self, process_list : list[ProcessContainer]):
+        while len(process_list) > 0:
+            for p_index, p  in enumerate(process_list):
+                if p.finished:
+                    logger.info("Process %s finished", p.ep_index)
+                    process_list.pop(p_index)
+                elif p.finished_timed_out(self._max_wait_for_finish):
+                    logger.info("Process %s was terminated after not finishing in %s", p.ep_index,
+                                self._max_wait_for_finish)
+                    process_list.pop(p_index)
+                    p.terminate()
+            time.sleep(self._max_wait_for_ready / 10)
+
+    def run(self, scene_path : Path, experiment_parameters : list[ExperimentParameters], simulator_parameters : Optional[SimulationParameters]):
+        self._configurationHandler.reset_all()
+        if simulator_parameters:
+            self._configurationHandler.set_simulation_parameters(simulator_parameters)
+        logger.info("Running %s experiments with a batch size of %s",len(experiment_parameters), self._batch_size)
+        process_list : list[ProcessContainer] = []
+        for ep_index, ep in enumerate(experiment_parameters):
+            #wait for all processes to be ready
+            self._wait_for_ready(process_list)
+            #set parameters
+            if not self._configurationHandler.set_experiment_parameters(ep):
+                logger.warning("Experiment %s was skipped due to inconsistent experiment_parameter %s", ep_index, ep)
+                continue
+            #wait for a space so that the number of active processes does not exceed the batch_size
+            self._wait_for_spot(process_list)
+            process_list.append(ProcessContainer(subprocess.Popen(str(PATH_EXECUTABLE) + " " + str(scene_path) + ".ros2",
+                                         stdout=subprocess.PIPE, text=True), ep_index))
+        #wait for all remaining processes to be ready
+        self._wait_for_ready(process_list)
+        self._configurationHandler.reset_all()
+        self._wait_for_finished(process_list)
 
     def extract(self, action_names: Optional[list[str]] = None,
                 recording_dates: Optional[list[str]] = None, log_indices: Optional[list[int]] = None, mode: ExperimentMode = ExperimentMode.PARTIAL):
-        """
-
-        :param action_names:
-        :param recording_dates:
-        :param log_indices:
-        :param mode: FULL: extract all given logs, PARTIAL: extract only logs without csv, DEL_EXISTING: delete existing csv of given logs and reextract all
-        :return:
-        """
         logger.info("Extracting logs to csvs, action_names: %s, recording_dates: %s, log_indices: %s",
                     "all" if action_names is None else action_names,
                     "all" if recording_dates is None else recording_dates,
@@ -106,33 +111,19 @@ class Simulator:
         elif mode == ExperimentMode.DEL_EXISTING:
             ExperimentParameters.delete_existing_csvs(eps)
         ExperimentParameters.create_directories(eps)
-        self._configurationHandler.reset_all()
         try:
-            self.run(PATH_LOG_EXTRACTION_SCENE, eps)
+            self.run(PATH_LOG_EXTRACTION_SCENE, eps, None)
         except Exception as e:
             logger.exception("%s failed to run due to %s", type(self).__name__, type(e).__name__)
-        self._configurationHandler.reset_all()
 
-    def replay(self, settings : SimulationParameters, action_names : Optional[list[str]] = None, recording_dates : Optional[list[str]] = None, log_indices : Optional[list[int]] = None, mode: ExperimentMode = ExperimentMode.PARTIAL, num_copies : int = 1):
-        """
-
-        :param settings:
-        :param action_names:
-        :param recording_dates:
-        :param log_indices:
-        :param mode: FULL: extract all given logs, PARTIAL: extract only logs with missing csvs, DEL_EXISTING: delete existing csv of given logs and reextract all
-        :param num_copies:
-        :return:
-        """
+    def replay(self, settings : SimulationParameters, action_names : Optional[list[str]] = None, recording_dates : Optional[list[str]] = None,
+               log_indices : Optional[list[int]] = None, mode: ExperimentMode = ExperimentMode.PARTIAL, num_copies : int = 1):
         if num_copies < 0:
             return
         logger.info("Replaying logs to csvs, action_names: %s, recording_dates: %s, log_indices: %s",
                     "all" if action_names is None else action_names,
                     "all" if recording_dates is None else recording_dates,
                     "all" if log_indices is None else log_indices)
-        self._configurationHandler.reset_all()
-        if settings:
-            self._configurationHandler.set_simulation_parameters(settings)
         eps = ExperimentParameters.get_replay_data(settings.target_param_set_id, action_names, recording_dates, log_indices, num_copies)
         if mode == ExperimentMode.PARTIAL:
             eps = ExperimentParameters.delete_redundant_eps(eps)
@@ -141,10 +132,12 @@ class Simulator:
         ExperimentParameters.create_directories(eps)
         eps = ExperimentParameters.split_eps(eps)
         try:
-            self.run(PATH_CSV_REPLAY_SCENE, eps)
+            self.run(PATH_CSV_REPLAY_SCENE, eps, settings)
         except Exception as e:
             logger.exception("%s failed to run due to %s", type(self).__name__, type(e).__name__)
-        self._configurationHandler.reset_all()
+
+    def replay_ep(self, settings : SimulationParameters, eps : list[ExperimentParameters]):
+        pass
 
     def simulation_gap(self, settings : SimulationParameters, action_names : Optional[list[str]] = None, recording_dates : Optional[list[str]] = None, log_indices : Optional[list[int]] = None, mode: ExperimentMode = ExperimentMode.PARTIAL, num_copies : int = 1):
         pass
@@ -159,20 +152,45 @@ class Simulator:
         return self._max_wait_for_ready
 
     @property
+    def max_run_duration(self) -> float:
+        return self._max_wait_for_finish
+
+    @property
     def show_ui(self) -> bool:
         return self._show_ui
 
     @batch_size.setter
     def batch_size(self, value):
         if value > self._MAX_INSTANCES:
-            logger.warning("given batch_size (%s) was larger than the maximum number of allowed instances (%s)", self._batch_size, self._MAX_INSTANCES)
+            logger.warning("Given batch_size (%s) was larger than the allowed maximum (%s). The value will set to the allowed maximum",
+                           value, self._MAX_INSTANCES)
             self._batch_size = self._MAX_INSTANCES
+        elif value < 1:
+            logger.warning("Given batch_size (%s) was smaller than 1. The value will be set to 1",
+                           self._batch_size)
+            self._batch_size = 1
         else:
             self._batch_size = value
 
     @max_wait_for_ready.setter
     def max_wait_for_ready(self, value):
-        self._max_wait_for_ready = value
+        if value < 0:
+            logger.warning(
+                "max_ready_for_wait (%s) cannot be negative. The value will be set to 0",
+                value)
+            self._max_wait_for_ready = 0
+        else:
+            self._max_wait_for_ready = value
+
+    @max_run_duration.setter
+    def max_run_duration(self, value):
+        if value < 0:
+            logger.warning(
+                "max_run_duration (%s) cannot be negative. The value will be set to 0",
+                value)
+            self._max_wait_for_finish = 0
+        else:
+            self._max_wait_for_finish = value
 
     @show_ui.setter
     def show_ui(self, value):
