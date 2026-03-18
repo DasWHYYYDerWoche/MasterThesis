@@ -104,7 +104,7 @@ class SimulationGapData:
             dic[key] = [p1 - p0 for p0,p1 in zip(val[:-1], val[1:])]
         return dic
 
-    def get_vel_replay(self, hinge_names: Optional[list[str]] = None, row_start: int = 0, row_end: int = -1) -> dict[str, list[float]]:
+    def get_vel_replay(self, hinge_names: Optional[list[str]] = None, row_start: int = 1, row_end: int = -1) -> dict[str, list[float]]:
         dic : dict[str, list[float]] = self.get_pos_replay(hinge_names, row_start-1, row_end)
         for key in dic.keys():
             val = dic[key]
@@ -142,6 +142,26 @@ class SimulationGapData:
             dic[hinge_name] = [pow(a_replay - a_extraction, 2) for a_extraction, a_replay in
                                zip(d_extraction[hinge_name], d_replay[hinge_name])]
         return dic
+
+    def get_total_gap(self, hinge_names: Optional[list[str]] = None, row_start: int = 0, row_end: int = -1) -> dict[str, list[float]]:
+        d_p = self.get_pos_gap(hinge_names, row_start, row_end)
+        d_v = self.get_vel_gap(hinge_names, row_start, row_end) # 1 shorter if row_start = 0
+        d_a = self.get_acc_gap(hinge_names, row_start, row_end) # 1 shorter if row_start = 0 and 2 shorter if row_start = 1
+        d_total = {}
+        for hinge in d_p.keys():
+            l_p = d_p[hinge]
+            l_v = d_v[hinge]
+            l_a = d_a[hinge]
+            if row_start <= 1:
+                l_a = [0] + l_a
+            if row_start <= 0:
+                l_a = [0] + l_a
+                l_v = [0] + l_v
+            d_total[hinge] = [p + v + a for p,v,a in zip(l_p, l_v, l_a)]
+        return d_total
+
+
+
 
     @property
     def identifier(self) -> str:

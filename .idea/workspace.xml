@@ -4,16 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b8d71ec4-48b2-4ec5-b1a5-6fe6d26ab8b8" name="Changes" comment="feature:&#10;added method to calculate sim gap for a set of files">
-      <change afterPath="$PROJECT_DIR$/gap_analysis.ipynb" afterDir="false" />
+    <list default="true" id="b8d71ec4-48b2-4ec5-b1a5-6fe6d26ab8b8" name="Changes" comment="features: work on SimGapData&#10;fix: simulator replay works again">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/main.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Optimizer/SimulationGapHandler.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Optimizer/SimulationGapHandler.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Simulator/Simulator.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Simulator/Simulator.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Utils/ExperimentParameters.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Utils/ExperimentParameters.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gap_analysis.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/gap_analysis.ipynb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Utils/SimulationGapData.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Utils/SimulationGapData.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Utils/SimulationParameters.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Utils/SimulationParameters.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Utils/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Utils/__init__.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -424,11 +418,18 @@
       <option name="project" value="LOCAL" />
       <updated>1771943975525</updated>
     </task>
-    <option name="localTasksCounter" value="43" />
+    <task id="LOCAL-00043" summary="features: work on SimGapData&#10;fix: simulator replay works again">
+      <option name="closed" value="true" />
+      <created>1773842535141</created>
+      <option name="number" value="00043" />
+      <option name="presentableId" value="LOCAL-00043" />
+      <option name="project" value="LOCAL" />
+      <updated>1773842535141</updated>
+    </task>
+    <option name="localTasksCounter" value="44" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="fix:&#10;- fixed name in dictonary from recording_date to recordingDate as C++ uses camelcase" />
     <MESSAGE value="fix:&#10;- simulator now correctly initializes self" />
     <MESSAGE value="fix:&#10;- renamed ACTIONS to ACTION_NAMES" />
     <MESSAGE value="feature:&#10;- log extraction is fully functional" />
@@ -453,6 +454,7 @@
     <MESSAGE value="fix:&#10;created additional methods to extract/replay a set of ExperimentParameters" />
     <MESSAGE value="fix: moved date calculation to c++ and updated the way ExperimentParameters are calculated" />
     <MESSAGE value="feature:&#10;added method to calculate sim gap for a set of files" />
-    <option name="LAST_COMMIT_MESSAGE" value="feature:&#10;added method to calculate sim gap for a set of files" />
+    <MESSAGE value="features: work on SimGapData&#10;fix: simulator replay works again" />
+    <option name="LAST_COMMIT_MESSAGE" value="features: work on SimGapData&#10;fix: simulator replay works again" />
   </component>
 </project>
