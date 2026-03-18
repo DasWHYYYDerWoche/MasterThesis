@@ -5,6 +5,10 @@ from typing import override
 from ...Utils import FileHandler, PATH_SCENE
 
 class ThesisLogExtractionHandler(FileHandler):
+    """
+    File handler for the ThesisLogExtraction.con file of the simulator. Used to set the log path during log extraction.
+    """
+
     _instance = None
     _initialized = False
 

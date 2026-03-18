@@ -7,8 +7,11 @@ from pathlib import Path
 from .FileHandler import FileHandler
 
 class XmlHandler(FileHandler):
+    """
+    Superclass used by the simulator to handle XML files
+    """
     def __init__(self, path: Path):
-        self._xml_tree: ET.ElementTree = ET.ElementTree() #TODO maybe not keep reference permanently
+        self._xml_tree: ET.ElementTree = ET.ElementTree()
         super().__init__(path)
 
     @override

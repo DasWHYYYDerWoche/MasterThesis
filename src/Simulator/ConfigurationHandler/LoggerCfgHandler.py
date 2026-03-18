@@ -4,6 +4,11 @@ from typing import override
 from ...Utils import  CfgHandler, PATH_CONFIG
 
 class LoggerCfgHandler(CfgHandler):
+    """
+    File handler for the loggerT.cfg file of the simulator. Controls parameters to enable/disable logging and
+    filepaths to chose where csvs are saved to and loaded from.
+    """
+
     _instance = None
     _initialized = False
 

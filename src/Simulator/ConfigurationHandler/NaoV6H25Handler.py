@@ -5,6 +5,10 @@ import xml.etree.ElementTree as ElementTree
 from ...Utils import XmlHandler, Hinge, PATH_SCENE
 
 class NaoV6H25Handler(XmlHandler):
+    """
+    File handler for the NaoV6H25.rsi2 file of the simulator. Controls the NAO model and related parameters.
+    """
+
     _instance = None
     _initialized = False
 

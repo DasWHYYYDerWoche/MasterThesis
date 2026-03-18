@@ -5,6 +5,10 @@ import xml.etree.ElementTree as ElementTree
 from ...Utils import XmlHandler, PATH_SCENE
 
 class ThesisCSVReplayHandler(XmlHandler):
+    """
+    File handler for the ThesisCSVReplay.ros2 file of the simulator. Controls the four global simulation parameters.
+    """
+
     _instance = None
     _initialized = False
 

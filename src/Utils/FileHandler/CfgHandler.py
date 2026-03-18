@@ -7,6 +7,13 @@ from pathlib import Path
 from .FileHandler import FileHandler
 
 class CfgHandler(FileHandler, ABC):
+    """
+    Represents a simple config file. Each line of the file must have the following structure:
+
+    var_name = var_data;
+
+    where var_name is a string and var_data is one of int, bool or str
+    """
     def __init__(self, path: Path):
         super().__init__(path)
 
@@ -59,4 +66,3 @@ class CfgHandler(FileHandler, ABC):
         finally:
             if f is not None:
                 f.close()
-

@@ -6,6 +6,12 @@ from .ThesisLogExtractionHandler import ThesisLogExtractionHandler
 from ...Utils import ExperimentParameters, ExperimentType, SimulationParameters
 
 class ConfigurationHandler:
+    """
+    Used by the Simulator to handle all configuration files needed for log extraction and replaying.
+
+    This is a singleton to ensure files are always only written to from one source.
+    """
+
     _instance = None
     _initialized = False
 
