@@ -11,6 +11,8 @@ logger = logging.getLogger("global_logger")
 class SimulationParameters:
     """
     Holds parameters that change the behavior of the simulation like kd/kp values.
+
+    Can be saved to and loaded from a file based on the given ID(s)
     """
 
     class Type:

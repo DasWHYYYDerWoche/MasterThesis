@@ -1,6 +1,10 @@
 from __future__ import annotations
 
 class Hinge:
+    """
+    Representation of a Hinge of the NAO.
+    """
+
     def __init__(self, max_velocity : float, max_force : float, p : float, i : float, d : float):
         self._max_velocity = max_velocity
         self._max_force = max_force

@@ -5,6 +5,10 @@ from enum import Enum
 import logging
 logger = logging.getLogger("global_logger")
 class ProcessContainer:
+    """
+    Used in the Simulator class to represent an instance of the running simulator.
+    """
+
     def __init__(self, process: subprocess.Popen[str], ep_index):
         self._p: subprocess.Popen[str] = process
         self._ep_index: int = ep_index

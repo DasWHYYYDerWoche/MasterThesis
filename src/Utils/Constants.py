@@ -1,6 +1,12 @@
 from __future__ import annotations
 from pathlib import Path
 
+"""
+File containing all the constants needed for this project.
+
+TODO: this should probably be a class
+"""
+
 PATH : Path = Path.home() / "source" / "repos" / "NDevils2015"
 # path to the config of the loggerT module
 PATH_CONFIG : Path = PATH / "Config"

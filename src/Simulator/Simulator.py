@@ -16,6 +16,14 @@ logger = logging.getLogger("global_logger")
 
 
 class Simulator:
+    """
+    TODO: rename to SimulatorHandler
+
+    Controls the simulator. Can create and run instances of it in parallel to perform experiments.
+
+    This is a singleton to ensure the simulator is only started from one source at a time.
+    """
+
     _instance = None
     _initialized = False
 
@@ -39,6 +47,10 @@ class Simulator:
 
 
     def _wait_for_ready(self, process_list : list[ProcessContainer]):
+        """
+        waits till all processes in the list are either ready or have timed out
+        :param process_list:
+        """
         while any([not p.ready for p in process_list]):
             for p_index, p in enumerate(process_list):
                 if p.ready_timed_out(self._max_wait_for_ready):
@@ -49,6 +61,11 @@ class Simulator:
             time.sleep(self._max_wait_for_ready / 10)
 
     def _wait_for_spot(self, process_list : list[ProcessContainer]):
+        """
+        waits till one process in the list either finishes or times out
+        :param process_list:
+        :return:
+        """
         while len(process_list) >= self._batch_size:
             for p_index, p in enumerate(process_list):
                 if p.finished:
@@ -62,6 +79,11 @@ class Simulator:
             time.sleep(self._max_wait_for_ready / 10)
 
     def _wait_for_finished(self, process_list : list[ProcessContainer]):
+        """
+        waits till all processes in the list are finished or timed out
+        :param process_list:
+        :return:
+        """
         while len(process_list) > 0:
             for p_index, p  in enumerate(process_list):
                 if p.finished:
@@ -78,6 +100,16 @@ class Simulator:
             scene_path : Path,
             experiment_parameters : list[ExperimentParameters],
             simulator_parameters : Optional[SimulationParameters]):
+        """
+        Runs the simulation for each of the experiment parameters. The simulator runs in parallel with _batch_size
+        instances. Each instance waits up till _wait_for_ready seconds till timing out and for another _wait_for_finish
+        seconds if the instance is ready.
+
+        :param scene_path: The path to the scene file used.
+        :param experiment_parameters: Data to perform each experiment
+        :param simulator_parameters: Parameters of the simulator
+        :return:
+        """
         self._configurationHandler.reset_all()
         if simulator_parameters:
             self._configurationHandler.set_simulation_parameters(simulator_parameters)
@@ -105,6 +137,14 @@ class Simulator:
                 recording_dates: Optional[list[str]] = None,
                 log_indices: Optional[list[int]] = None,
                 mode: ExperimentMode = ExperimentMode.PARTIAL):
+        """
+        extracts the given logs to csvs
+        :param action_names:
+        :param recording_dates:
+        :param log_indices:
+        :param mode:
+        :return:
+        """
         logger.info("Extracting logs to csvs, action_names: %s, recording_dates: %s, log_indices: %s",
                     "all" if action_names is None else action_names,
                     "all" if recording_dates is None else recording_dates,
@@ -123,6 +163,19 @@ class Simulator:
                log_indices : Optional[list[int]] = None,
                mode: ExperimentMode = ExperimentMode.PARTIAL,
                num_copies : int = 1):
+        """
+        replays the given logs with the given settings
+        :param settings:
+        :param action_names:
+        :param recording_dates:
+        :param log_indices:
+        :param mode:
+        :param num_copies:
+        :return:
+
+        TODO: num_copies is useless
+        TODO: what happens if no extraction exists?
+        """
         if num_copies < 0:
             return
         logger.info("Replaying logs to csvs, action_names: %s, recording_dates: %s, log_indices: %s",
@@ -144,6 +197,18 @@ class Simulator:
                        num_replays : int = 1,
                        extraction_mode : ExperimentMode = ExperimentMode.PARTIAL,
                        replay_mode : ExperimentMode = ExperimentMode.PARTIAL) -> list[SimulationGapData]:
+        """
+        returns a simulation gap object for the given experiments. Automatically extracts and replays missing experiments.
+
+        :param settings:
+        :param action_names:
+        :param recording_dates:
+        :param log_indices:
+        :param num_replays:
+        :param extraction_mode:
+        :param replay_mode:
+        :return:
+        """
         self.extract(action_names, recording_dates, log_indices, extraction_mode)
         self.replay(settings, action_names, recording_dates, log_indices, replay_mode)
         eps = ExperimentParameters.get_all(ExperimentType.CSV_REPLAY, settings.target_param_set_id, action_names, recording_dates, log_indices, num_replays)
@@ -151,7 +216,6 @@ class Simulator:
         for ep in eps:
             sim_gaps.append(SimulationGapData(ep.param_set_id, ep.action_name, ep.recording_date, ep.log_index))
         return sim_gaps
-
 
     @property
     def batch_size(self) -> int:

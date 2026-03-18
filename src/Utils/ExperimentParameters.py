@@ -1,9 +1,7 @@
 from __future__ import annotations
-from typing import Optional
 from enum import Enum
-from copy import copy
 from pathlib import Path
-from datetime import datetime
+from typing import Optional
 from .Constants import (PATH_FIELD_LOGS, PATH_LOGS_AS_CSVS,
                         get_field_logs_path, get_replay_path_full, get_replay_path_partial,get_extraction_path_partial,get_extraction_path_full)
 
@@ -14,14 +12,28 @@ class ExperimentType(Enum):
     LOG_EXTRACTION = 0
     CSV_REPLAY = 1
 
-
 class ExperimentMode(Enum):
-    FULL = 0
+    FULL = 0 #TODO full doesnt make any sense if everything is extracted at most once
     PARTIAL = 1
     DEL_EXISTING = 2
 
 class ExperimentParameters:
+    """
+    Holds all information needed to perform a single experiment. Used to transfer information between different parts of the project.
+    Also provides a host of static method to generate lists of experiment parameters based on existing files.
+    """
+
     def __init__(self, experiment_type : ExperimentType, param_set_id : str = "", action_name : str = "", recording_date : str = "", log_index : int = -1, num_copies : int = 1):
+        #TODO: remove base values that do not make sense
+
+        """
+        :param experiment_type: LOG_EXTRACTION or CSV_REPLAY
+        :param param_set_id: which parameter set to use
+        :param action_name: one of "kick", "turn", "sidestep", "walk"
+        :param recording_date: data when the original log was recorded
+        :param log_index: number of the log
+        :param num_copies: how many copies of the extraction/replay should exist total TODO: maybe remove since its always 1
+        """
         self._experiment_type = experiment_type
         self._action_name: str = action_name
         self._param_set_id: str = param_set_id
@@ -31,6 +43,7 @@ class ExperimentParameters:
         self._num_missing_copies: int = self._count_missing_files()
 
     def _count_missing_files(self) -> int:
+        #TODO: rewrite since num_copies will always be 1
         if self._experiment_type is ExperimentType.LOG_EXTRACTION:
             return 0 if self.extraction_path_full.with_suffix(".csv").exists() else 1
         elif self._experiment_type is ExperimentType.CSV_REPLAY:
@@ -45,6 +58,7 @@ class ExperimentParameters:
         return 0
 
     def delete_existing_csv(self):
+        #TODO: rewrite since num_copies will always be 1
         if self._experiment_type is ExperimentType.LOG_EXTRACTION:
             file = self.extraction_path_full.with_suffix(".csv")
             if file.exists():

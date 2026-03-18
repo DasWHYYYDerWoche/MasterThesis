@@ -24,6 +24,9 @@ class DataSelector(Enum):
     MERGED = 2
 
 class SimulationGapData:
+    """
+    can load extracted log and its replay to calculate various parts of the simulation gap
+    """
 
     def __init__(self, param_set_id: str, action_name: str, recording_date: str, log_index: int):
         self._merged : Optional[pandas.DataFrame] = None
