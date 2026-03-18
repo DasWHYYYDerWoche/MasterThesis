@@ -135,7 +135,7 @@ class ExperimentParameters:
             logger.warning("Logs cannot be extracted multiple times. Chose an extraction mode other than FULL")
             return []
         eps = ExperimentParameters.get_all(ExperimentType.LOG_EXTRACTION, "", action_names, recording_dates, log_indices, 1)
-        ExperimentParameters.prepare(eps, mode)
+        eps = ExperimentParameters.prepare(eps, mode)
         return eps
 
     @staticmethod
@@ -146,7 +146,7 @@ class ExperimentParameters:
                         num_copies : int = 1,
                         mode: ExperimentMode = ExperimentMode.PARTIAL) -> list[ExperimentParameters]:
         eps = ExperimentParameters.get_all(ExperimentType.CSV_REPLAY, param_set_id, action_names, recording_dates, log_indices, num_copies)
-        ExperimentParameters.prepare(eps, mode)
+        eps = ExperimentParameters.prepare(eps, mode)
         return eps
 
     @staticmethod
@@ -155,7 +155,7 @@ class ExperimentParameters:
                 action_names: Optional[list[str]],
                 recording_dates: Optional[list[str]],
                 log_indices : Optional[list[int]],
-                num_copies : int) -> list[ExperimentParameters]:
+                num_copies : int = 1) -> list[ExperimentParameters]:
         eps = []
         if action_names is None:
             if experiment_type is ExperimentType.LOG_EXTRACTION:
@@ -194,7 +194,7 @@ class ExperimentParameters:
             if experiment_type is ExperimentType.LOG_EXTRACTION:
                 log_indices = [int(file.stem) for file in (PATH_FIELD_LOGS / action_name / recording_date).iterdir()]
             elif experiment_type is ExperimentType.CSV_REPLAY:
-                log_indices = [file.name for file in (PATH_LOGS_AS_CSVS / action_name / recording_date).iterdir()]
+                log_indices = [file.stem for file in (PATH_LOGS_AS_CSVS / action_name / recording_date).iterdir()]
         if experiment_type is ExperimentType.LOG_EXTRACTION:
             for log_index in log_indices:
                 eps.append(ExperimentParameters(experiment_type=ExperimentType.LOG_EXTRACTION, action_name=action_name, recording_date=recording_date, log_index=log_index))
@@ -207,12 +207,15 @@ class ExperimentParameters:
 
     @staticmethod
     def prepare(eps : list[ExperimentParameters], mode: ExperimentMode):
+        filtered = []
         if mode == ExperimentMode.PARTIAL:
-            for i, ep in enumerate(eps):
-                if ep._num_missing_copies < 1:
-                    eps.pop(i)
+            for ep in eps:
+                if ep._num_missing_copies > 0:
+                    filtered.append(ep)
         elif mode == ExperimentMode.DEL_EXISTING:
             for ep in eps:
+                filtered.append(ep)
                 ep.delete_existing_csv()
-        for ep in eps:
+        for ep in filtered:
             ep.create_directory()
+        return filtered

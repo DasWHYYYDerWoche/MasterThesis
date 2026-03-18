@@ -109,14 +109,12 @@ class Simulator:
                     "all" if action_names is None else action_names,
                     "all" if recording_dates is None else recording_dates,
                     "all" if log_indices is None else log_indices)
-        eps = ExperimentParameters.get_extraction_data(action_names, recording_dates, log_indices, mode)
-        self.extract_ep(eps)
-
-    def extract_ep(self, eps : list[ExperimentParameters]):
-        try:
-            self.run(PATH_LOG_EXTRACTION_SCENE, eps, None)
-        except Exception as e:
-            logger.exception("%s failed to run due to %s", type(self).__name__, type(e).__name__)
+        extract_eps = ExperimentParameters.get_extraction_data(action_names, recording_dates, log_indices, mode)
+        if len(extract_eps) > 0:
+            try:
+                self.run(PATH_LOG_EXTRACTION_SCENE, extract_eps, None)
+            except Exception as e:
+                logger.exception("%s failed to run due to %s", type(self).__name__, type(e).__name__)
 
     def replay(self,
                settings : SimulationParameters,
@@ -131,14 +129,12 @@ class Simulator:
                     "all" if action_names is None else action_names,
                     "all" if recording_dates is None else recording_dates,
                     "all" if log_indices is None else log_indices)
-        eps = ExperimentParameters.get_replay_data(settings.target_param_set_id, action_names, recording_dates, log_indices, num_copies, mode)
-        self.replay_ep(settings, eps)
-
-    def replay_ep(self, settings : SimulationParameters, eps : list[ExperimentParameters]):
-        try:
-            self.run(PATH_CSV_REPLAY_SCENE, eps, settings)
-        except Exception as e:
-            logger.exception("%s failed to run due to %s", type(self).__name__, type(e).__name__)
+        replay_eps = ExperimentParameters.get_replay_data(settings.target_param_set_id, action_names, recording_dates, log_indices, num_copies, mode)
+        if len(replay_eps) > 0:
+            try:
+                self.run(PATH_CSV_REPLAY_SCENE, replay_eps, settings)
+            except Exception as e:
+                logger.exception("%s failed to run due to %s", type(self).__name__, type(e).__name__)
 
     def simulation_gap(self,
                        settings : SimulationParameters,
@@ -148,15 +144,9 @@ class Simulator:
                        num_replays : int = 1,
                        extraction_mode : ExperimentMode = ExperimentMode.PARTIAL,
                        replay_mode : ExperimentMode = ExperimentMode.PARTIAL) -> list[SimulationGapData]:
-        extract_eps = ExperimentParameters.get_extraction_data(action_names,
-                                                               recording_dates,
-                                                               log_indices,
-                                                               extraction_mode)
-        self.extract_ep(extract_eps)
+        self.extract(action_names, recording_dates, log_indices, extraction_mode)
+        self.replay(settings, action_names, recording_dates, log_indices, replay_mode)
         eps = ExperimentParameters.get_all(ExperimentType.CSV_REPLAY, settings.target_param_set_id, action_names, recording_dates, log_indices, num_replays)
-        replay_eps = copy(eps)
-        ExperimentParameters.prepare(replay_eps, replay_mode)
-        self.replay_ep(settings, replay_eps)
         sim_gaps = []
         for ep in eps:
             sim_gaps.append(SimulationGapData(ep.param_set_id, ep.action_name, ep.recording_date, ep.log_index))

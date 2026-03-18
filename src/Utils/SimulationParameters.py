@@ -60,6 +60,7 @@ class SimulationParameters:
         #create folder(s)
         if not self.path_target.exists():
             self.path_target.mkdir(parents=True)
+        self.save_to_file()
 
     def save_to_file(self) -> bool:
         if self._type is SimulationParameters.Type.NEW or \
