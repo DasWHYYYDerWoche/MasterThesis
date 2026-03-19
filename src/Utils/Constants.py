@@ -89,5 +89,8 @@ def get_replay_path_partial(param_set_id : str, action_name : str, recording_dat
 def get_replay_path_full(param_set_id : str, action_name : str, recording_date : str, log_index : int) -> Path:
     return PATH_CSV_LOGGER / get_replay_path_partial(param_set_id, action_name, recording_date, log_index)
 
-def get_field_logs_path(action_name : str, recording_date : str, log_index : int) -> Path:
+def get_field_logs_path_partial(action_name : str, recording_date : str, log_index : int) -> Path:
     return Path("..") / "Logs" / "ThesisFieldLogs"/ action_name /  recording_date / (str(log_index) + ".log")
+
+def get_field_logs_path_full(action_name : str, recording_date : str, log_index : int) -> Path:
+    return PATH_LOGS / "ThesisFieldLogs"/ action_name /  recording_date / (str(log_index) + ".log")

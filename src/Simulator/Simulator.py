@@ -119,99 +119,103 @@ class Simulator:
             #wait for all processes to be ready
             self._wait_for_ready(process_list)
             #set parameters
-            if not self._configurationHandler.set_experiment_parameters(ep):
-                logger.warning("Experiment %s was skipped due to inconsistent experiment_parameter %s", ep_index, ep)
-                continue
-            for _ in range(ep.num_missing_copies):
-                #wait for a space so that the number of active processes does not exceed the batch_size
-                self._wait_for_spot(process_list)
-                process_list.append(ProcessContainer(subprocess.Popen(str(PATH_EXECUTABLE) + " " + str(scene_path) + ".ros2",
-                                             stdout=subprocess.PIPE, text=True), ep_index))
+            self._configurationHandler.set_experiment_parameters(ep)
+            #wait for a space so that the number of active processes does not exceed the batch_size
+            self._wait_for_spot(process_list)
+            process_list.append(ProcessContainer(subprocess.Popen(str(PATH_EXECUTABLE) + " " + str(scene_path) + ".ros2",
+                                         stdout=subprocess.PIPE, text=True), ep_index))
         #wait for all remaining processes to be ready
         self._wait_for_ready(process_list)
         self._configurationHandler.reset_all()
         self._wait_for_finished(process_list)
 
     def extract(self,
-                action_names: Optional[list[str]] = None,
-                recording_dates: Optional[list[str]] = None,
-                log_indices: Optional[list[int]] = None,
+                data : Optional[list[tuple[Optional[str], Optional[str], Optional[int]]]] = None,
                 mode: ExperimentMode = ExperimentMode.PARTIAL):
         """
-        extracts the given logs to csvs
-        :param action_names:
-        :param recording_dates:
-        :param log_indices:
-        :param mode:
-        :return:
+        Extracts the logs given in the data object from a .log into a .csv.
+
+        :param data: which extractions should be performed.
+            If data is None then all possible combinations are extracted.
+            If a value in a tuple in data is None then it is replaced by a list of all possible values it could have.
+        :param mode: either PARTIAL (only extract missing logs) or DELETE_EXISTING (delete existing extractions and
+        re-extract all)
         """
-        logger.info("Extracting logs to csvs, action_names: %s, recording_dates: %s, log_indices: %s",
-                    "all" if action_names is None else action_names,
-                    "all" if recording_dates is None else recording_dates,
-                    "all" if log_indices is None else log_indices)
-        extract_eps = ExperimentParameters.get_extraction_data(action_names, recording_dates, log_indices, mode)
-        if len(extract_eps) > 0:
+        logger.info("Starting Log Extraction")
+        # create eps
+        eps = ExperimentParameters.create_experiment_parameters(None, data)
+        # preprocessing
+        if mode is ExperimentMode.DEL_EXISTING:
+            for ep in eps:
+                ep.delete_target()
+        else:
+            # remove eps that have an existing file
+            eps = [ep for ep in eps if not ep.exists_extraction()]
+        for ep in eps:
+            ep.create_directories()
+        # run
+        if len(eps) > 0:
             try:
-                self.run(PATH_LOG_EXTRACTION_SCENE, extract_eps, None)
+                self.run(PATH_LOG_EXTRACTION_SCENE, eps, None)
             except Exception as e:
                 logger.exception("%s failed to run due to %s", type(self).__name__, type(e).__name__)
+        logger.info("Finished Log Extraction")
 
     def replay(self,
                settings : SimulationParameters,
-               action_names : Optional[list[str]] = None,
-               recording_dates : Optional[list[str]] = None,
-               log_indices : Optional[list[int]] = None,
-               mode: ExperimentMode = ExperimentMode.PARTIAL,
-               num_copies : int = 1):
+               data : Optional[list[tuple[Optional[str], Optional[str], Optional[int]]]] = None,
+               mode: ExperimentMode = ExperimentMode.PARTIAL):
         """
-        replays the given logs with the given settings
-        :param settings:
-        :param action_names:
-        :param recording_dates:
-        :param log_indices:
-        :param mode:
-        :param num_copies:
-        :return:
+        Replay the given logs.
 
-        TODO: num_copies is useless
-        TODO: what happens if no extraction exists?
+        :param settings: the used simulator settings
+        :param data: which replays should be performed.
+            If data is None then all possible combinations are replayed.
+            If a value in a tuple in data is None then it is replaced by a list of all possible values it could have.
+        :param mode: either PARTIAL (only replay missing logs) or DELETE_EXISTING (delete existing replay and
+        re-replay all)
         """
-        if num_copies < 0:
-            return
-        logger.info("Replaying logs to csvs, action_names: %s, recording_dates: %s, log_indices: %s",
-                    "all" if action_names is None else action_names,
-                    "all" if recording_dates is None else recording_dates,
-                    "all" if log_indices is None else log_indices)
-        replay_eps = ExperimentParameters.get_replay_data(settings.target_param_set_id, action_names, recording_dates, log_indices, num_copies, mode)
-        if len(replay_eps) > 0:
+        logger.info("Starting Log Replaying")
+        # create eps
+        eps = ExperimentParameters.create_experiment_parameters(settings.target_param_set_id, data)
+        # preprocessing
+        if mode is ExperimentMode.DEL_EXISTING:
+            for ep in eps:
+                ep.delete_target()
+        else:
+            eps = [ep for ep in eps if not ep.exists_replay()]
+        for ep in eps:
+            ep.create_directories()
+        # run
+        if len(eps) > 0:
             try:
-                self.run(PATH_CSV_REPLAY_SCENE, replay_eps, settings)
+                self.run(PATH_CSV_REPLAY_SCENE, eps, settings)
             except Exception as e:
                 logger.exception("%s failed to run due to %s", type(self).__name__, type(e).__name__)
+        logger.info("Finished Log Replay")
 
     def simulation_gap(self,
                        settings : SimulationParameters,
-                       action_names : Optional[list[str]] = None,
-                       recording_dates : Optional[list[str]] = None,
-                       log_indices : Optional[list[int]] = None,
-                       num_replays : int = 1,
+                       data : Optional[list[tuple[Optional[str], Optional[str], Optional[int]]]] = None,
                        extraction_mode : ExperimentMode = ExperimentMode.PARTIAL,
-                       replay_mode : ExperimentMode = ExperimentMode.PARTIAL) -> list[SimulationGapData]:
+                       replay_mode : ExperimentMode = ExperimentMode.PARTIAL)\
+            -> list[SimulationGapData]:
         """
-        returns a simulation gap object for the given experiments. Automatically extracts and replays missing experiments.
+        Create simulation gap objects for the given experiments. Automatically extracts and replays logs as necessary.
 
-        :param settings:
-        :param action_names:
-        :param recording_dates:
-        :param log_indices:
-        :param num_replays:
-        :param extraction_mode:
-        :param replay_mode:
-        :return:
+        :param settings: the settings of the simulator
+        :param data: logs for which a simulation gap object should be created
+            If data is None then all possible combinations are replayed.
+            If a value in a tuple in data is None then it is replaced by a list of all possible values it could have.
+        :param extraction_mode: either PARTIAL (only extract missing logs) or DELETE_EXISTING (delete existing extractions and
+        re-extract all)
+        :param replay_mode: either PARTIAL (only replay missing logs) or DELETE_EXISTING (delete existing replay and
+        re-replay all)
+        :return: a list of SimulationGap objects
         """
-        self.extract(action_names, recording_dates, log_indices, extraction_mode)
-        self.replay(settings, action_names, recording_dates, log_indices, replay_mode)
-        eps = ExperimentParameters.get_all(ExperimentType.CSV_REPLAY, settings.target_param_set_id, action_names, recording_dates, log_indices, num_replays)
+        self.extract(data, extraction_mode)
+        self.replay(settings, data, replay_mode)
+        eps = ExperimentParameters.create_experiment_parameters(settings.target_param_set_id, data)
         sim_gaps = []
         for ep in eps:
             sim_gaps.append(SimulationGapData(ep.param_set_id, ep.action_name, ep.recording_date, ep.log_index))

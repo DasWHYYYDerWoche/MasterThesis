@@ -3,7 +3,7 @@ from enum import Enum
 from pathlib import Path
 from typing import Optional
 from .Constants import (PATH_FIELD_LOGS, PATH_LOGS_AS_CSVS,
-                        get_field_logs_path, get_replay_path_full, get_replay_path_partial,get_extraction_path_partial,get_extraction_path_full)
+                        get_field_logs_path_partial, get_replay_path_full, get_replay_path_partial, get_extraction_path_partial, get_extraction_path_full, get_field_logs_path_full)
 
 import logging
 logger = logging.getLogger("global_logger")
@@ -23,69 +23,79 @@ class ExperimentParameters:
     Also provides a host of static method to generate lists of experiment parameters based on existing files.
     """
 
-    def __init__(self, experiment_type : ExperimentType, param_set_id : str = "", action_name : str = "", recording_date : str = "", log_index : int = -1, num_copies : int = 1):
-        #TODO: remove base values that do not make sense
+    def __init__(self, param_set_id : Optional[str], action_name : str, recording_date : str, log_index : int):
 
         """
-        :param experiment_type: LOG_EXTRACTION or CSV_REPLAY
         :param param_set_id: which parameter set to use
         :param action_name: one of "kick", "turn", "sidestep", "walk"
         :param recording_date: data when the original log was recorded
         :param log_index: number of the log
-        :param num_copies: how many copies of the extraction/replay should exist total TODO: maybe remove since its always 1
         """
-        self._experiment_type = experiment_type
         self._action_name: str = action_name
         self._param_set_id: str = param_set_id
         self._recording_date: str = recording_date
         self._log_index: int = log_index
-        self._num_copies: int = num_copies
-        self._num_missing_copies: int = self._count_missing_files()
 
-    def _count_missing_files(self) -> int:
-        #TODO: rewrite since num_copies will always be 1
-        if self._experiment_type is ExperimentType.LOG_EXTRACTION:
-            return 0 if self.extraction_path_full.with_suffix(".csv").exists() else 1
-        elif self._experiment_type is ExperimentType.CSV_REPLAY:
-            path = self.replay_path_full.parent
-            if not path.exists():
-                return self._num_copies
-            existing_files = 0
-            for file in path.iterdir():
-                if file.name.startswith(str(self._log_index) + "_") and file.suffix == ".csv":
-                    existing_files += 1
-            return self._num_copies - existing_files
-        return 0
+    def exists_log(self) -> bool:
+        """
+        :return: True if a .log file exists, False otherwise
+        """
+        return self.log_path_full.exists()
 
-    def delete_existing_csv(self):
-        #TODO: rewrite since num_copies will always be 1
-        if self._experiment_type is ExperimentType.LOG_EXTRACTION:
+    def exists_extraction(self) -> bool:
+        """
+
+        :return: True if an extraction .csv of the .log file exists
+        """
+        return self.extraction_path_full.with_suffix(".csv").exists()
+
+    def exists_replay(self) -> bool:
+        """
+
+        :return: True if a replay .csv of the extraction exists
+        """
+        path = self.replay_path_full.parent
+        if not path.exists():
+            return False
+        for file in path.iterdir():
+            if file.name.startswith(str(self._log_index) + "_") and file.suffix == ".csv":
+                return True
+        return False
+
+    def delete_target(self) -> bool:
+        """
+        Deletes the target file if it exists
+        :return: True if the file existed and was deleted, False otherwise
+        """
+        if self._param_set_id is None:
             file = self.extraction_path_full.with_suffix(".csv")
             if file.exists():
-                logger.info("Deleted existing csv %s", file)
+                logger.info("Deleted extraction %s", file)
                 file.unlink()
-        elif self._experiment_type is ExperimentType.CSV_REPLAY:
+                return True
+            return False
+        else:
             path = self.replay_path_full.parent
             if not path.exists():
-                return
+                return False
             for file in path.iterdir():
                 if file.name.startswith(str(self._log_index) + "_"):
-                    logger.info("Deleted existing csv %s", file)
+                    logger.info("Deleted replay %s", file)
                     file.unlink()
-        self._num_missing_copies = self._count_missing_files()
+                    return True
+            return False
 
-    def create_directory(self):
-        folder = None
-        if self._experiment_type is ExperimentType.LOG_EXTRACTION:
-            folder = self.extraction_path_full.parent
-        elif self._experiment_type is ExperimentType.CSV_REPLAY:
-            folder = self.replay_path_full.parent
-        if folder and not folder.exists():
+    def create_directories(self):
+        """
+        Creates the directories of the extraction and replay if they do not exist.
+        """
+        folder = self.extraction_path_full.parent
+        if not folder.exists():
             folder.mkdir(parents=True)
-
-    @property
-    def experiment_type(self) -> ExperimentType:
-        return self._experiment_type
+        if self._param_set_id is not None:
+            folder = self.replay_path_full.parent
+            if not folder.exists():
+                folder.mkdir(parents=True)
 
     @property
     def action_name(self) -> str:
@@ -104,16 +114,12 @@ class ExperimentParameters:
         return self._log_index
 
     @property
-    def num_copies(self) -> int:
-        return self._num_copies
+    def log_path_relative(self) -> Path:
+        return get_field_logs_path_partial(self._action_name, self._recording_date, self._log_index)
 
     @property
-    def num_missing_copies(self) -> int:
-        return self._num_missing_copies
-
-    @property
-    def log_path(self) -> Path:
-        return get_field_logs_path(self._action_name, self._recording_date, self._log_index)
+    def log_path_full(self) -> Path:
+        return get_field_logs_path_full(self._action_name, self._recording_date, self._log_index)
 
     @property
     def extraction_path_relative(self) -> Path:
@@ -132,104 +138,63 @@ class ExperimentParameters:
         return get_replay_path_full(self._param_set_id, self._action_name, self._recording_date, self._log_index)
 
     def __str__(self):
-        if self._experiment_type is ExperimentType.LOG_EXTRACTION:
+        if self._param_set_id is None:
             return "ExtractionData: [" + self._action_name + "," + self._recording_date + "," + str(self._log_index) + "]"
-        if self._experiment_type is ExperimentType.CSV_REPLAY:
+        else:
             return "ReplayData: [" + str(self._param_set_id) + "," + self._action_name + "," + self._recording_date + "," + str(self._log_index) + "]"
-        return "ShittyData"
 
     # -------- creating extraction data lists from existing files --------
 
     @staticmethod
-    def get_extraction_data(action_names: Optional[list[str]] = None,
-                            recording_dates: Optional[list[str]] = None,
-                            log_indices : Optional[list[int]] = None,
-                            mode: ExperimentMode = ExperimentMode.PARTIAL) -> list[ExperimentParameters]:
-        if mode is ExperimentMode.FULL:
-            logger.warning("Logs cannot be extracted multiple times. Chose an extraction mode other than FULL")
-            return []
-        eps = ExperimentParameters.get_all(ExperimentType.LOG_EXTRACTION, "", action_names, recording_dates, log_indices, 1)
-        eps = ExperimentParameters.prepare(eps, mode)
-        return eps
+    def create_experiment_parameters(param_set_id : Optional[str],
+                                     data : Optional[list[tuple[Optional[str], Optional[str], Optional[int]]]])\
+            -> list[ExperimentParameters]:
+        if data is None:
+            return ExperimentParameters._create_experiment_parameters(param_set_id, None, None, None)
+        else:
+            eps = []
+            for a_n, r_d, l_i in data:
+                eps.extend(ExperimentParameters._create_experiment_parameters(param_set_id, a_n, r_d, l_i))
+            return eps
 
     @staticmethod
-    def get_replay_data(param_set_id : str,
-                        action_names: Optional[list[str]] = None,
-                        recording_dates: Optional[list[str]] = None,
-                        log_indices : Optional[list[int]] = None,
-                        num_copies : int = 1,
-                        mode: ExperimentMode = ExperimentMode.PARTIAL) -> list[ExperimentParameters]:
-        eps = ExperimentParameters.get_all(ExperimentType.CSV_REPLAY, param_set_id, action_names, recording_dates, log_indices, num_copies)
-        eps = ExperimentParameters.prepare(eps, mode)
-        return eps
+    def _create_experiment_parameters(param_set_id : Optional[str],
+                                      action_name : Optional[str],
+                                      recording_date : Optional[str],
+                                      log_index : Optional[int]) \
+            -> list[ExperimentParameters]:
+        """
+        Creates an ExperimentParameter object for the given parameters. If any of action_name, recording_date or log_index are None they are replaced
+        with a list of all possible values instead.
 
-    @staticmethod
-    def get_all(experiment_type : ExperimentType,
-                param_set_id : str,
-                action_names: Optional[list[str]],
-                recording_dates: Optional[list[str]],
-                log_indices : Optional[list[int]],
-                num_copies : int = 1) -> list[ExperimentParameters]:
+        Extractions with no existing .log file are skipped. If param_set_id is not None, logs without an extraction .csv
+        are also skipped.
+
+        :param param_set_id: parameter configuration used for replaying. If set to None the created EPs can only be used
+            to extract logs but not replay them
+        :param action_name:
+        :param recording_date:
+        :param log_index:
+        :return: a list of ExperimentParameter objects
+        """
+        directory = PATH_FIELD_LOGS if param_set_id is None else PATH_LOGS_AS_CSVS
         eps = []
-        if action_names is None:
-            if experiment_type is ExperimentType.LOG_EXTRACTION:
-                action_names = [file.name for file in PATH_FIELD_LOGS.iterdir()]
-            elif experiment_type is ExperimentType.CSV_REPLAY:
-                action_names = [file.name for file in PATH_LOGS_AS_CSVS.iterdir()]
-        for action_name in action_names:
-            eps.extend(ExperimentParameters._get_for_action(experiment_type, param_set_id, action_name, recording_dates, log_indices, num_copies))
+        if action_name is None:
+            action_names = [file.name for file in directory.iterdir()]
+        else:
+            action_names = [action_name]
+        for a_n in action_names:
+            if recording_date is None:
+                recording_dates = [file.name for file in (directory / a_n).iterdir()]
+            else:
+                recording_dates = [recording_date]
+            for r_d in recording_dates:
+                if log_index is None:
+                    log_indices = [int(file.stem) for file in (directory / a_n / r_d).iterdir()]
+                else:
+                    log_indices = [log_index]
+                for l_i in log_indices:
+                    ep = ExperimentParameters(param_set_id=param_set_id, action_name=a_n, recording_date=r_d, log_index=l_i)
+                    if ep.exists_log() and (ep.exists_extraction() or param_set_id is None):
+                        eps.append(ep)
         return eps
-
-    @staticmethod
-    def _get_for_action(experiment_type : ExperimentType,
-                        param_set_id : str,
-                        action_name: str,
-                        recording_dates: Optional[list[str]],
-                        log_indices : Optional[list[int]],
-                        num_copies : int) -> list[ExperimentParameters]:
-        eps = []
-        if recording_dates is None:
-            if experiment_type is ExperimentType.LOG_EXTRACTION:
-                recording_dates = [file.name for file in (PATH_FIELD_LOGS / action_name).iterdir()]
-            elif experiment_type is ExperimentType.CSV_REPLAY:
-                recording_dates = [file.name for file in (PATH_LOGS_AS_CSVS / action_name).iterdir()]
-        for recording_date in recording_dates:
-            eps.extend(ExperimentParameters._get_for_action_date(experiment_type, param_set_id, action_name, recording_date, log_indices, num_copies))
-        return eps
-
-    @staticmethod
-    def _get_for_action_date(experiment_type : ExperimentType,
-                             param_set_id : str, action_name : str,
-                             recording_date : str,
-                             log_indices : Optional[list[int]],
-                             num_copies : int) -> list[ExperimentParameters]:
-        eps = []
-        if log_indices is None:
-            if experiment_type is ExperimentType.LOG_EXTRACTION:
-                log_indices = [int(file.stem) for file in (PATH_FIELD_LOGS / action_name / recording_date).iterdir()]
-            elif experiment_type is ExperimentType.CSV_REPLAY:
-                log_indices = [file.stem for file in (PATH_LOGS_AS_CSVS / action_name / recording_date).iterdir()]
-        if experiment_type is ExperimentType.LOG_EXTRACTION:
-            for log_index in log_indices:
-                eps.append(ExperimentParameters(experiment_type=ExperimentType.LOG_EXTRACTION, action_name=action_name, recording_date=recording_date, log_index=log_index))
-        elif experiment_type is ExperimentType.CSV_REPLAY:
-            for log_index in log_indices:
-                eps.append(ExperimentParameters(experiment_type=ExperimentType.CSV_REPLAY, param_set_id=param_set_id, action_name=action_name, recording_date=recording_date, log_index=log_index, num_copies=num_copies))
-        return eps
-
-    # -------- modifying extraction data lists --------
-
-    @staticmethod
-    def prepare(eps : list[ExperimentParameters], mode: ExperimentMode):
-        filtered = []
-        if mode == ExperimentMode.PARTIAL:
-            for ep in eps:
-                if ep._num_missing_copies > 0:
-                    filtered.append(ep)
-        elif mode == ExperimentMode.DEL_EXISTING:
-            for ep in eps:
-                filtered.append(ep)
-                ep.delete_existing_csv()
-        for ep in filtered:
-            ep.create_directory()
-        return filtered
