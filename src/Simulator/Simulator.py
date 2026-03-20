@@ -9,7 +9,7 @@ import math
 from pathlib import Path
 from .ProcessContainer import ProcessContainer
 from .ConfigurationHandler import ConfigurationHandler
-from ..Utils import PATH_EXECUTABLE, ExperimentParameters, SimulationParameters, PATH_LOG_EXTRACTION_SCENE, PATH_CSV_REPLAY_SCENE, SimulationGapData, ExperimentMode, ExperimentType
+from ..Utils import PATH_EXECUTABLE, ExperimentParameters, SimulationParameters, PATH_LOG_EXTRACTION_SCENE, PATH_CSV_REPLAY_SCENE, SimulationGapHandler, ExperimentMode, ExperimentType
 
 import logging
 logger = logging.getLogger("global_logger")
@@ -199,7 +199,7 @@ class Simulator:
                        data : Optional[list[tuple[Optional[str], Optional[str], Optional[int]]]] = None,
                        extraction_mode : ExperimentMode = ExperimentMode.PARTIAL,
                        replay_mode : ExperimentMode = ExperimentMode.PARTIAL)\
-            -> list[SimulationGapData]:
+            -> SimulationGapHandler:
         """
         Create simulation gap objects for the given experiments. Automatically extracts and replays logs as necessary.
 
@@ -216,10 +216,10 @@ class Simulator:
         self.extract(data, extraction_mode)
         self.replay(settings, data, replay_mode)
         eps = ExperimentParameters.create_experiment_parameters(settings.target_param_set_id, data)
-        sim_gaps = []
+        gap_handler = SimulationGapHandler(settings.target_param_set_id)
         for ep in eps:
-            sim_gaps.append(SimulationGapData(ep.param_set_id, ep.action_name, ep.recording_date, ep.log_index))
-        return sim_gaps
+            gap_handler.add(ep.action_name, ep.recording_date, ep.log_index)
+        return gap_handler
 
     @property
     def batch_size(self) -> int:

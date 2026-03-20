@@ -37,6 +37,44 @@ HINGE_NAMES = [
 "rHipYawPitch","rHipRoll","rHipPitch","rKneePitch","rAnklePitch","rAnkleRoll",
 ]
 
+JOINT_WEIGHTS = {
+    # Head
+    "headYaw": 1,
+    "headPitch": 1,
+
+    # Left Arm
+    "lShoulderPitch": 1,
+    "lShoulderRoll": 1,
+    "lElbowYaw": 1,
+    "lElbowRoll": 1,
+    "lWristYaw": 1,
+    "lHand" : 1,
+
+    # Right Arm
+    "rShoulderPitch": 1,
+    "rShoulderRoll": 1,
+    "rElbowYaw": 1,
+    "rElbowRoll": 1,
+    "rWristYaw": 1,
+    "rHand" : 1,
+
+    # Left Leg
+    "lHipYawPitch": 1,
+    "lHipRoll": 1,
+    "lHipPitch": 1,
+    "lKneePitch": 1,
+    "lAnklePitch": 1,
+    "lAnkleRoll": 1,
+
+    # Right Leg
+    "rHipYawPitch": 1,
+    "rHipRoll": 1,
+    "rHipPitch": 1,
+    "rKneePitch": 1,
+    "rAnklePitch": 1,
+    "rAnkleRoll": 1,
+}
+
 JOINT_DEFLECTIONS = {
     # Head
     "headYaw": (-119.5, 119.5),
