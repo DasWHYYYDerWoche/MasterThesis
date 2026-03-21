@@ -61,7 +61,7 @@ class SimulationGapData:
         """
         Returns the joint positions of the extracted log for the given joints and frames as a dictionary.
         """
-        return self._get_pos("_x", hinge_names, start_frame, end_frame)
+        return self._get("_x", hinge_names, start_frame, end_frame)
 
     def get_pos_replay(self,
                        hinge_names: Optional[list[str]] = None,
@@ -71,7 +71,7 @@ class SimulationGapData:
         """
         Returns the joint positions of the replayed log for the given joints and frames as a dictionary.
         """
-        return self._get_pos("_y", hinge_names, start_frame, end_frame)
+        return self._get("_y", hinge_names, start_frame, end_frame)
 
     def get_vel_extraction(self,
                            hinge_names: Optional[list[str]] = None,
@@ -136,6 +136,9 @@ class SimulationGapData:
                                      self.get_acc_replay(hinge_names, start_frame, end_frame))
 
     def get_total_gap(self, hinge_names: Optional[list[str]] = None, start_frame: int = 0, end_frame: int = -1) -> dict[str, list[float]]:
+        """
+        Returns the sum of the pos, vel and acc gaps.
+        """
         d_p = self.get_pos_gap(hinge_names, start_frame, end_frame)
         d_v = self.get_vel_gap(hinge_names, start_frame, end_frame)
         d_a = self.get_acc_gap(hinge_names, start_frame, end_frame)
@@ -147,67 +150,61 @@ class SimulationGapData:
             d_total[hinge] = [p + v + a for p,v,a in zip(l_p, l_v, l_a)]
         return d_total
 
-    # -------- average over all frames --------
+    # -------- average for joints --------
 
-    def get_pos_gap_frame_avg(self, hinge_names: Optional[list[str]] = None, start_frame: int = 0, end_frame: int = -1) -> dict[str, float]:
+    def get_pos_gap_avg_for_joints(self, hinge_names: Optional[list[str]] = None, start_frame: int = 0, end_frame: int = -1) -> dict[str, float]:
         return {hinge_name : fmean(sim_gaps) for hinge_name,sim_gaps in self.get_pos_gap(hinge_names, start_frame, end_frame).items()}
 
-    def get_vel_gap_frame_avg(self, hinge_names: Optional[list[str]] = None, start_frame: int = 0, end_frame: int = -1) -> dict[str, float]:
+    def get_vel_gap_avg_for_joints(self, hinge_names: Optional[list[str]] = None, start_frame: int = 0, end_frame: int = -1) -> dict[str, float]:
         return {hinge_name : fmean(sim_gaps) for hinge_name,sim_gaps in self.get_vel_gap(hinge_names, start_frame, end_frame).items()}
 
-    def get_acc_gap_frame_avg(self, hinge_names: Optional[list[str]] = None, start_frame: int = 0, end_frame: int = -1) -> dict[str, float]:
+    def get_acc_gap_avg_for_joints(self, hinge_names: Optional[list[str]] = None, start_frame: int = 0, end_frame: int = -1) -> dict[str, float]:
         return {hinge_name : fmean(sim_gaps) for hinge_name,sim_gaps in self.get_acc_gap(hinge_names, start_frame, end_frame).items()}
 
-    def get_total_gap_frame_avg(self, hinge_names: Optional[list[str]] = None, start_frame: int = 0, end_frame: int = -1) -> dict[str, float]:
+    def get_total_gap_avg_for_joints(self, hinge_names: Optional[list[str]] = None, start_frame: int = 0, end_frame: int = -1) -> dict[str, float]:
         return {hinge_name : fmean(sim_gaps) for hinge_name,sim_gaps in self.get_total_gap(hinge_names, start_frame, end_frame).items()}
 
     # -------- average over all joints --------
 
-    def get_pos_gap_joint_avg(self, hinge_names: Optional[list[str]] = None, start_frame: int = 0, end_frame: int = -1) -> list[float]:
-        d_p = self.get_pos_gap(hinge_names, start_frame, end_frame)
-        d_p_avg = range(len(list(d_p.values())[0]))
-        for hinge_name in d_p.keys():
-            d_p_avg = [old + (JOINT_WEIGHTS[hinge_name]*new) for old, new in zip(d_p_avg, d_p[hinge_name])]
-        steps = len(list(d_p.keys()))
-        return [val / steps for val in d_p_avg]
+    def get_pos_gap_avg_for_frames(self, hinge_names: Optional[list[str]] = None, start_frame: int = 0, end_frame: int = -1) -> list[float]:
+        return self._get_value_avg(self.get_pos_gap(hinge_names, start_frame, end_frame))
 
-    def get_vel_gap_joint_avg(self, hinge_names: Optional[list[str]] = None, start_frame: int = 0, end_frame: int = -1) -> list[float]:
-        d_p = self.get_vel_gap(hinge_names, start_frame, end_frame)
-        d_p_avg = range(len(list(d_p.values())[0]))
-        for hinge_name in d_p.keys():
-            d_p_avg = [old + (JOINT_WEIGHTS[hinge_name]*new) for old, new in zip(d_p_avg, d_p[hinge_name])]
-        steps = len(list(d_p.keys()))
-        return [val / steps for val in d_p_avg]
+    def get_vel_gap_avg_for_frames(self, hinge_names: Optional[list[str]] = None, start_frame: int = 0, end_frame: int = -1) -> list[float]:
+        return self._get_value_avg(self.get_vel_gap(hinge_names, start_frame, end_frame))
 
-    def get_acc_gap_joint_avg(self, hinge_names: Optional[list[str]] = None, start_frame: int = 0, end_frame: int = -1) -> list[float]:
-        d_p = self.get_acc_gap(hinge_names, start_frame, end_frame)
-        d_p_avg = range(len(list(d_p.values())[0]))
-        for hinge_name in d_p.keys():
-            d_p_avg = [old + (JOINT_WEIGHTS[hinge_name]*new) for old, new in zip(d_p_avg, d_p[hinge_name])]
-        steps = len(list(d_p.keys()))
-        return [val / steps for val in d_p_avg]
+    def get_acc_gap_avg_for_frames(self, hinge_names: Optional[list[str]] = None, start_frame: int = 0, end_frame: int = -1) -> list[float]:
+        return self._get_value_avg(self.get_acc_gap(hinge_names, start_frame, end_frame))
 
-    def get_total_gap_joint_avg(self, hinge_names: Optional[list[str]] = None, start_frame: int = 0, end_frame: int = -1) -> list[float]:
-        d_p = self.get_total_gap(hinge_names, start_frame, end_frame)
-        d_p_avg = range(len(list(d_p.values())[0]))
-        for hinge_name in d_p.keys():
-            d_p_avg = [old + (JOINT_WEIGHTS[hinge_name]*new) for old, new in zip(d_p_avg, d_p[hinge_name])]
-        steps = len(list(d_p.keys()))
-        return [val / steps for val in d_p_avg]
+    def get_total_gap_avg_for_frames(self, hinge_names: Optional[list[str]] = None, start_frame: int = 0, end_frame: int = -1) -> list[float]:
+        return self._get_value_avg(self.get_total_gap(hinge_names, start_frame, end_frame))
 
     # -------- average over both joints and time --------
 
     def get_pos_gap_avg(self, hinge_names: Optional[list[str]] = None, start_frame: int = 0, end_frame: int = -1) -> float:
-        return fmean(self.get_pos_gap_joint_avg(hinge_names, start_frame, end_frame))
+        return fmean(self.get_pos_gap_avg_for_frames(hinge_names, start_frame, end_frame))
 
     def get_vel_gap_avg(self, hinge_names: Optional[list[str]] = None, start_frame: int = 0, end_frame: int = -1) -> float:
-        return fmean(self.get_vel_gap_joint_avg(hinge_names, start_frame, end_frame))
+        return fmean(self.get_vel_gap_avg_for_frames(hinge_names, start_frame, end_frame))
 
     def get_acc_gap_avg(self, hinge_names: Optional[list[str]] = None, start_frame: int = 0, end_frame: int = -1) -> float:
-        return fmean(self.get_acc_gap_joint_avg(hinge_names, start_frame, end_frame))
+        return fmean(self.get_acc_gap_avg_for_frames(hinge_names, start_frame, end_frame))
 
     def get_total_gap_avg(self, hinge_names: Optional[list[str]] = None, start_frame: int = 0, end_frame: int = -1) -> float:
-        return fmean(self.get_total_gap_joint_avg(hinge_names, start_frame, end_frame))
+        return fmean(self.get_total_gap_avg_for_frames(hinge_names, start_frame, end_frame))
+
+    # testing methods (these should yield the same result (apart from small rounding errors) as the ones above)
+
+    def _get_pos_gap_avg_test(self, hinge_names: Optional[list[str]] = None, start_frame: int = 0, end_frame: int = -1) -> float:
+        return fmean(self.get_pos_gap_avg_for_joints(hinge_names, start_frame, end_frame).values())
+
+    def _get_vel_gap_avg_test(self, hinge_names: Optional[list[str]] = None, start_frame: int = 0, end_frame: int = -1) -> float:
+        return fmean(self.get_vel_gap_avg_for_joints(hinge_names, start_frame, end_frame).values())
+
+    def _get_acc_gap_avg_test(self, hinge_names: Optional[list[str]] = None, start_frame: int = 0, end_frame: int = -1) -> float:
+        return fmean(self.get_acc_gap_avg_for_joints(hinge_names, start_frame, end_frame).values())
+
+    def _get_total_gap_avg_test(self, hinge_names: Optional[list[str]] = None, start_frame: int = 0, end_frame: int = -1) -> float:
+        return fmean(self.get_total_gap_avg_for_joints(hinge_names, start_frame, end_frame).values())
 
     # -------- properties --------
 
@@ -237,11 +234,11 @@ class SimulationGapData:
 
     # -------- helper methods --------
 
-    def _get_pos(self,
-                 column_name_extension : str,
-                 hinge_names: Optional[list[str]] = None,
-                 start_frame: int = 0,
-                 end_frame: int = -1)\
+    def _get(self,
+             column_name_extension : str,
+             hinge_names: Optional[list[str]] = None,
+             start_frame: int = 0,
+             end_frame: int = -1)\
             -> dict[str, list[float]]:
         if start_frame < 0:
             start_frame = 0
@@ -249,7 +246,7 @@ class SimulationGapData:
             end_frame = len(self._merged.index)
         if start_frame > end_frame:
             return {}
-        if hinge_names is None:
+        if hinge_names is None or len(hinge_names) <= 0:
             hinge_names = HINGE_NAMES
         dic = {hinge_name : [] for hinge_name in hinge_names}
         for hinge_name in hinge_names:
@@ -270,3 +267,10 @@ class SimulationGapData:
         for hinge_name in d_extraction.keys():
             gap[hinge_name] = [pow(p_replay - p_extraction, 2) for p_extraction, p_replay in zip(d_extraction[hinge_name], d_replay[hinge_name])]
         return gap
+
+    def _get_value_avg(self, dic: dict[str, list[float]]) -> list[float]:
+        num_key = len(dic.keys())
+        joint_sums = [0 for _ in range(len(next(iter(dic.values()))))]
+        for key in dic.keys():
+            joint_sums = list(map(lambda x,y:x+y, joint_sums, dic[key]))
+        return [joint_avg / num_key for joint_avg in joint_sums]

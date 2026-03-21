@@ -113,6 +113,37 @@ JOINT_DEFLECTIONS = {
     "rAnkleRoll": (-44.06, 22.80),
 }
 
+HINGE_SHORT = {
+    "headYaw": "HY",
+    "headPitch": "HP",
+
+    "lShoulderPitch": "LSP",
+    "lShoulderRoll": "LSR",
+    "lElbowYaw": "LEY",
+    "lElbowRoll": "LER",
+    "lWristYaw": "LWY",
+
+    "rShoulderPitch": "RSP",
+    "rShoulderRoll": "RSR",
+    "rElbowYaw": "REY",
+    "rElbowRoll": "RER",
+    "rWristYaw": "RWY",
+
+    "lHipYawPitch": "LHipYP",
+    "lHipRoll": "LHipR",
+    "lHipPitch": "LHipP",
+    "lKneePitch": "LKP",
+    "lAnklePitch": "LAP",
+    "lAnkleRoll": "LAR",
+
+    "rHipYawPitch": "RHipYP",
+    "rHipRoll": "RHipR",
+    "rHipPitch": "RHipP",
+    "rKneePitch": "RKP",
+    "rAnklePitch": "RAP",
+    "rAnkleRoll": "RAR",
+}
+
 JOINT_RANGES = {key : abs(value[0] - value[1]) for key, value in JOINT_DEFLECTIONS.items()}
 
 def get_extraction_path_partial(action_name : str, recording_date : str, log_index : int) -> Path:
