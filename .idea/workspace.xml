@@ -4,13 +4,18 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b8d71ec4-48b2-4ec5-b1a5-6fe6d26ab8b8" name="Changes" comment="">
+    <list default="true" id="b8d71ec4-48b2-4ec5-b1a5-6fe6d26ab8b8" name="Changes" comment="feature: continued work on gap_analysis.ipynb&#10;fix: renamed functions in gapData">
+      <change afterPath="$PROJECT_DIR$/testing/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/testing/gap_handler_test.ipynb" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/testing/gap_handler_test.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/testing/gap_object_test.ipynb" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/testing/gap_object_test.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gap_analysis.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/gap_analysis.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/main.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/gap_analysis.ipynb" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Utils/Constants.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Utils/Constants.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Utils/SimulationGapData.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Utils/SimulationGapData.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Utils/SimulationGapHandler.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Utils/SimulationGapHandler.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Utils/SimulationParameters.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Utils/SimulationParameters.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -20,8 +25,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Python Script" />
         <option value="Jupyter Notebook" />
+        <option value="Python Script" />
       </list>
     </option>
   </component>
@@ -63,11 +68,11 @@
 }</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="C:\Users\felix\PycharmProjects\Thesis\src\Utils" />
+      <recent name="C:\Users\felix\PycharmProjects\Thesis\testing" />
       <recent name="C:\Users\felix\PycharmProjects\Thesis" />
+      <recent name="C:\Users\felix\PycharmProjects\Thesis\Gap_Analysis" />
+      <recent name="C:\Users\felix\PycharmProjects\Thesis\src\Utils" />
       <recent name="C:\Users\felix\PycharmProjects\Thesis\src\Simulator" />
-      <recent name="C:\Users\felix\PycharmProjects\Thesis\src\FileHandler\SimulatorFileHandler" />
-      <recent name="C:\Users\felix\PycharmProjects\Thesis\src" />
     </key>
   </component>
   <component name="SharedIndexes">
@@ -84,14 +89,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1767698678177</updated>
-    </task>
-    <task id="LOCAL-00001" summary="initial">
-      <option name="closed" value="true" />
-      <created>1767698812087</created>
-      <option name="number" value="00001" />
-      <option name="presentableId" value="LOCAL-00001" />
-      <option name="project" value="LOCAL" />
-      <updated>1767698812087</updated>
     </task>
     <task id="LOCAL-00002" summary="feature: created and implemented &quot;update_cfg method&quot;">
       <option name="closed" value="true" />
@@ -477,7 +474,15 @@
       <option name="project" value="LOCAL" />
       <updated>1774037437646</updated>
     </task>
-    <option name="localTasksCounter" value="50" />
+    <task id="LOCAL-00050" summary="feature: continued work on gap_analysis.ipynb&#10;fix: renamed functions in gapData">
+      <option name="closed" value="true" />
+      <created>1774101233582</created>
+      <option name="number" value="00050" />
+      <option name="presentableId" value="LOCAL-00050" />
+      <option name="project" value="LOCAL" />
+      <updated>1774101233582</updated>
+    </task>
+    <option name="localTasksCounter" value="51" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -492,7 +497,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="feature:&#10;- further work on csv replayer, currently only starts scene very shortly" />
     <MESSAGE value="feature:&#10;- update cfg handler and experiment data to handle path construction and removed path construction from cpp code&#10;- this does not yet work !" />
     <MESSAGE value="feature:&#10;- finalized new path structure by updating deletion and filter methods in LogExtractor" />
     <MESSAGE value="feature:&#10;- moved filter methods for eds to ExtractionData" />
@@ -517,6 +521,7 @@
     <MESSAGE value="features: massive" />
     <MESSAGE value="features: massive changes to ExperimentParameter generation." />
     <MESSAGE value="fix: updated SimulationGapData to fix missindexing of vel and acc.&#10;feature: added a test to gap_analysis.ipynb" />
-    <option name="LAST_COMMIT_MESSAGE" value="fix: updated SimulationGapData to fix missindexing of vel and acc.&#10;feature: added a test to gap_analysis.ipynb" />
+    <MESSAGE value="feature: continued work on gap_analysis.ipynb&#10;fix: renamed functions in gapData" />
+    <option name="LAST_COMMIT_MESSAGE" value="feature: continued work on gap_analysis.ipynb&#10;fix: renamed functions in gapData" />
   </component>
 </project>

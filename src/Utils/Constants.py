@@ -29,7 +29,7 @@ PATH_REPLAYS : Path = PATH_CSV_LOGGER / "replays"
 # path to the executable
 PATH_EXECUTABLE : Path = PATH / "Build" / "simulator-multiconfig" / "Release" / "SimRobot.exe"
 
-HINGE_NAMES = [
+JOINT_NAMES = [
 "headYaw","headPitch",
 "lShoulderPitch","lShoulderRoll","lElbowYaw","lElbowRoll","lWristYaw",
 "rShoulderPitch","rShoulderRoll","rElbowYaw","rElbowRoll","rWristYaw",
@@ -113,7 +113,7 @@ JOINT_DEFLECTIONS = {
     "rAnkleRoll": (-44.06, 22.80),
 }
 
-HINGE_SHORT = {
+JOINT_SHORT = {
     "headYaw": "HY",
     "headPitch": "HP",
 

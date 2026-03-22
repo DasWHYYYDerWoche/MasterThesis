@@ -5,7 +5,7 @@ from itertools import zip_longest
 import numpy as np
 import pandas
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Callable, TypeVar
 
 from pandas.core.window.doc import numba_notes
 
@@ -13,6 +13,8 @@ from .SimulationGapData import SimulationGapData
 
 import logging
 logger = logging.getLogger("global_logger")
+
+T = TypeVar("T")
 
 class SimulationGapHandler:
     def __init__(self, param_set_id: str):
@@ -30,24 +32,65 @@ class SimulationGapHandler:
         for i, gap_object in enumerate(self._sim_gap_data[action_name]):
             if gap_object.recording_date == recording_date and gap_object.log_index == log_index:
                 self._sim_gap_data[action_name].pop(i)
+        if len(self._sim_gap_data[action_name]) <= 0:
+            del self._sim_gap_data[action_name]
 
-    def get(self, action_names: Optional[list[str]] = None, recording_dates: Optional[list[str]] = None, log_indices: Optional[list[int]] = None) -> list[SimulationGapData]:
-        if action_names is None:
-            action_names = list(self._sim_gap_data.keys())
-        ret = []
-        for action_name in action_names:
-            if action_name in self._sim_gap_data.keys():
-                ret.extend(self._sim_gap_data[action_name])
-        if recording_dates is not None:
-            ret = [gab_object for gab_object in ret if gab_object.recording_date in recording_dates]
-        if log_indices is not None:
-            ret = [gab_object for gab_object in ret if gab_object.recording_date in recording_dates]
-        return ret
+    def get(self, action_name: str, recording_date: str, log_index: int) -> Optional[SimulationGapData]:
+        if action_name not in self._sim_gap_data.keys():
+            return None
+        for gap_object in self._sim_gap_data[action_name]:
+            if gap_object.recording_date == recording_date and gap_object.log_index == log_index:
+                return gap_object
+        return None
 
     def get_at(self, action_name : str, index : int) -> Optional[SimulationGapData]:
         if action_name in self._sim_gap_data.keys() and len(self._sim_gap_data[action_name]) > index:
             return self._sim_gap_data[action_name][index]
         return None
+
+    # -------- getters that combine results of all gap_objects for a single action --------
+
+    def get_all(self, action_name : str,
+                method : Callable[[SimulationGapData, Optional[list[str]], int, int], dict[str, list[float]]],
+                hinge_names: Optional[list[str]] = None,
+                start_frame: int = 0,
+                end_frame: int = -1) -> dict[str, list[tuple[float]]]:
+        result_as_list = self._get_for_all(action_name, method, hinge_names,start_frame,end_frame)
+        if len(result_as_list) <= 0:
+            return {}
+        result = {key : [] for key in result_as_list[0].keys()}
+        for key in result.keys():
+            results_for_key : list[list[float]] = []
+            for partial_result in result_as_list:
+                results_for_key.append(partial_result[key])
+            result[key] = list(zip_longest(*results_for_key, fillvalue=float('nan')))
+        return result
+
+    def get_gap_avg_for_joints(self, action_name : str,
+                method : Callable[[SimulationGapData, Optional[list[str]], int, int], dict[str, float]],
+                hinge_names: Optional[list[str]] = None,
+                start_frame: int = 0,
+                end_frame: int = -1) -> dict[str, list[float]]:
+        result_as_list = self._get_for_all(action_name, method, hinge_names,start_frame,end_frame)
+        if len(result_as_list) <= 0:
+            return {}
+        result = {key : [] for key in result_as_list[0].keys()}
+        for key in result.keys():
+            results_for_key : list[float] = []
+            for partial_result in result_as_list:
+                results_for_key.append(partial_result[key])
+            result[key] = results_for_key
+        return result
+
+    def get_gap_avg_for_frames(self, action_name : str,
+                method : Callable[[SimulationGapData, Optional[list[str]], int, int], list[float]],
+                hinge_names: Optional[list[str]] = None,
+                start_frame: int = 0,
+                end_frame: int = -1) -> list[tuple[float]]:
+        result_as_list = self._get_for_all(action_name, method, hinge_names,start_frame,end_frame)
+        if len(result_as_list) <= 0:
+            return []
+        return list(zip_longest(*result_as_list, fillvalue=float('nan')))
 
     # -------- averages over all replays of the same action --------
 
@@ -109,3 +152,19 @@ class SimulationGapHandler:
     @property
     def actions(self) -> list[str]:
         return list(self._sim_gap_data.keys())
+
+    # -------- helper methods --------
+
+    def _get_for_all(self, action_name : str,
+                           method : Callable[[SimulationGapData, Optional[list[str]], int, int], T],
+                           hinge_names: Optional[list[str]] = None,
+                           start_frame: int = 0,
+                           end_frame: int = -1) -> list[T]:
+        if not action_name in self._sim_gap_data.keys():
+            return []
+        results = []
+        for gap_object in self._sim_gap_data[action_name]:
+            gap_object.load()
+            results.append(method(gap_object, hinge_names, start_frame, end_frame))
+            gap_object.unload()
+        return results
