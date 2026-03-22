@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from itertools import zip_longest
+from statistics import fmean
 
 import numpy as np
 import pandas
@@ -54,7 +55,21 @@ class SimulationGapHandler:
                 method : Callable[[SimulationGapData, Optional[list[str]], int, int], dict[str, list[float]]],
                 hinge_names: Optional[list[str]] = None,
                 start_frame: int = 0,
-                end_frame: int = -1) -> dict[str, list[tuple[float]]]:
+                end_frame: int = -1) \
+            -> dict[str, list[tuple[float]]]:
+        """
+        Calls the given method for all gap_objects with the given action.
+        The returned dictionary has the following structure:
+
+        The inner tuple contains an entry for each existing gap_object with the given action.
+
+        The lists contain a tuple for every requested frame.
+
+        The dictionary has an entry for every requested joint.
+
+        :param method: get_pos_extraction, get_vel_extraction, get_acc_extraction,
+            get_pos_replay, get_vel_replay, get_acc_replay, get_pos_gap, get_vel_gap, get_acc_gap, get_total_gap
+        """
         result_as_list = self._get_for_all(action_name, method, hinge_names,start_frame,end_frame)
         if len(result_as_list) <= 0:
             return {}
@@ -66,27 +81,45 @@ class SimulationGapHandler:
             result[key] = list(zip_longest(*results_for_key, fillvalue=float('nan')))
         return result
 
-    def get_gap_avg_for_joints(self, action_name : str,
-                method : Callable[[SimulationGapData, Optional[list[str]], int, int], dict[str, float]],
-                hinge_names: Optional[list[str]] = None,
-                start_frame: int = 0,
-                end_frame: int = -1) -> dict[str, list[float]]:
+    def get_all_gap_avg_for_joints(self, action_name : str,
+                                   method : Callable[[SimulationGapData, Optional[list[str]], int, int], dict[str, float]],
+                                   hinge_names: Optional[list[str]] = None,
+                                   start_frame: int = 0,
+                                   end_frame: int = -1) \
+            -> dict[str, list[float]]:
+        """
+        Calls the given method for all gap_objects with the given action.
+        The returned dictionary has the following structure:
+
+        The inner list contains an entry for each existing gap_object with the given action.
+
+        The dictionary has an entry for every requested joint.
+
+        :param method: get_pos_gap_avg_for_joints, get_vel_gap_avg_for_joints get_acc_gap_avg_for_joints, get_total_gap_avg_for_joints
+        """
         result_as_list = self._get_for_all(action_name, method, hinge_names,start_frame,end_frame)
         if len(result_as_list) <= 0:
             return {}
         result = {key : [] for key in result_as_list[0].keys()}
         for key in result.keys():
-            results_for_key : list[float] = []
-            for partial_result in result_as_list:
-                results_for_key.append(partial_result[key])
-            result[key] = results_for_key
+            result[key] = [partial_result[key] for partial_result in result_as_list]
         return result
 
-    def get_gap_avg_for_frames(self, action_name : str,
-                method : Callable[[SimulationGapData, Optional[list[str]], int, int], list[float]],
-                hinge_names: Optional[list[str]] = None,
-                start_frame: int = 0,
-                end_frame: int = -1) -> list[tuple[float]]:
+    def get_all_gap_avg_for_frames(self, action_name : str,
+                                   method : Callable[[SimulationGapData, Optional[list[str]], int, int], list[float]],
+                                   hinge_names: Optional[list[str]] = None,
+                                   start_frame: int = 0,
+                                   end_frame: int = -1)\
+            -> list[tuple[float]]:
+        """
+        Calls the given method for all gap_objects with the given action.
+        The returned list has the following structure:
+
+        The inner tuple contains an entry for each existing gap_object with the given action.
+
+        The list has an entry for every requested frame.
+        :param method: get_pos_gap_avg_for_frames, get_vel_gap_avg_for_frames, get_acc_gap_avg_for_frames, get_total_gap_avg_for_frames
+        """
         result_as_list = self._get_for_all(action_name, method, hinge_names,start_frame,end_frame)
         if len(result_as_list) <= 0:
             return []
@@ -94,58 +127,54 @@ class SimulationGapHandler:
 
     # -------- averages over all replays of the same action --------
 
-    def get_avg_for_joints(self,
-                           action_name : str,
-                           hinge_names: Optional[list[str]] = None,
-                           start_frame: int = 0,
-                           end_frame: int = -1)\
-            -> dict[str, float]:
-        """
-        Returns the average simulation gap of the given joints for the given action as a dictionary.
-        """
-        if not action_name in self._sim_gap_data.keys():
-            return {}
-        frame_avgs_list: list[dict[str, float]]= []
-        for gap_object in self._sim_gap_data[action_name]:
-            gap_object.load()
-            frame_avgs_list.append(gap_object.get_pos_gap_avg_for_joints(hinge_names, start_frame, end_frame))
-            gap_object.unload()
-        num_logs = len(frame_avgs_list)
-        if len(frame_avgs_list) == 0:
-            return {}
-        if len(frame_avgs_list) == 1:
-            return frame_avgs_list[0]
-        result = {key :value for key,value in frame_avgs_list[0].items()}
-        for frame_avgs_dic in frame_avgs_list[1:]:
-            for joint_name, frame_avg in frame_avgs_dic.items():
-                result[joint_name] += frame_avg
-        for key in result.keys():
-            result[key] = result[key] / num_logs
+    def get_gap_avg_for_joints(self,
+                               action_names: Optional[list[str]],
+                               method: Callable[[SimulationGapData, Optional[list[str]], int, int], dict[str, float]],
+                               hinge_names: Optional[list[str]] = None,
+                               start_frame: int = 0,
+                               end_frame: int = -1) \
+            -> dict[str, dict[str, float]]:
+        if action_names is None or len(action_names) <= 0:
+            action_names = self._sim_gap_data.keys()
+        result = {}
+        for action_name in action_names:
+            result[action_name] = {joint_name : fmean(gap_list) for joint_name,gap_list in
+                self.get_all_gap_avg_for_joints(action_name, method, hinge_names, start_frame,end_frame).items()}
         return result
 
-    def get_avg_for_frames(self,
-                           action_name : str,
-                           hinge_names: Optional[list[str]] = None,
-                           start_frame: int = 0,
-                           end_frame: int = -1)\
-            -> list[float]:
-        """
-        Returns the average simulation gap of the given frames for the given action as a list.
-        """
-        if not action_name in self._sim_gap_data.keys():
-            return []
-        joint_avgs = []
-        for gap_object in self._sim_gap_data[action_name]:
-            gap_object.load()
-            joint_avgs.append(gap_object.get_pos_gap_avg_for_frames(hinge_names, start_frame, end_frame))
-            gap_object.unload()
-        result = [0 for _ in range(max([len(joint_avg) for joint_avg in joint_avgs]))]
-        div_at = [0 for _ in range(max([len(joint_avg) for joint_avg in joint_avgs]))]
-        for i, joint_avg in enumerate(joint_avgs):
-            for avg_at_frame in joint_avg:
-                result[i] += avg_at_frame
-                div_at[i] += 1
-        return [val / div for val, div in zip(result, div_at)]
+    def get_gap_avg_for_frames(self,
+                               action_names: Optional[list[str]],
+                               method: Callable[[SimulationGapData, Optional[list[str]], int, int], list[float]],
+                               hinge_names: Optional[list[str]] = None,
+                               start_frame: int = 0,
+                               end_frame: int = -1) \
+            -> dict[str, list[float]]:
+        if action_names is None or len(action_names) <= 0:
+            action_names = self._sim_gap_data.keys()
+        result = {}
+        for action_name in action_names:
+            result[action_name] = [fmean(gap_list) for gap_list in
+                self.get_all_gap_avg_for_frames(action_name, method, hinge_names, start_frame,end_frame)]
+        return result
+
+    # ???
+
+    def get_gap_data_for_frames(self,
+                                action_name: str,
+                                method: Callable[[SimulationGapData, Optional[list[str]], int, int], list[float]],
+                                hinge_names: Optional[list[str]] = None,
+                                start_frame: int = 0,
+                                end_frame: int = -1,
+                                factor : int = 1) \
+            -> list[tuple[float, float, float]]:
+        partial_results = self.get_all_gap_avg_for_frames(action_name, method, hinge_names, start_frame, end_frame)
+        val = [(t,t,t) for t in partial_results]
+
+
+
+
+
+
 
     # -------- properties --------
 

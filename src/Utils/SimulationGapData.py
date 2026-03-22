@@ -2,10 +2,13 @@ from __future__ import annotations
 from typing import Optional
 from enum import Enum
 from pathlib import Path
+
+import numpy
+import numpy as np
 import pandas
 from statistics import fmean
 
-from .Constants import JOINT_WEIGHTS, JOINT_NAMES, get_extraction_path_full, get_replay_path_full
+from .Constants import JOINT_WEIGHTS, JOINT_NAMES, get_extraction_path_full, get_replay_path_full, SIM_SECONDS_PER_FRAME
 
 import logging
 logger = logging.getLogger("global_logger")
@@ -25,8 +28,10 @@ class SimulationGapData:
     def load(self) -> bool:
         path_replays: Path = get_replay_path_full(self._param_set_id, self._action_name, self._recording_date, self._log_index).parent
         #load extraction csv
-        extraction : Optional[pandas.DataFrame] = pandas.read_csv(get_extraction_path_full(self._action_name, self._recording_date, self._log_index).with_suffix(".csv"),
-                                           sep=None, engine="python")
+        extraction : Optional[pandas.DataFrame] = pandas.read_csv(
+            get_extraction_path_full(
+                self._action_name, self._recording_date, self._log_index).with_suffix(".csv"),
+            sep=None, engine="python")
         if extraction is None:
             logger.warning("No extraction at s% exist for log %s", path_replays, self._log_index)
             return False
@@ -44,6 +49,10 @@ class SimulationGapData:
         self._merged = pandas.merge(left=extraction, right=replay, left_on="time", right_on="replayed_frame",
                                                 how='inner')
         self._merged.drop(columns=['replayed_frame'])
+        self._merged.rename(columns={"time_x": "time"}, inplace=True)
+        self._merged['time'] = self._merged['time'] - self._merged['time'][0]
+        self._merged['time'] = self._merged['time'] / 12
+
         logger.info("Successfully loaded replays of log %s",
                     self._param_set_id + "," + self._action_name + "," + self._recording_date + "," + str(self._log_index))
         return True
@@ -51,114 +60,135 @@ class SimulationGapData:
     def unload(self):
         self._merged : Optional[pandas.DataFrame] = None
 
+    def get_time_steps(self, start_index: int = 0, end_index: int = -1) -> list[int]:
+        if start_index < 0:
+            start_index = 0
+        if end_index == -1:
+            end_index = len(self._merged.index)
+        if start_index > end_index:
+            return []
+        return list(self._merged['time'])[start_index:end_index]
+
     # -------- get extraction/replay values --------
 
     def get_pos_extraction(self,
                            joint_names: Optional[list[str]] = None,
-                           start_frame: int = 0,
-                           end_frame: int = -1) \
+                           start_index: int = 0,
+                           end_index: int = -1) \
             -> dict[str, list[float]]:
         """
-        Returns the joint positions of the extracted log for the given joints and frames.
+        Returns the joint positions of the extraction for the given joints and frames.
         """
-        return self._get("_x", joint_names, start_frame, end_frame)
+        return self._get("_x", joint_names, start_index, end_index)
 
     def get_pos_replay(self,
                        joint_names: Optional[list[str]] = None,
-                       start_frame: int = 0,
-                       end_frame: int = -1) \
+                       start_index: int = 0,
+                       end_index: int = -1) \
             -> dict[str, list[float]]:
         """
-        Returns the joint positions of the replayed log for the given joints and frames.
+        Returns the joint positions of the replay for the given joints and frames.
         """
-        return self._get("_y", joint_names, start_frame, end_frame)
+        return self._get("_y", joint_names, start_index, end_index)
 
     def get_vel_extraction(self,
                            joint_names: Optional[list[str]] = None,
-                           start_frame: int = 1,
-                           end_frame: int = -1) \
+                           start_index: int = 0,
+                           end_index: int = -1) \
             -> dict[str, list[float]]:
         """
-        Returns the angular velocities of the extracted logs for the given joints and frames.
+        Returns the angular velocities of the extraction for the given joints and frames.
+
+        The velocity in step t is calculated as (p_{t+1} - p_{t-1}) / 2*step.
+        v_0 is 0. v_T is approximated as (p_{T} - p_{T-1}) / step
         """
-        return self._get_derivative(self.get_pos_extraction(joint_names, start_frame - 1, end_frame), start_frame <= 0)
+        return self._calculate_velocity("_x", joint_names, start_index, end_index)
 
     def get_vel_replay(self,
                        joint_names: Optional[list[str]] = None,
-                       start_frame: int = 1,
-                       end_frame: int = -1) \
+                       start_index: int = 0,
+                       end_index: int = -1) \
             -> dict[str, list[float]]:
         """
-        Returns the angular velocities of the replayed logs for the given joints and frames.
+        Returns the angular velocities of the replay for the given joints and frames.
+
+        The velocity in step t is calculated as (p_{t+1} - p_{t-1}) / 2*step.
+        v_0 is 0. v_T is approximated as (p_{T} - p_{T-1}) / step
         """
-        return self._get_derivative(self.get_pos_replay(joint_names, start_frame - 1, end_frame), start_frame <= 0)
+        return self._calculate_velocity("_y", joint_names, start_index, end_index)
 
     def get_acc_extraction(self,
                            joint_names: Optional[list[str]] = None,
-                           start_frame: int = 2,
-                           end_frame: int = -1) \
+                           start_index: int = 0,
+                           end_index: int = -1) \
             -> dict[str, list[float]]:
         """
-        Returns the angular acceleration of the extracted logs for the given joints and frames.
+        Returns the angular accelerations of the extraction for the given joints and frames.
+
+        The acceleration in step t is calculated as (v_{t+1} - v_{t-1}) / 2*step.
+        a_0 is 0. a_T is approximated as (v_{T} - v_{T-1}) / step
         """
-        return self._get_derivative(self.get_vel_extraction(joint_names, start_frame - 1, end_frame), start_frame <= 1)
+        return self._calculate_acceleration("_x", joint_names, start_index, end_index)
 
 
     def get_acc_replay(self,
                        joint_names: Optional[list[str]] = None,
-                       start_frame: int = 2,
-                       end_frame: int = -1) \
+                       start_index: int = 0,
+                       end_index: int = -1) \
             -> dict[str, list[float]]:
         """
-        Returns the angular acceleration of the replayed logs for the given joints and frames.
+        Returns the angular accelerations of the replay for the given joints and frames.
+
+        The acceleration in step t is calculated as (v_{t+1} - v_{t-1}) / 2*step.
+        a_0 is 0. a_T is approximated as (v_{T} - v_{T-1}) / step
         """
-        return self._get_derivative(self.get_vel_replay(joint_names, start_frame - 1, end_frame), start_frame <= 1)
+        return self._calculate_acceleration("_y", joint_names, start_index, end_index)
 
     # -------- partial gaps --------
 
     def get_pos_gap(self,
                     joint_names: Optional[list[str]] = None,
-                    start_frame: int = 0,
-                    end_frame: int = -1) \
+                    start_index: int = 0,
+                    end_index: int = -1) \
             -> dict[str, list[float]]:
         """
         Returns the squared difference between the position of the extraction and replay for the given joints and frames
         """
-        return self._get_partial_gap(self.get_pos_extraction(joint_names, start_frame, end_frame),
-                                     self.get_pos_replay(joint_names, start_frame, end_frame))
+        return self._calculate_gap(self.get_pos_extraction(joint_names, start_index, end_index),
+                                   self.get_pos_replay(joint_names, start_index, end_index))
 
     def get_vel_gap(self,
                     joint_names: Optional[list[str]] = None,
-                    start_frame: int = 1, end_frame: int = -1) \
+                    start_index: int = 1, end_index: int = -1) \
             -> dict[str, list[float]]:
         """
         Returns the squared difference between the velocity of the extraction and replay for the given joints and frames
         """
-        return self._get_partial_gap(self.get_vel_extraction(joint_names, start_frame, end_frame),
-                                     self.get_vel_replay(joint_names, start_frame, end_frame))
+        return self._calculate_gap(self.get_vel_extraction(joint_names, start_index, end_index),
+                                   self.get_vel_replay(joint_names, start_index, end_index))
 
     def get_acc_gap(self,
                     joint_names: Optional[list[str]] = None,
-                    start_frame: int = 2,
-                    end_frame: int = -1) \
+                    start_index: int = 2,
+                    end_index: int = -1) \
             -> dict[str, list[float]]:
         """
         Returns the squared difference between the acceleration of the extraction and replay for the given joints and frames
         """
-        return self._get_partial_gap(self.get_acc_extraction(joint_names, start_frame, end_frame),
-                                     self.get_acc_replay(joint_names, start_frame, end_frame))
+        return self._calculate_gap(self.get_acc_extraction(joint_names, start_index, end_index),
+                                   self.get_acc_replay(joint_names, start_index, end_index))
 
     def get_total_gap(self,
                       joint_names: Optional[list[str]] = None,
-                      start_frame: int = 0,
-                      end_frame: int = -1) \
+                      start_index: int = 0,
+                      end_index: int = -1) \
             -> dict[str, list[float]]:
         """
         Returns the sum of the pos, vel and acc gaps.
         """
-        d_p = self.get_pos_gap(joint_names, start_frame, end_frame)
-        d_v = self.get_vel_gap(joint_names, start_frame, end_frame)
-        d_a = self.get_acc_gap(joint_names, start_frame, end_frame)
+        d_p = self.get_pos_gap(joint_names, start_index, end_index)
+        d_v = self.get_vel_gap(joint_names, start_index, end_index)
+        d_a = self.get_acc_gap(joint_names, start_index, end_index)
         d_total = {}
         for joint in d_p.keys():
             l_p = d_p[joint]
@@ -171,129 +201,129 @@ class SimulationGapData:
 
     def get_pos_gap_avg_for_joints(self,
                                    joint_names: Optional[list[str]] = None,
-                                   start_frame: int = 0,
-                                   end_frame: int = -1)\
+                                   start_index: int = 0,
+                                   end_index: int = -1)\
             -> dict[str, float]:
         """
         Returns the average position sim gap for the given joints by averaging over all given frames.
         """
         return {joint_name : fmean(sim_gaps) for joint_name,sim_gaps in
-                self.get_pos_gap(joint_names, start_frame, end_frame).items()}
+                self.get_pos_gap(joint_names, start_index, end_index).items()}
 
     def get_vel_gap_avg_for_joints(self,
                                    joint_names: Optional[list[str]] = None,
-                                   start_frame: int = 0,
-                                   end_frame: int = -1) \
+                                   start_index: int = 0,
+                                   end_index: int = -1) \
             -> dict[str, float]:
         """
         Returns the average velocity sim gap for the given joints by averaging over all given frames.
         """
         return {joint_name : fmean(sim_gaps) for joint_name,sim_gaps in
-                self.get_vel_gap(joint_names, start_frame, end_frame).items()}
+                self.get_vel_gap(joint_names, start_index, end_index).items()}
 
     def get_acc_gap_avg_for_joints(self,
                                    joint_names: Optional[list[str]] = None,
-                                   start_frame: int = 0,
-                                   end_frame: int = -1) \
+                                   start_index: int = 0,
+                                   end_index: int = -1) \
             -> dict[str, float]:
         """
         Returns the average acceleration sim gap for the given joints by averaging over all given frames.
         """
         return {joint_name : fmean(sim_gaps) for joint_name,sim_gaps in
-                self.get_acc_gap(joint_names, start_frame, end_frame).items()}
+                self.get_acc_gap(joint_names, start_index, end_index).items()}
 
     def get_total_gap_avg_for_joints(self,
                                      joint_names: Optional[list[str]] = None,
-                                     start_frame: int = 0,
-                                     end_frame: int = -1) \
+                                     start_index: int = 0,
+                                     end_index: int = -1) \
             -> dict[str, float]:
         """
         Returns the average total sim gap for the given joints by averaging over all given frames.
         """
         return {joint_name : fmean(sim_gaps) for joint_name,sim_gaps in
-                self.get_total_gap(joint_names, start_frame, end_frame).items()}
+                self.get_total_gap(joint_names, start_index, end_index).items()}
 
     # -------- average over all joints --------
 
     def get_pos_gap_avg_for_frames(self,
                                    joint_names: Optional[list[str]] = None,
-                                   start_frame: int = 0,
-                                   end_frame: int = -1) \
+                                   start_index: int = 0,
+                                   end_index: int = -1) \
             -> list[float]:
         """
         Returns the average position sim gap in the given frames by averaging over all given joints.
         """
-        return self._get_weighted_joint_average(self.get_pos_gap(joint_names, start_frame, end_frame))
+        return self._get_weighted_joint_average(self.get_pos_gap(joint_names, start_index, end_index))
 
     def get_vel_gap_avg_for_frames(self,
                                    joint_names: Optional[list[str]] = None,
-                                   start_frame: int = 0,
-                                   end_frame: int = -1) \
+                                   start_index: int = 0,
+                                   end_index: int = -1) \
             -> list[float]:
         """
         Returns the average velocity sim gap in the given frames by averaging over all given joints.
         """
-        return self._get_weighted_joint_average(self.get_vel_gap(joint_names, start_frame, end_frame))
+        return self._get_weighted_joint_average(self.get_vel_gap(joint_names, start_index, end_index))
 
     def get_acc_gap_avg_for_frames(self,
                                    joint_names: Optional[list[str]] = None,
-                                   start_frame: int = 0,
-                                   end_frame: int = -1) \
+                                   start_index: int = 0,
+                                   end_index: int = -1) \
             -> list[float]:
         """
         Returns the average acceleration sim gap in the given frames by averaging over all given joints.
         """
-        return self._get_weighted_joint_average(self.get_acc_gap(joint_names, start_frame, end_frame))
+        return self._get_weighted_joint_average(self.get_acc_gap(joint_names, start_index, end_index))
 
     def get_total_gap_avg_for_frames(self,
                                      joint_names: Optional[list[str]] = None,
-                                     start_frame: int = 0,
-                                     end_frame: int = -1) \
+                                     start_index: int = 0,
+                                     end_index: int = -1) \
             -> list[float]:
         """
         Returns the average total sim gap in the given frames by averaging over all given joints.
         """
-        return self._get_weighted_joint_average(self.get_total_gap(joint_names, start_frame, end_frame))
+        return self._get_weighted_joint_average(self.get_total_gap(joint_names, start_index, end_index))
 
     # -------- average over both joints and time --------
 
-    def get_pos_gap_avg(self, joint_names: Optional[list[str]] = None, start_frame: int = 0, end_frame: int = -1) -> float:
+    def get_pos_gap_avg(self, joint_names: Optional[list[str]] = None, start_index: int = 0, end_index: int = -1) -> float:
         """
         Returns the position sim gap. Calculated by averaging over all given frames and joints
         """
-        return fmean(self.get_pos_gap_avg_for_frames(joint_names, start_frame, end_frame))
+        return fmean(self.get_pos_gap_avg_for_frames(joint_names, start_index, end_index))
 
-    def get_vel_gap_avg(self, joint_names: Optional[list[str]] = None, start_frame: int = 0, end_frame: int = -1) -> float:
+    def get_vel_gap_avg(self, joint_names: Optional[list[str]] = None, start_index: int = 0, end_index: int = -1) -> float:
         """
         Returns the velocity sim gap. Calculated by averaging over all given frames and joints
         """
-        return fmean(self.get_vel_gap_avg_for_frames(joint_names, start_frame, end_frame))
+        return fmean(self.get_vel_gap_avg_for_frames(joint_names, start_index, end_index))
 
-    def get_acc_gap_avg(self, joint_names: Optional[list[str]] = None, start_frame: int = 0, end_frame: int = -1) -> float:
+    def get_acc_gap_avg(self, joint_names: Optional[list[str]] = None, start_index: int = 0, end_index: int = -1) -> float:
         """
         Returns the acceleration sim gap. Calculated by averaging over all given frames and joints
         """
-        return fmean(self.get_acc_gap_avg_for_frames(joint_names, start_frame, end_frame))
+        return fmean(self.get_acc_gap_avg_for_frames(joint_names, start_index, end_index))
 
-    def get_total_gap_avg(self, joint_names: Optional[list[str]] = None, start_frame: int = 0, end_frame: int = -1) -> float:
+    def get_total_gap_avg(self, joint_names: Optional[list[str]] = None, start_index: int = 0, end_index: int = -1) -> float:
         """
         Returns the total velocity sim gap. Calculated by averaging over all given frames and joints
         """
-        return fmean(self.get_total_gap_avg_for_frames(joint_names, start_frame, end_frame))
+        return fmean(self.get_total_gap_avg_for_frames(joint_names, start_index, end_index))
 
     # testing methods (these should yield the same result (apart from small rounding errors) as the ones above)
 
-    def _get_pos_gap_avg_test(self, joint_names: Optional[list[str]] = None, start_frame: int = 0, end_frame: int = -1) -> float:
-        return fmean(self.get_pos_gap_avg_for_joints(joint_names, start_frame, end_frame).values())
+    def _get_pos_gap_avg_test(self, joint_names: Optional[list[str]] = None, start_index: int = 0, end_index: int = -1) -> float:
+        return fmean(self.get_pos_gap_avg_for_joints(joint_names, start_index, end_index).values())
 
-    def _get_vel_gap_avg_test(self, joint_names: Optional[list[str]] = None, start_frame: int = 0, end_frame: int = -1) -> float:
-        return fmean(self.get_vel_gap_avg_for_joints(joint_names, start_frame, end_frame).values())
+    def _get_vel_gap_avg_test(self, joint_names: Optional[list[str]] = None, start_index: int = 0, end_index: int = -1) -> float:
+        return fmean(self.get_vel_gap_avg_for_joints(joint_names, start_index, end_index).values())
 
-    def _get_acc_gap_avg_test(self, joint_names: Optional[list[str]] = None, start_frame: int = 0, end_frame: int = -1) -> float:
-        return fmean(self.get_acc_gap_avg_for_joints(joint_names, start_frame, end_frame).values())
+    def _get_acc_gap_avg_test(self, joint_names: Optional[list[str]] = None, start_index: int = 0, end_index: int = -1) -> float:
+        return fmean(self.get_acc_gap_avg_for_joints(joint_names, start_index, end_index).values())
 
-    def _get_total_gap_avg_test(self, joint_names: Optional[list[str]] = None, start_frame: int = 0, end_frame: int = -1) -> float:
-        return fmean(self.get_total_gap_avg_for_joints(joint_names, start_frame, end_frame).values())
+    def _get_total_gap_avg_test(self, joint_names: Optional[list[str]] = None, start_index: int = 0, end_index: int = -1) -> float:
+        return fmean(self.get_total_gap_avg_for_joints(joint_names, start_index, end_index).values())
 
     # -------- properties --------
 
@@ -326,32 +356,73 @@ class SimulationGapData:
     def _get(self,
              column_name_extension : str,
              joint_names: Optional[list[str]] = None,
-             start_frame: int = 0,
-             end_frame: int = -1)\
+             start_index: int = 0,
+             end_index: int = -1)\
             -> dict[str, list[float]]:
-        if start_frame < 0:
-            start_frame = 0
-        if end_frame == -1:
-            end_frame = len(self._merged.index)
-        if start_frame > end_frame:
+        if start_index < 0:
+            start_index = 0
+        if end_index == -1:
+            end_index = len(self._merged.index)
+        if start_index > end_index:
             return {}
         if joint_names is None or len(joint_names) <= 0:
             joint_names = JOINT_NAMES
-        dic = {joint_name : [] for joint_name in joint_names}
+        result : dict[str, list[float]] = {}
         for joint_name in joint_names:
-            dic[joint_name] = ((self._merged["JSD_" + joint_name + column_name_extension])[start_frame:end_frame]).to_list()
-        return dic
+            result[joint_name] = ((self._merged["JSD_" + joint_name + column_name_extension])[start_index:end_index]).to_list()
+        return result
 
-    def _get_derivative(self, dic : dict[str, list[float]], add_zero_prefix : bool) -> dict[str, list[float]]:
-        for key in dic.keys():
-            value = dic[key]
-            value = [p1 - p0 for p0,p1 in zip(value[:-1], value[1:])]
-            if add_zero_prefix:
-                value = [0] + value
-            dic[key] = value
-        return dic
+    def _calculate_velocity(self,
+                            column_name_extension : str,
+                            joint_names: Optional[list[str]] = None,
+                            start_index: int = 0,
+                            end_index: int = -1)\
+            -> dict[str, list[float]]:
+        if start_index < 0:
+            start_index = 0
+        if end_index == -1:
+            end_index = len(self._merged.index)
+        if start_index > end_index:
+            return {}
+        if joint_names is None or len(joint_names) <= 0:
+            joint_names = JOINT_NAMES
+        result: dict[str, list[float]] = {}
+        for joint_name in joint_names:
+            positions = (self._merged["JSD_" + joint_name + column_name_extension]).to_numpy()
+            frames = self._merged["time"].to_numpy()
+            velocity = list(numpy.gradient(positions, frames))[start_index:end_index]
+            if start_index == 0:
+                velocity[0] = 0
+            result[joint_name] = velocity
+        return result
 
-    def _get_partial_gap(self, d_extraction :  dict[str, list[float]], d_replay :  dict[str, list[float]]):
+    def _calculate_acceleration(self,
+                                column_name_extension : str,
+                                joint_names: Optional[list[str]] = None,
+                                start_index: int = 0,
+                                end_index: int = -1)\
+            -> dict[str, list[float]]:
+        if start_index < 0:
+            start_index = 0
+        if end_index == -1:
+            end_index = len(self._merged.index)
+        if start_index > end_index:
+            return {}
+        if joint_names is None or len(joint_names) <= 0:
+            joint_names = JOINT_NAMES
+        result: dict[str, list[float]] = {}
+        for joint_name in joint_names:
+            positions = (self._merged["JSD_" + joint_name + column_name_extension]).to_numpy()
+            frames = self._merged["time"].to_numpy()
+            acceleration = list(numpy.gradient(numpy.gradient(positions, frames), frames))[start_index:end_index]
+            if start_index <= 0:
+                acceleration[0] = 0
+            if start_index <= 1 and len(acceleration) > 1:
+                acceleration[1] = 0
+            result[joint_name] = acceleration
+        return result
+
+    def _calculate_gap(self, d_extraction :  dict[str, list[float]], d_replay :  dict[str, list[float]]):
         gap = {}
         for joint_name in d_extraction.keys():
             gap[joint_name] = [pow(p_replay - p_extraction, 2) for p_extraction, p_replay in zip(d_extraction[joint_name], d_replay[joint_name])]

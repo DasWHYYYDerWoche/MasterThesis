@@ -4,18 +4,15 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b8d71ec4-48b2-4ec5-b1a5-6fe6d26ab8b8" name="Changes" comment="feature: continued work on gap_analysis.ipynb&#10;fix: renamed functions in gapData">
-      <change afterPath="$PROJECT_DIR$/testing/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/testing/gap_handler_test.ipynb" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/testing/gap_handler_test.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/testing/gap_object_test.ipynb" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/testing/gap_object_test.py" afterDir="false" />
+    <list default="true" id="b8d71ec4-48b2-4ec5-b1a5-6fe6d26ab8b8" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gap_analysis.ipynb" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Utils/Constants.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Utils/Constants.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Utils/SimulationGapData.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Utils/SimulationGapData.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Utils/SimulationGapHandler.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Utils/SimulationGapHandler.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Utils/SimulationParameters.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Utils/SimulationParameters.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/testing/gap_handler_test.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/testing/gap_handler_test.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/testing/gap_handler_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/testing/gap_handler_test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/testing/gap_object_test.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/testing/gap_object_test.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/testing/gap_object_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/testing/gap_object_test.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -89,14 +86,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1767698678177</updated>
-    </task>
-    <task id="LOCAL-00002" summary="feature: created and implemented &quot;update_cfg method&quot;">
-      <option name="closed" value="true" />
-      <created>1767789268955</created>
-      <option name="number" value="00002" />
-      <option name="presentableId" value="LOCAL-00002" />
-      <option name="project" value="LOCAL" />
-      <updated>1767789268955</updated>
     </task>
     <task id="LOCAL-00003" summary="feature: created simulator class">
       <option name="closed" value="true" />
@@ -482,7 +471,15 @@
       <option name="project" value="LOCAL" />
       <updated>1774101233582</updated>
     </task>
-    <option name="localTasksCounter" value="51" />
+    <task id="LOCAL-00051" summary="feature: moved gap_object and gap_handler tests to separate notebooks. &#10;docs: updated documentation in SimulationGapData">
+      <option name="closed" value="true" />
+      <created>1774187153855</created>
+      <option name="number" value="00051" />
+      <option name="presentableId" value="LOCAL-00051" />
+      <option name="project" value="LOCAL" />
+      <updated>1774187153855</updated>
+    </task>
+    <option name="localTasksCounter" value="52" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -497,7 +494,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="feature:&#10;- update cfg handler and experiment data to handle path construction and removed path construction from cpp code&#10;- this does not yet work !" />
     <MESSAGE value="feature:&#10;- finalized new path structure by updating deletion and filter methods in LogExtractor" />
     <MESSAGE value="feature:&#10;- moved filter methods for eds to ExtractionData" />
     <MESSAGE value="feature:&#10;- combined CSVReplayer and LogExtractor into ExperimentPerformer" />
@@ -522,6 +518,7 @@
     <MESSAGE value="features: massive changes to ExperimentParameter generation." />
     <MESSAGE value="fix: updated SimulationGapData to fix missindexing of vel and acc.&#10;feature: added a test to gap_analysis.ipynb" />
     <MESSAGE value="feature: continued work on gap_analysis.ipynb&#10;fix: renamed functions in gapData" />
-    <option name="LAST_COMMIT_MESSAGE" value="feature: continued work on gap_analysis.ipynb&#10;fix: renamed functions in gapData" />
+    <MESSAGE value="feature: moved gap_object and gap_handler tests to separate notebooks. &#10;docs: updated documentation in SimulationGapData" />
+    <option name="LAST_COMMIT_MESSAGE" value="feature: moved gap_object and gap_handler tests to separate notebooks. &#10;docs: updated documentation in SimulationGapData" />
   </component>
 </project>

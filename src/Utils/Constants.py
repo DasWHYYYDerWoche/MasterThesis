@@ -29,6 +29,10 @@ PATH_REPLAYS : Path = PATH_CSV_LOGGER / "replays"
 # path to the executable
 PATH_EXECUTABLE : Path = PATH / "Build" / "simulator-multiconfig" / "Release" / "SimRobot.exe"
 
+
+SIM_SECONDS_PER_FRAME : float = 1
+
+
 JOINT_NAMES = [
 "headYaw","headPitch",
 "lShoulderPitch","lShoulderRoll","lElbowYaw","lElbowRoll","lWristYaw",
