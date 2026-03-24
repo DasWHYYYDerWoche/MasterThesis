@@ -8,6 +8,8 @@ import numpy as np
 import pandas
 from statistics import fmean
 
+from matplotlib.font_manager import weight_dict
+
 from .Constants import JOINT_WEIGHTS, JOINT_NAMES, get_extraction_path_full, get_replay_path_full, SIM_SECONDS_PER_FRAME
 
 import logging
@@ -24,8 +26,11 @@ class SimulationGapData:
         self._action_name: str = action_name
         self._recording_date: str = recording_date
         self._log_index: int = log_index
+        self._num_frames: int = -1
 
     def load(self) -> bool:
+        if self.loaded:
+            return True
         path_replays: Path = get_replay_path_full(self._param_set_id, self._action_name, self._recording_date, self._log_index).parent
         #load extraction csv
         extraction : Optional[pandas.DataFrame] = pandas.read_csv(
@@ -33,7 +38,7 @@ class SimulationGapData:
                 self._action_name, self._recording_date, self._log_index).with_suffix(".csv"),
             sep=None, engine="python")
         if extraction is None:
-            logger.warning("No extraction at s% exist for log %s", path_replays, self._log_index)
+            logger.error("No extraction at s% exist for log %s", path_replays, self._log_index)
             return False
         #load replay csv
         replay: Optional[pandas.DataFrame] = None
@@ -42,16 +47,20 @@ class SimulationGapData:
                 replay = pandas.read_csv(path_replays / file.name, sep=None, engine="python")
                 break
         if replay is None:
-            logger.warning("No replay at s% exist for log %s", path_replays, self._log_index)
+            logger.error("No replay at s% exist for log %s", path_replays, self._log_index)
             return False
         #merge extraction and replay
         replay.drop(columns=['time'])
         self._merged = pandas.merge(left=extraction, right=replay, left_on="time", right_on="replayed_frame",
                                                 how='inner')
         self._merged.drop(columns=['replayed_frame'])
+        # correctly format time column
         self._merged.rename(columns={"time_x": "time"}, inplace=True)
         self._merged['time'] = self._merged['time'] - self._merged['time'][0]
         self._merged['time'] = self._merged['time'] / 12
+
+        self._num_frames = len(self._merged)
+
 
         logger.info("Successfully loaded replays of log %s",
                     self._param_set_id + "," + self._action_name + "," + self._recording_date + "," + str(self._log_index))
@@ -59,6 +68,7 @@ class SimulationGapData:
 
     def unload(self):
         self._merged : Optional[pandas.DataFrame] = None
+        self._num_frames = -1
 
     def get_time_steps(self, start_index: int = 0, end_index: int = -1) -> list[int]:
         if start_index < 0:
@@ -198,6 +208,17 @@ class SimulationGapData:
         return d_total
 
     # -------- average for joints --------
+
+    def get_pos_gap_for_joints_TEST(self,
+                                    joint_names: Optional[list[str]] = None,
+                                    start_index: int = 0,
+                                    end_index: int = -1)\
+            -> dict[str, tuple[float, float]]:
+        """
+        Returns the average position sim gap for the given joints by averaging over all given frames.
+        """
+        return {joint_name : (float(np.average(sim_gaps)), float(np.std(sim_gaps))) for joint_name,sim_gaps in
+                self.get_pos_gap(joint_names, start_index, end_index).items()}
 
     def get_pos_gap_avg_for_joints(self,
                                    joint_names: Optional[list[str]] = None,
@@ -351,6 +372,12 @@ class SimulationGapData:
     def loaded(self) -> bool:
         return self._merged is not None
 
+    @property
+    def num_frames(self):
+        if not self.loaded:
+            raise Exception("")
+        return self._num_frames
+
     # -------- helper methods --------
 
     def _get(self,
@@ -359,10 +386,12 @@ class SimulationGapData:
              start_index: int = 0,
              end_index: int = -1)\
             -> dict[str, list[float]]:
+        if not self.loaded:
+            logger.error("SimulationGapData must be loaded before calling any methods. %s", self.identifier)
         if start_index < 0:
             start_index = 0
         if end_index == -1:
-            end_index = len(self._merged.index)
+            end_index = self.num_frames
         if start_index > end_index:
             return {}
         if joint_names is None or len(joint_names) <= 0:
@@ -378,6 +407,8 @@ class SimulationGapData:
                             start_index: int = 0,
                             end_index: int = -1)\
             -> dict[str, list[float]]:
+        if not self.loaded:
+            logger.error("SimulationGapData must be loaded before calling any methods. %s", self.identifier)
         if start_index < 0:
             start_index = 0
         if end_index == -1:
@@ -390,7 +421,7 @@ class SimulationGapData:
         for joint_name in joint_names:
             positions = (self._merged["JSD_" + joint_name + column_name_extension]).to_numpy()
             frames = self._merged["time"].to_numpy()
-            velocity = list(numpy.gradient(positions, frames))[start_index:end_index]
+            velocity = numpy.gradient(positions, frames).tolist()[start_index:end_index]
             if start_index == 0:
                 velocity[0] = 0
             result[joint_name] = velocity
@@ -402,6 +433,8 @@ class SimulationGapData:
                                 start_index: int = 0,
                                 end_index: int = -1)\
             -> dict[str, list[float]]:
+        if not self.loaded:
+            logger.error("SimulationGapData must be loaded before calling any methods. %s", self.identifier)
         if start_index < 0:
             start_index = 0
         if end_index == -1:
@@ -414,7 +447,7 @@ class SimulationGapData:
         for joint_name in joint_names:
             positions = (self._merged["JSD_" + joint_name + column_name_extension]).to_numpy()
             frames = self._merged["time"].to_numpy()
-            acceleration = list(numpy.gradient(numpy.gradient(positions, frames), frames))[start_index:end_index]
+            acceleration = numpy.gradient(numpy.gradient(positions, frames), frames).tolist()[start_index:end_index]
             if start_index <= 0:
                 acceleration[0] = 0
             if start_index <= 1 and len(acceleration) > 1:
@@ -428,9 +461,8 @@ class SimulationGapData:
             gap[joint_name] = [pow(p_replay - p_extraction, 2) for p_extraction, p_replay in zip(d_extraction[joint_name], d_replay[joint_name])]
         return gap
 
-    def _get_weighted_joint_average(self, dic: dict[str, list[float]]) -> list[float]:
-        num_key = len(dic.keys())
-        joint_sums = [0 for _ in range(len(next(iter(dic.values()))))]
-        for key in dic.keys():
-            joint_sums = list(map(lambda x,y:x+(JOINT_WEIGHTS[key]*y), joint_sums, dic[key]))
-        return [joint_avg / num_key for joint_avg in joint_sums]
+    def _get_weighted_joint_average(self, dictionary: dict[str, list[float]]) -> list[float]:
+        keys = list(dictionary.keys())
+        values_as_matrix = np.array([dictionary[k] for k in keys])  # shape: (n_keys, list_length)
+        weights_as_matrix = np.array([JOINT_WEIGHTS[k] for k in keys]) # shape: (n_keys, 1)
+        return np.average(values_as_matrix, weights=weights_as_matrix, axis=0).tolist() # axis 0 = rows
