@@ -4,7 +4,7 @@ import logging
 from typing import Optional
 from pathlib import Path
 
-from ..Utils import Hinge, JOINT_NAMES, PATH_REPLAYS
+from ..Utils import Hinge, NAMES, PATH_REPLAYS
 
 logger = logging.getLogger("global_logger")
 
@@ -96,13 +96,13 @@ class SimulationParameters:
     def set(self, hinge_name, hinge : Hinge) -> bool:
         if self._type is SimulationParameters.Type.NEW or \
                 self._type is SimulationParameters.Type.NEW_WITH_BASE:
-            if hinge_name in JOINT_NAMES:
+            if hinge_name in NAMES:
                 self._hinge_parameters[hinge_name] = hinge
                 return True
         return False
 
     def get(self, hinge_name) -> Optional[Hinge]:
-        if hinge_name in JOINT_NAMES and hinge_name in self._hinge_parameters.keys():
+        if hinge_name in NAMES and hinge_name in self._hinge_parameters.keys():
             return self._hinge_parameters[hinge_name]
         return None
 

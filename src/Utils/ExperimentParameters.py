@@ -3,7 +3,9 @@ from enum import Enum
 from pathlib import Path
 from typing import Optional
 from .Constants import (PATH_FIELD_LOGS, PATH_LOGS_AS_CSVS,
-                        get_field_logs_path_partial, get_replay_path_full, get_replay_path_partial, get_extraction_path_partial, get_extraction_path_full, get_field_logs_path_full)
+                        get_field_logs_path_partial, get_replay_path_full,
+                       get_replay_path_partial, get_extraction_path_partial,
+                       get_extraction_path_full, get_field_logs_path_full)
 
 import logging
 logger = logging.getLogger("global_logger")

@@ -1,5 +1,4 @@
 from __future__ import annotations
-
 from itertools import zip_longest
 import numpy as np
 from typing import Optional, Callable, TypeVar
@@ -62,10 +61,8 @@ class SimulationGapHandler:
             partial_results : list[dict[str, float]]= []
             weights : list[float] = []
             for gap_object in self._sim_gap_data[action_name]:
-                gap_object.load()
                 partial_results.append(method(gap_object))
                 weights.append(float(gap_object.num_frames))
-                gap_object.unload()
             for key in partial_results[0].keys():
                 partial_results_for_key = [partial_result[key] for partial_result in partial_results]
                 result[action_name][key] = np.average(partial_results_for_key, axis=0,weights=weights)
@@ -81,11 +78,89 @@ class SimulationGapHandler:
         for action_name in action_names:
             partial_results : list[list[float]]= []
             for gap_object in self._sim_gap_data[action_name]:
-                gap_object.load()
                 partial_results.append(method(gap_object))
-                gap_object.unload()
             result[action_name] = [np.nanmean(np.array(group, dtype=float)) for group in zip_longest(*partial_results, fillvalue=np.nan)]
         return result
+
+    def get_gap_avg(self, action_names: Optional[list[str]], method: Callable[[SimulationGapData], float]) -> dict[str, float]:
+        if action_names is None or len(action_names) <= 0:
+            action_names = list(self._sim_gap_data.keys())
+        result = {}
+        for action_name in action_names:
+            partial_results: list[float] = []
+            weights: list[float] = []
+            for gap_object in self._sim_gap_data[action_name]:
+                partial_results.append(method(gap_object))
+                weights.append(gap_object.num_frames)
+            result[action_name]= np.average(partial_results, weights=weights)
+        return result
+
+    # -------- actual final gap --------
+
+    def get_final_FINAL_gap_avg(self, method: Callable[[SimulationGapData], float]) -> float:
+        gap_per_action = self.get_gap_avg(None, method)
+        weights = []
+        values = []
+        for action_name in gap_per_action.keys():
+            weights.append(sum([gap_object.num_frames for gap_object in self._sim_gap_data[action_name]]))
+            values.append(gap_per_action[action_name])
+        return np.average(values, weights=weights)
+
+    # -------- method to find scale factor --------
+
+    def avg_abs_pos(self) -> float:
+        averages = []
+        weights = []
+        for gap_objects in self._sim_gap_data.values():
+            cur_weights = [gap_object.num_frames for gap_object in gap_objects]
+            averages.append(np.average([gap_object.avg_abs_pos() for gap_object in gap_objects], weights=cur_weights))
+            weights.append(len(cur_weights))
+        return np.average(averages, weights=weights)
+
+    def avg_abs_vel(self) -> float:
+        averages = []
+        weights = []
+        for gap_objects in self._sim_gap_data.values():
+            cur_weights = [gap_object.num_frames for gap_object in gap_objects]
+            averages.append(np.average([gap_object.avg_abs_vel() for gap_object in gap_objects], weights=cur_weights))
+            weights.append(len(cur_weights))
+        return np.average(averages, weights=weights)
+
+    def avg_abs_acc(self) -> float:
+        averages = []
+        weights = []
+        for gap_objects in self._sim_gap_data.values():
+            cur_weights = [gap_object.num_frames for gap_object in gap_objects]
+            averages.append(np.average([gap_object.avg_abs_acc() for gap_object in gap_objects], weights=cur_weights))
+            weights.append(len(cur_weights))
+        return np.average(averages, weights=weights)
+
+    def max_abs_pos(self) -> float:
+        return max([max([gap_object.max_abs_pos() for gap_object in gap_objects])
+                    for gap_objects in self._sim_gap_data.values()])
+
+    def max_abs_vel(self) -> float:
+        return max([max([gap_object.max_abs_vel() for gap_object in gap_objects])
+                    for gap_objects in self._sim_gap_data.values()])
+
+    def max_abs_acc(self) -> float:
+        return max([max([gap_object.max_abs_acc() for gap_object in gap_objects])
+                    for gap_objects in self._sim_gap_data.values()])
+
+    def get_scale_factors(self) -> tuple[float,float]:
+        avg_pos = self.avg_abs_pos()
+        avg_vel = self.avg_abs_vel()
+        avg_acc = self.avg_abs_acc()
+        print(avg_pos)
+        print(avg_vel)
+        print(avg_acc)
+        return avg_pos / avg_vel, avg_pos / avg_acc
+
+    def set_scale_factors(self, vel_gap_factor: float, acc_gap_factor : float):
+        for gap_list in self._sim_gap_data.values():
+            for gap_object in gap_list:
+                gap_object.vel_gap_factor = vel_gap_factor
+                gap_object.acc_gap_factor = acc_gap_factor
 
     # -------- properties --------
 
@@ -102,7 +177,5 @@ class SimulationGapHandler:
         for action_name in action_names:
             results[action_name] = []
             for gap_data in self._sim_gap_data[action_name]:
-                gap_data.load()
                 results[action_name].append(method(gap_data))
-                gap_data.unload()
         return results

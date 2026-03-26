@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Optional
 
-from ..Utils import SimulationGapData, JOINT_SHORT
+from ..Utils import SimulationGapData, ABBREVIATIONS
 import matplotlib.pyplot as plt
 
 class GapObjectVisualizer:
@@ -51,7 +51,7 @@ class GapObjectVisualizer:
         x_axis = self._gap_object.get_time_steps(start_index, end_index)
         pos_extraction = self._gap_object.get_pos_extraction(joint_names=[joint_name], start_index=start_index, end_index=end_index)[joint_name]
         pos_replay = self._gap_object.get_pos_replay(joint_names=[joint_name], start_index=start_index, end_index=end_index)[joint_name]
-        pos_gap = self._gap_object.get_pos_gap(joint_names=[joint_name], start_index=start_index, end_index=end_index)[joint_name]
+        pos_gap = self._gap_object.get_pos_gaps(joint_names=[joint_name], start_index=start_index, end_index=end_index)[joint_name]
         if unload:
             self.unload()
         title = "The angle of the " + joint_name + "for experiment \"" + self._gap_object.identifier + "\""
@@ -66,7 +66,7 @@ class GapObjectVisualizer:
         x_axis = self._gap_object.get_time_steps(start_index, end_index)
         vel_extraction = self._gap_object.get_vel_extraction(joint_names=[joint_name], start_index=start_index, end_index=end_index)[joint_name]
         vel_replay = self._gap_object.get_vel_replay(joint_names=[joint_name], start_index=start_index, end_index=end_index)[joint_name]
-        vel_gap = self._gap_object.get_vel_gap(joint_names=[joint_name], start_index=start_index, end_index=end_index)[joint_name]
+        vel_gap = self._gap_object.get_vel_gaps(joint_names=[joint_name], start_index=start_index, end_index=end_index)[joint_name]
         if unload:
             self.unload()
         title = "The angular velocity of the " + joint_name + "for experiment \"" + self._gap_object.identifier + "\""
@@ -81,7 +81,7 @@ class GapObjectVisualizer:
         x_axis = self._gap_object.get_time_steps(start_index, end_index)
         acc_extraction = self._gap_object.get_acc_extraction(joint_names=[joint_name], start_index=start_index, end_index=end_index)[joint_name]
         acc_replay = self._gap_object.get_acc_replay(joint_names=[joint_name], start_index=start_index, end_index=end_index)[joint_name]
-        acc_gap = self._gap_object.get_acc_gap(joint_names=[joint_name], start_index=start_index, end_index=end_index)[joint_name]
+        acc_gap = self._gap_object.get_acc_gaps(joint_names=[joint_name], start_index=start_index, end_index=end_index)[joint_name]
         if unload:
             self.unload()
         title = "The angular acceleration of the " + joint_name + "for experiment \"" + self._gap_object.identifier + "\""
@@ -94,10 +94,10 @@ class GapObjectVisualizer:
 
     def plt_total_gap(self, joint_name : str, start_index : int = 0, end_index : int = -1, line_type : str = "-", unload : bool = False):
         x_axis = self._gap_object.get_time_steps(start_index, end_index)
-        pos_gap = self._gap_object.get_pos_gap(joint_names=[joint_name], start_index=start_index, end_index=end_index)[joint_name]
-        vel_gap = self._gap_object.get_vel_gap(joint_names=[joint_name], start_index=start_index, end_index=end_index)[joint_name]
-        acc_gap = self._gap_object.get_acc_gap(joint_names=[joint_name], start_index=start_index, end_index=end_index)[joint_name]
-        total_gap = self._gap_object.get_total_gap(joint_names=[joint_name], start_index=start_index, end_index=end_index)[joint_name]
+        pos_gap = self._gap_object.get_pos_gaps(joint_names=[joint_name], start_index=start_index, end_index=end_index)[joint_name]
+        vel_gap = self._gap_object.get_vel_gaps(joint_names=[joint_name], start_index=start_index, end_index=end_index)[joint_name]
+        acc_gap = self._gap_object.get_acc_gaps(joint_names=[joint_name], start_index=start_index, end_index=end_index)[joint_name]
+        total_gap = self._gap_object.get_total_gaps(joint_names=[joint_name], start_index=start_index, end_index=end_index)[joint_name]
         if unload:
             self.unload()
         title = "Angle/Velocity/Acceleration and Accumulated Simulation Gap"
@@ -110,10 +110,10 @@ class GapObjectVisualizer:
 
     def plt_avg_for_frames(self, joint_names : Optional[list[str]] = None, start_index : int = 0, end_index : int = -1, line_type : str = "-", unload : bool = False):
         x_axis = self._gap_object.get_time_steps(start_index, end_index)
-        pos_gap = self._gap_object.get_pos_gap_avg_for_frames(joint_names=joint_names, start_index=start_index, end_index=end_index)
-        vel_gap = self._gap_object.get_vel_gap_avg_for_frames(joint_names=joint_names,start_index=start_index, end_index=end_index)
-        acc_gap = self._gap_object.get_acc_gap_avg_for_frames(joint_names=joint_names,start_index=start_index, end_index=end_index)
-        total_gap = self._gap_object.get_total_gap_avg_for_frames(joint_names=joint_names,start_index=start_index, end_index=end_index)
+        pos_gap = self._gap_object.get_pos_gap_for_frames(joint_names=joint_names, start_index=start_index, end_index=end_index)
+        vel_gap = self._gap_object.get_vel_gap_for_frames(joint_names=joint_names, start_index=start_index, end_index=end_index)
+        acc_gap = self._gap_object.get_acc_gap_for_frames(joint_names=joint_names, start_index=start_index, end_index=end_index)
+        total_gap = self._gap_object.get_total_gap_for_frames(joint_names=joint_names, start_index=start_index, end_index=end_index)
         if unload:
             self.unload()
         title = ("Partial Simulation Gaps of \"" + self._gap_object.identifier + "\" averaged over " + (joint_names if joint_names else "all joints"))
@@ -125,10 +125,10 @@ class GapObjectVisualizer:
                         title, y_label, line_type)
 
     def plt_avg_for_joints(self, start_index : int = 0, end_index : int = -1, line_type : str = "o", unload : bool = False):
-        pos_gap = self._gap_object.get_pos_gap_avg_for_joints()
-        vel_gap = self._gap_object.get_vel_gap_avg_for_joints()
-        acc_gap = self._gap_object.get_acc_gap_avg_for_joints()
-        total_gap = self._gap_object.get_total_gap_avg_for_joints()
+        pos_gap = self._gap_object.get_pos_gap_for_joints()
+        vel_gap = self._gap_object.get_vel_gap_for_joints()
+        acc_gap = self._gap_object.get_acc_gap_for_joints()
+        total_gap = self._gap_object.get_total_gap_for_joints()
         if unload:
             self.unload()
         title = "Partial Simulation Gaps of each joint averaged over all frames."
@@ -144,6 +144,7 @@ class GapObjectVisualizer:
         plt.title(title)
         plt.xlabel("Joint")
         plt.ylabel(y_label)
+        plt.grid(visible=True)
         for i, d in enumerate(data):
             plt.plot(x_axis, d, line_type, color=colors[i], label=labels[i])
         plt.legend()
@@ -157,6 +158,6 @@ class GapObjectVisualizer:
         plt.xlabel("Joint")
         plt.ylabel(y_label)
         for i, dic in enumerate(data):
-            plt.plot([JOINT_SHORT[key] for key in dic.keys()], dic.values(), line_type, color=colors[i], label=labels[i])
+            plt.plot([ABBREVIATIONS[key] for key in dic.keys()], dic.values(), line_type, color=colors[i], label=labels[i])
         plt.legend()
         plt.show()
