@@ -1,10 +1,11 @@
 import json
 import logging
 
-from typing import Optional
+from typing import Optional, Any
 from pathlib import Path
-
-from ..Utils import Hinge, NAMES, PATH_REPLAYS
+from ..IO import NaoV6H25Handler
+from ..Constants import NAMES, PATH_REPLAYS, JOINT_TYPES
+from ..Structs import Joint
 
 logger = logging.getLogger("global_logger")
 
@@ -34,11 +35,12 @@ class SimulationParameters:
         """
         self._target_param_set_id : str = target_param_set_id
         self._source_param_set_id : Optional[str] = source_param_set_id
-        self._kp: Optional[float] = None
-        self._kd: Optional[float] = None
-        self._contact_kp: Optional[float] = None
-        self._contact_kd: Optional[float] = None
-        self._hinge_parameters: dict[str, Hinge] = {}
+        self._Kp: Optional[float] = None
+        self._Kd: Optional[float] = None
+        self._contactKp: Optional[float] = None
+        self._contactKd: Optional[float] = None
+        naoV6H25Handler = NaoV6H25Handler()
+        self._joint_parameters: dict[str, Joint] = {}
         #setting source parameter
         if self._source_param_set_id:
             if self._target_param_set_id == self._source_param_set_id:
@@ -62,19 +64,18 @@ class SimulationParameters:
         #create folder(s)
         if not self.path_target.exists():
             self.path_target.mkdir(parents=True)
-        self.save_to_file()
 
     def save_to_file(self) -> bool:
         if self._type is SimulationParameters.Type.NEW or \
                 self._type is SimulationParameters.Type.NEW_WITH_BASE:
             as_dict = {
-                "kp": self._kp,
-                "kd": self._kd,
-                "contact_kp": self._contact_kp,
-                "contact_kd": self._contact_kd,
+                "Kp": self._Kp,
+                "Kd": self._Kd,
+                "contactKp": self._contactKp,
+                "contactKd": self._contactKd,
                 "hinge_parameters": {
                     name: hinge.to_dict()
-                    for name, hinge in self._hinge_parameters.items()
+                    for name, hinge in self._joint_parameters.items()
                 },
             }
             with open(self.path_settings_target, "w") as f:
@@ -85,26 +86,30 @@ class SimulationParameters:
     def _load_from_file(self):
         with open(self.path_settings_source, "r") as f:
             data = json.load(f)
-        self._kp = data["kp"]
-        self._kd = data["kd"]
-        self._contact_kp = data["contact_kp"]
-        self._contact_kd = data["contact_kd"]
-        self._hinge_parameters = {
-            name: Hinge.from_dict(h_data) for name, h_data in data["hinge_parameters"].items()
+        self._Kp = data["kp"]
+        self._Kd = data["kd"]
+        self._contactKp = data["contact_kp"]
+        self._contactKd = data["contact_kd"]
+        self._joint_parameters = {
+            name: Joint.from_dict(h_data) for name, h_data in data["hinge_parameters"].items()
         }
 
-    def set(self, hinge_name, hinge : Hinge) -> bool:
+    def set(self, joint_name, joint : Joint) -> bool:
         if self._type is SimulationParameters.Type.NEW or \
                 self._type is SimulationParameters.Type.NEW_WITH_BASE:
-            if hinge_name in NAMES:
-                self._hinge_parameters[hinge_name] = hinge
+            if joint_name in NAMES:
+                self._joint_parameters[joint_name] = joint
                 return True
         return False
 
-    def get(self, hinge_name) -> Optional[Hinge]:
-        if hinge_name in NAMES and hinge_name in self._hinge_parameters.keys():
-            return self._hinge_parameters[hinge_name]
+    def get(self, joint_name) -> Optional[Joint]:
+        if joint_name in NAMES and joint_name in self._joint_parameters.keys():
+            return self._joint_parameters[joint_name]
         return None
+
+    def set_for_joint_type(self, joint_type : int, parameter_name : str, value : Any):
+        for joint in [self._joint_parameters[joint_name] for joint_name in JOINT_TYPES[joint_type]]:
+            setattr(joint, parameter_name, value)
 
     @property
     def path_target(self) -> Path:
@@ -131,46 +136,46 @@ class SimulationParameters:
         return self._target_param_set_id
 
     @property
-    def kp(self) -> float:
-        return self._kp
+    def Kp(self) -> float:
+        return self._Kp
 
     @property
-    def kd(self) -> float:
-        return self._kd
+    def Kd(self) -> float:
+        return self._Kd
 
     @property
-    def contact_kp(self) -> float:
-        return self._contact_kp
+    def contactKp(self) -> float:
+        return self._contactKp
 
     @property
-    def contact_kd(self) -> float:
-        return self._contact_kd
+    def contactKd(self) -> float:
+        return self._contactKd
 
     @property
-    def hinge_parameters(self):
-        return self._hinge_parameters
+    def joint_parameters(self):
+        return self._joint_parameters
 
-    @kp.setter
-    def kp(self, value):
+    @Kp.setter
+    def Kp(self, value):
         if self._type is SimulationParameters.Type.NEW or \
                 self._type is SimulationParameters.Type.NEW_WITH_BASE:
-            self._kp = value
+            self._Kp = value
 
-    @kd.setter
-    def kd(self, value):
+    @Kd.setter
+    def Kd(self, value):
         if self._type is SimulationParameters.Type.NEW or \
                 self._type is SimulationParameters.Type.NEW_WITH_BASE:
-            self._kd = value
+            self._Kd = value
 
-    @contact_kp.setter
-    def contact_kp(self, value):
+    @contactKp.setter
+    def contactKp(self, value):
         if self._type is SimulationParameters.Type.NEW or \
                 self._type is SimulationParameters.Type.NEW_WITH_BASE:
-            self._contact_kp = value
+            self._contactKp = value
 
-    @contact_kd.setter
-    def contact_kd(self, value):
+    @contactKd.setter
+    def contactKd(self, value):
         if self._type is SimulationParameters.Type.NEW or \
                 self._type is SimulationParameters.Type.NEW_WITH_BASE:
-            self._contact_kd = value
+            self._contactKd = value
 

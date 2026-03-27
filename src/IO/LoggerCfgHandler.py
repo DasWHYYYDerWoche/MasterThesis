@@ -1,7 +1,8 @@
 from __future__ import annotations
 from typing import override
 
-from ...Utils import  CfgHandler, PATH_CONFIG
+from ..Constants import PATH_CONFIG
+from . import  CfgHandler
 
 class LoggerCfgHandler(CfgHandler):
     """

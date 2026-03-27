@@ -2,7 +2,8 @@ from __future__ import annotations
 
 from typing import Callable
 
-from ..Utils import SimulationGapHandler, SimulationGapData, ABBREVIATIONS
+from ..Constants import ABBREVIATIONS
+from ..Utils import SimulationGapHandler, SimulationGapData
 from .GapObjectVisualizer import GapObjectVisualizer
 import matplotlib.pyplot as plt
 

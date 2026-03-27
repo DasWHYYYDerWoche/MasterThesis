@@ -1,6 +1,5 @@
 import subprocess
 import time
-from enum import Enum
 
 import logging
 logger = logging.getLogger("global_logger")

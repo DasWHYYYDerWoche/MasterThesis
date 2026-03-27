@@ -2,7 +2,10 @@ from __future__ import annotations
 from typing import override
 import xml.etree.ElementTree as ElementTree
 
-from ...Utils import XmlHandler, Hinge, PATH_SCENE
+from ..Constants import PATH_SCENE
+from ..Structs import Joint
+from .XmlHandler import XmlHandler
+
 
 class NaoV6H25Handler(XmlHandler):
     """
@@ -28,19 +31,20 @@ class NaoV6H25Handler(XmlHandler):
         self._data = self._convert(self._xml_tree)
 
     @staticmethod
-    def _convert(xml_tree : ElementTree.ElementTree) -> dict:
+    def _convert(xml_tree: ElementTree.ElementTree) -> dict:
         root: ElementTree.Element = xml_tree.getroot()
         data = {}
-        for hinge_element in root.iter("Hinge"):
-            servo_element = hinge_element.find("Axis").find("ServoMotor")
+        for joint_element in root.iter("Hinge"):
+            servo_element = joint_element.find("Axis").find("ServoMotor")
             try:
                 max_velocity = float(servo_element.get("maxVelocity"))
                 max_force = float(servo_element.get("maxForce"))
                 p = float(servo_element.get("p"))
                 i = float(servo_element.get("i", "0"))
                 d = float(servo_element.get("d", "0"))
-                hinge = Hinge(max_velocity, max_force, p, i, d)
-                data[hinge_element.get("name")] = hinge
+                hinge = Joint(max_velocity, max_force, p, i, d)
+                name = joint_element.get("name")
+                data[name[0].lower() + name[1:]] = hinge
             except ValueError:
                 raise ValueError
         return data
@@ -48,9 +52,10 @@ class NaoV6H25Handler(XmlHandler):
     @override
     def _dict_to_xml(self):
         root: ElementTree.Element = self._xml_tree.getroot()
-        for hinge_element in root.iter("Hinge"):
-            hinge = self._data[hinge_element.get("name")]
-            servo_element = hinge_element.find("Axis").find("ServoMotor")
+        for joint_element in root.iter("Hinge"):
+            name = joint_element.get("name")
+            hinge = self._data[name[0].lower() + name[1:]]
+            servo_element = joint_element.find("Axis").find("ServoMotor")
             servo_element.set("maxVelocity", str(hinge.max_velocity))
             servo_element.set("maxForce", str(hinge.max_force))
             servo_element.set("p", str(hinge.p))
@@ -63,5 +68,5 @@ class NaoV6H25Handler(XmlHandler):
         default_tree = ElementTree.parse(PATH_SCENE / "Includes" / "NaoV6H25_BACKUP.rsi2")
         return NaoV6H25Handler._convert(default_tree)
 
-    def set_hinge_parameters(self, hinge_name : str, hinge : Hinge):
-        self._set_value(hinge_name, hinge)
+    def set_joint_parameters(self, joint_name: str, joint: Joint):
+        self._set_value(joint_name, joint)

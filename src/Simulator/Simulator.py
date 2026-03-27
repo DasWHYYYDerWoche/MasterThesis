@@ -2,14 +2,12 @@ from __future__ import annotations
 
 import subprocess
 import time
-from copy import copy
-from typing import Optional
-from enum import Enum
-import math
+from typing import Optional, Any
 from pathlib import Path
 from .ProcessContainer import ProcessContainer
 from .ConfigurationHandler import ConfigurationHandler
-from ..Utils import PATH_EXECUTABLE, ExperimentParameters, SimulationParameters, PATH_LOG_EXTRACTION_SCENE, PATH_CSV_REPLAY_SCENE, SimulationGapHandler, ExperimentMode, ExperimentType
+from ..Constants import PATH_EXECUTABLE, PATH_LOG_EXTRACTION_SCENE, PATH_CSV_REPLAY_SCENE
+from ..Utils import ExperimentParameters , SimulationGapHandler, ExperimentMode, SimulationParameters
 
 import logging
 logger = logging.getLogger("global_logger")
@@ -220,6 +218,12 @@ class Simulator:
         for ep in eps:
             gap_handler.add(ep.action_name, ep.recording_date, ep.log_index)
         return gap_handler
+
+    def get_parameter_value(self, parameter_name) -> Any:
+        return self._configurationHandler.get_parameter_value(parameter_name)
+
+    def get_default_value(self, parameter_name) -> Any:
+        return self._configurationHandler.get_default_value(parameter_name)
 
     @property
     def batch_size(self) -> int:

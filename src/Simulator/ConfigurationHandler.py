@@ -1,9 +1,7 @@
-from .LoggerCfgHandler import LoggerCfgHandler
-from .NaoV6H25Handler import NaoV6H25Handler
-from .ThesisCSVReplayHandler import ThesisCSVReplayHandler
-from .ThesisLogExtractionHandler import ThesisLogExtractionHandler
+from typing import Any
 
-from ...Utils import ExperimentParameters, ExperimentType, SimulationParameters
+from ..Utils import ExperimentParameters, SimulationParameters
+from ..IO import LoggerCfgHandler, NaoV6H25Handler, ThesisCSVReplayHandler, ThesisLogExtractionHandler
 
 class ConfigurationHandler:
     """
@@ -43,17 +41,17 @@ class ConfigurationHandler:
             self._thesisLogExtractionHandler.write_to_file()
 
     def set_simulation_parameters(self, parameters : SimulationParameters):
-        if parameters.kd:
-            self._thesisCSVReplayHandler.kd = parameters.kd
-        if parameters.kp:
-            self._thesisCSVReplayHandler.kp = parameters.kp
-        if parameters.contact_kd:
-            self._thesisCSVReplayHandler.contact_kd = parameters.contact_kd
-        if parameters.contact_kp:
-            self._thesisCSVReplayHandler.contact_kp = parameters.contact_kp
+        if parameters.Kd:
+            self._thesisCSVReplayHandler.kd = parameters.Kd
+        if parameters.Kp:
+            self._thesisCSVReplayHandler.kp = parameters.Kp
+        if parameters.contactKd:
+            self._thesisCSVReplayHandler.contact_kd = parameters.contactKd
+        if parameters.contactKp:
+            self._thesisCSVReplayHandler.contact_kp = parameters.contactKp
         self._thesisCSVReplayHandler.write_to_file()
-        for hinge_name, hinge in parameters.hinge_parameters.items():
-            self._naoV6H25Handler.set_hinge_parameters(hinge_name, hinge)
+        for hinge_name, hinge in parameters.joint_parameters.items():
+            self._naoV6H25Handler.set_joint_parameters(hinge_name, hinge)
         self._naoV6H25Handler.write_to_file()
 
     def reset_experiment_parameters(self):
@@ -72,3 +70,30 @@ class ConfigurationHandler:
         self.reset_experiment_parameters()
         self.reset_simulation_parameters()
 
+    def get_parameter_value(self, parameter_name) -> Any:
+        val = self._loggerCfgHandler.get_value(parameter_name)
+        if val is not None:
+            return val
+        val = self._naoV6H25Handler.get_value(parameter_name)
+        if val is not None:
+            return val
+        val = self._thesisCSVReplayHandler.get_value(parameter_name)
+        if val is not None:
+            return val
+        val = self._thesisLogExtractionHandler.get_value(parameter_name)
+        return val
+
+    def get_default_value(self, parameter_name):
+        d = self._loggerCfgHandler.get_default()
+        if parameter_name in d.keys():
+            return d[parameter_name]
+        d = self._naoV6H25Handler.get_default()
+        if parameter_name in d.keys():
+            return d[parameter_name]
+        d = self._thesisCSVReplayHandler.get_default()
+        if parameter_name in d.keys():
+            return d[parameter_name]
+        d = self._thesisLogExtractionHandler.get_default()
+        if parameter_name in d.keys():
+            return d[parameter_name]
+        return None

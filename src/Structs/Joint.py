@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-class Hinge:
+class Joint:
     """
     Representation of a Hinge of the NAO.
     """
@@ -22,7 +22,7 @@ class Hinge:
         }
 
     @classmethod
-    def from_dict(cls, data: dict) -> "Hinge":
+    def from_dict(cls, data: dict) -> "Joint":
         return cls(
             max_velocity=data["max_velocity"],
             max_force=data["max_force"],

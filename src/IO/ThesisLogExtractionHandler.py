@@ -2,7 +2,8 @@ from __future__ import annotations
 
 from typing import override
 
-from ...Utils import FileHandler, PATH_SCENE
+from .FileHandler import FileHandler
+from ..Constants import PATH_SCENE
 
 class ThesisLogExtractionHandler(FileHandler):
     """

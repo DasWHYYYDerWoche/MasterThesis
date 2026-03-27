@@ -113,4 +113,12 @@ ABBREVIATIONS = {
     "rAnkleRoll": "RAR",
 }
 
+JOINT_TYPES = {
+    0 : ["lHipYawPitch", "rHipYawPitch", "lHipRoll", "rHipRoll", "lAnkleRoll", "rAnkleRoll"],
+    1 : ["lWristYaw", "rWristYaw", "lHand", "rHand"],
+    2 : ["headYaw", "lElbowYaw", "rElbowYaw", "headPitch", "lShoulderRoll", "rShoulderRoll", "lElbowRoll", "rElbowRoll"],
+    3 : ["lShoulderPitch", "rShoulderPitch"],
+    4 : ["lHipPitch", "rHipPitch", "lKneePitch", "rKneePitch", "lAnklePitch", "rAnklePitch"]
+}
+
 RANGES = {key : abs(value[0] - value[1]) for key, value in DEFLECTIONS.items()}

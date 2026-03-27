@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Optional
-from enum import Enum
 from pathlib import Path
 
 import numpy
@@ -8,9 +7,7 @@ import numpy as np
 import pandas
 from statistics import fmean
 
-from matplotlib.font_manager import weight_dict
-
-from .Constants import WEIGHTS, NAMES, get_extraction_path_full, get_replay_path_full
+from ..Constants import WEIGHTS, NAMES, get_extraction_path_full, get_replay_path_full
 
 import logging
 logger = logging.getLogger("global_logger")

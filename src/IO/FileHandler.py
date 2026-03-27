@@ -105,6 +105,11 @@ class FileHandler(ABC):
         if len(not_contained_keys) > 0:
             logger.warning("%s does not contain key(s) \"%s\"", type(self).__name__, not_contained_keys)
 
+    def get_value(self, key : str) -> Any:
+        if key in self._data.keys():
+            return self._data[key]
+        return None
+
     def set_default(self):
         """
         Sets the _data object to the dict returned by get_default

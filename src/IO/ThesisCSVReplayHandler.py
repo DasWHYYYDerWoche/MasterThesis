@@ -2,7 +2,8 @@ from __future__ import annotations
 from typing import override
 import xml.etree.ElementTree as ElementTree
 
-from ...Utils import XmlHandler, PATH_SCENE
+from ..Constants import PATH_SCENE
+from .XmlHandler import XmlHandler
 
 class ThesisCSVReplayHandler(XmlHandler):
     """

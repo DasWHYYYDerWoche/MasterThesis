@@ -2,7 +2,8 @@ from __future__ import annotations
 
 from typing import Optional
 
-from ..Utils import SimulationGapData, ABBREVIATIONS
+from ..Constants import ABBREVIATIONS
+from ..Utils import SimulationGapData
 import matplotlib.pyplot as plt
 
 class GapObjectVisualizer:

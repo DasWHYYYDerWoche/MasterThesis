@@ -1,0 +1,8 @@
+PARAMETERS_GLOBAL_0 = ["Kd", "Kp", "contactKd", "contactKp"]
+PARAMETERS_PER_TYPE_0 = ["p"]
+PARAMETERS_PER_JOINT_0 = []
+
+
+PARAMETERS_GLOBAL_1 = ["Kd", "Kp", "contactKd", "contactKp"]
+PARAMETERS_PER_TYPE_1 = ["p", "d"]
+PARAMETERS_PER_JOINT_1 = []
