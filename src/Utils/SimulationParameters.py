@@ -3,6 +3,8 @@ import logging
 
 from typing import Optional, Any
 from pathlib import Path
+
+from .. import ThesisCSVReplayHandler
 from ..IO import NaoV6H25Handler
 from ..Constants import NAMES, PATH_REPLAYS, JOINT_TYPES
 from ..Structs import Joint
@@ -35,12 +37,9 @@ class SimulationParameters:
         """
         self._target_param_set_id : str = target_param_set_id
         self._source_param_set_id : Optional[str] = source_param_set_id
-        self._Kp: Optional[float] = None
-        self._Kd: Optional[float] = None
-        self._contactKp: Optional[float] = None
-        self._contactKd: Optional[float] = None
-        naoV6H25Handler = NaoV6H25Handler()
-        self._joint_parameters: dict[str, Joint] = {}
+
+        self._Kd, self._Kd, self._contactKd, self._contactKp = ThesisCSVReplayHandler.get_default().values()
+        self._joint_parameters: dict[str, Joint] = NaoV6H25Handler.get_default()
         #setting source parameter
         if self._source_param_set_id:
             if self._target_param_set_id == self._source_param_set_id:

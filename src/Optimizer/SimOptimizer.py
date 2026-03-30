@@ -14,35 +14,6 @@ from ..Utils import SimulationGapData, ExperimentMode, SimulationParameters
 import logging
 logger = logging.getLogger("global_logger")
 
-def evaluate(experiments : Optional[list[tuple[Optional[str], Optional[str], Optional[int]]]],
-             simulator : Simulator,
-             global_attribute_names: list[str],
-             per_joint_type_attribute_names: list[str],
-             individual) -> tuple[float]:
-    """
-    Maps individual genes to simulator parameters,
-    runs simulation, and returns objective value.
-    """
-
-    # create simulation parameters
-    simulator_parameters = SimulationParameters("")
-    i = 0
-    for name in global_attribute_names:
-        setattr(simulator_parameters, name.split("_")[1], individual[i])
-        i += 1
-
-    for name in per_joint_type_attribute_names:
-        split_name = name.split("_")
-        name = split_name[1]
-        joint_type = int(split_name[2])
-        simulator_parameters.set_for_joint_type(joint_type, name, individual[i])
-        i += 1
-
-    # Run simulation
-    gap_handler = simulator.simulation_gap(simulator_parameters, experiments, replay_mode=ExperimentMode.DEL_EXISTING)
-    gap = gap_handler.get_final_FINAL_gap_avg(lambda gap_object: SimulationGapData.get_total_gap_avg(gap_object))
-    # Return tuple (DEAP requirement)
-    return (gap,)
 
 class SimOptimizer:
     def __init__(self,
@@ -56,16 +27,23 @@ class SimOptimizer:
         """
         self._global_attributes = global_attributes
         self._global_attribute_names = []
+        self._global_attribute_boundaries = []
         self._per_joint_type_attributes = per_joint_type_attributes
         self._per_joint_type_attribute_names = []
+        self._per_joint_type_attribute_boundaries = []
         self._individual_dimension = len(global_attributes) + (5 * len(per_joint_type_attributes))
         self._experiments = experiments
-        self._todoname = 0.1
+
+        self._initialization_offset = 0.1
+        self._lower_bound_factor = 0.001
+        self._upper_bound_factor = 100
         self._population_size = 20
         self._crossover_pb = 0.5
         self._mutation_pb = 0.2
-        self._max_gen = 5
+        self._max_gen = 20
+
         self._simulator = Simulator()
+        self._simulator.batch_size = 5
         self._toolbox = base.Toolbox()
         self._create_classes()
         self._init_toolbox()
@@ -80,11 +58,13 @@ class SimOptimizer:
         # creates a method attr_name for each attribute that samples a random value from their within its boundaries
         #global parameters
         for attribute_name in self._global_attributes:
-            val = self._simulator.get_default_value(attribute_name)
-            if type(val) is not float:
+            value = self._simulator.get_default_value(attribute_name)
+            if type(value) is not float:
                 logger.error("Global Parameter %s was not found", attribute_name)
-            self._global_attribute_names.append(f"g_{attribute_name}")
-            self._toolbox.register(f"g_{attribute_name}", random.uniform, val * (1 - self._todoname), val * (1 + self._todoname))
+            identifier = f"g_{attribute_name}"
+            self._global_attribute_names.append(identifier)
+            self._global_attribute_boundaries.append((value * self._lower_bound_factor, value * self._upper_bound_factor))
+            self._toolbox.register(identifier, random.uniform, value * (1 - self._initialization_offset), value * (1 + self._initialization_offset))
         #per-joint-type parameters
         for attribute_name in self._per_joint_type_attributes:
             for motor_index, joints_of_type in enumerate(JOINT_TYPES.values()):
@@ -92,11 +72,14 @@ class SimOptimizer:
                 joint_object = self._simulator.get_default_value(example_joint)
                 if type(joint_object) is not Joint:
                     logger.error("Per Joint Type %s was not found", attribute_name)
-                attribute = getattr(joint_object, attribute_name, None)
-                if attribute is None:
+                value = getattr(joint_object, attribute_name, None)
+                if value is None:
                     logger.error("Attribute for %s did not exists in %s", attribute_name, joint_object.__name__)
-                self._per_joint_type_attribute_names.append(f"jt_{attribute_name}_{motor_index}")
-                self._toolbox.register(f"jt_{attribute_name}_{motor_index}", random.uniform, attribute * (1 - self._todoname), attribute * (1 + self._todoname))
+                identifier = f"jt_{attribute_name}_{motor_index}"
+                self._per_joint_type_attribute_names.append(identifier)
+                self._per_joint_type_attribute_boundaries.append(
+                    (value * self._lower_bound_factor, value * self._upper_bound_factor))
+                self._toolbox.register(identifier, random.uniform, value * (1 - self._initialization_offset), value * (1 + self._initialization_offset))
         # creates a method to create new Individuals by calling tools.initCycle(creator.Individual, [list of methods], n=1)
         # tools.initCycle calls the methods in the list in order, repeating n times
         # creator.Individual is a container the results are put into
@@ -116,11 +99,23 @@ class SimOptimizer:
 
         # creates a new method called evaluate based on the evaluate method above this class
         # prefills 3 parameters, so only requires the individual
-        self._toolbox.register("evaluate", evaluate, self._experiments, self._simulator, self._global_attribute_names, self._per_joint_type_attribute_names)
+        self._toolbox.register("evaluate", SimOptimizer.evaluate,
+                               self._experiments, self._simulator, self._global_attribute_names, self._per_joint_type_attribute_names)
+
+        def mate(individual1, individual2):
+            i1, i2 = tools.cxBlend(individual1, individual2, alpha = 0.5)
+            SimOptimizer.clamp(i1, self._global_attribute_boundaries + self._per_joint_type_attribute_boundaries)
+            SimOptimizer.clamp(i2, self._global_attribute_boundaries + self._per_joint_type_attribute_boundaries)
+            return i1,i2
+
+        def mutate(individual):
+            tools.mutGaussian(individual, mu=0, sigma=5.0, indpb=0.2),
+            SimOptimizer.clamp(individual, self._global_attribute_boundaries + self._per_joint_type_attribute_boundaries)
+            return (individual,)
 
         # genetic operators to create new individuals
-        self._toolbox.register("mate", tools.cxBlend, alpha=0.5)
-        self._toolbox.register("mutate", tools.mutGaussian, mu=0, sigma=5.0, indpb=0.2)
+        self._toolbox.register("mate", mate)
+        self._toolbox.register("mutate", mutate)
         self._toolbox.register("select", tools.selTournament, tournsize=3)
 
     def run(self, seed : int = None):
@@ -138,8 +133,52 @@ class SimOptimizer:
         population, logbook = algorithms.eaSimple(
             population,
             self._toolbox,
+            stats=stats,
             halloffame=halloffame,
             cxpb=self._crossover_pb,
             mutpb=self._mutation_pb,
             ngen=self._max_gen)
-        return population, logbook
+        return population, logbook, stats
+
+    # -------- static methods --------
+
+    @staticmethod
+    def evaluate(experiments: Optional[list[tuple[Optional[str], Optional[str], Optional[int]]]],
+                 simulator: Simulator,
+                 global_attribute_names: list[str],
+                 per_joint_type_attribute_names: list[str],
+                 individual) -> tuple[float]:
+        """
+        Maps individual genes to simulator parameters,
+        runs simulation, and returns objective value.
+        """
+
+        # create simulation parameters
+        simulator_parameters = SimulationParameters("")
+        i = 0
+        for name in global_attribute_names:
+            setattr(simulator_parameters, name.split("_")[1], individual[i])
+            i += 1
+
+        for name in per_joint_type_attribute_names:
+            split_name = name.split("_")
+            name = split_name[1]
+            joint_type = int(split_name[2])
+            simulator_parameters.set_for_joint_type(joint_type, name, individual[i])
+            i += 1
+
+        # Run simulation
+        gap_handler = simulator.simulation_gap(simulator_parameters, experiments,
+                                               replay_mode=ExperimentMode.DEL_EXISTING)
+        gap_handler.set_scale_factors(0.1, 0.001)
+        gap = gap_handler.get_final_FINAL_gap_avg(lambda gap_object: SimulationGapData.get_total_gap_avg(gap_object))
+        # Return tuple (DEAP requirement)
+        return (gap,)
+
+    @staticmethod
+    def clamp(individual, bounds : list[tuple[float,float]]):
+        for i, (low, high) in enumerate(bounds):
+            if individual[i] < low:
+                individual[i] = low
+            elif individual[i] > high:
+                individual[i] = high

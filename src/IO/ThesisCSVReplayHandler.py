@@ -39,7 +39,8 @@ class ThesisCSVReplayHandler(XmlHandler):
             element.set(key, str(value))
 
     @override
-    def get_default(self) -> dict:
+    @staticmethod
+    def get_default() -> dict:
         return {
             "Kp": 12500,
             "Kd": 10000,

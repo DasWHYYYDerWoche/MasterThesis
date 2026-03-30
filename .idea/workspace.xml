@@ -4,42 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b8d71ec4-48b2-4ec5-b1a5-6fe6d26ab8b8" name="Changes" comment="features: moved constants into separate files&#10;added final gap calculation and scale factor calculation to simgaphandler">
-      <change afterPath="$PROJECT_DIR$/src/Constants/Optimization.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/IO/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/Optimizer/OneMaxTest.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/Optimizer/OneMaxTestShort.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/Optimizer/SimOptimizer.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/Optimizer/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/Structs/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/Thesis.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Thesis.iml" afterDir="false" />
+    <list default="true" id="b8d71ec4-48b2-4ec5-b1a5-6fe6d26ab8b8" name="Changes" comment="features: moved a bunch of files around to fix import problems...">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/main.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Simulator/ConfigurationHandler/ConfigurationHandler.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Simulator/ConfigurationHandler.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Simulator/ConfigurationHandler/LoggerCfgHandler.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/IO/LoggerCfgHandler.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Simulator/ConfigurationHandler/NaoV6H25Handler.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/IO/NaoV6H25Handler.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Simulator/ConfigurationHandler/ThesisCSVReplayHandler.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/IO/ThesisCSVReplayHandler.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Simulator/ConfigurationHandler/ThesisLogExtractionHandler.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/IO/ThesisLogExtractionHandler.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Simulator/ConfigurationHandler/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Simulator/ProcessContainer.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Simulator/ProcessContainer.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Simulator/Simulator.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Simulator/Simulator.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Utils/Constants.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Utils/Constants/Joints.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Constants/Joints.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Utils/Constants/Paths.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Constants/Paths.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Utils/Constants/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Constants/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Utils/ExperimentParameters.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Utils/ExperimentParameters.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Utils/FileHandler/CfgHandler.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/IO/CfgHandler.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Utils/FileHandler/FileHandler.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/IO/FileHandler.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Utils/FileHandler/XmlHandler.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/IO/XmlHandler.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Utils/FileHandler/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Utils/Hinge.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Structs/Joint.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Utils/SimulationGapData.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Utils/SimulationGapData.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Constants/Joints.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Constants/Joints.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/IO/ThesisCSVReplayHandler.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/IO/ThesisCSVReplayHandler.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Optimizer/SimOptimizer.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Optimizer/SimOptimizer.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Utils/SimulationParameters.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Utils/SimulationParameters.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Utils/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Utils/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Visualization/GapHandlerVisualizer.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Visualization/GapHandlerVisualizer.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Visualization/GapObjectVisualizer.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Visualization/GapObjectVisualizer.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/__init__.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/testing/gap_object_test.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/testing/gap_object_test.ipynb" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -177,14 +148,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1767698678177</updated>
-    </task>
-    <task id="LOCAL-00006" summary="feature: updated project structure and started moving code out of the simulator class">
-      <option name="closed" value="true" />
-      <created>1769010826963</created>
-      <option name="number" value="00006" />
-      <option name="presentableId" value="LOCAL-00006" />
-      <option name="project" value="LOCAL" />
-      <updated>1769010826963</updated>
     </task>
     <task id="LOCAL-00007" summary="fix: updated imports. Loading files now works correctly for all files">
       <option name="closed" value="true" />
@@ -570,7 +533,15 @@
       <option name="project" value="LOCAL" />
       <updated>1774520189019</updated>
     </task>
-    <option name="localTasksCounter" value="55" />
+    <task id="LOCAL-00055" summary="features: moved a bunch of files around to fix import problems...">
+      <option name="closed" value="true" />
+      <created>1774616133298</created>
+      <option name="number" value="00055" />
+      <option name="presentableId" value="LOCAL-00055" />
+      <option name="project" value="LOCAL" />
+      <updated>1774616133298</updated>
+    </task>
+    <option name="localTasksCounter" value="56" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -585,7 +556,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="feature:&#10;moved methods from ExperimentPerformer to Simulator&#10;&#10;moved SimulatorSettings to Simulator folder&#10;&#10;updated getDefault method in FileHandler to be static" />
     <MESSAGE value="fix:&#10;moved filehandler out of Simulator folder" />
     <MESSAGE value="fix:&#10;moved filehandlers from simulator into separate files" />
     <MESSAGE value="fix:&#10;moved files again and again help me pls&#10;feature:&#10;SimulatorSettings can now be saved to a file and loaded" />
@@ -610,6 +580,7 @@
     <MESSAGE value="features: update velocity and acceleration calculation to correctly account for step size. &#10;fix: updated gap_object_test.py to use correct step size for axis" />
     <MESSAGE value="features: further work on visualization of sim gap" />
     <MESSAGE value="features: moved constants into separate files&#10;added final gap calculation and scale factor calculation to simgaphandler" />
-    <option name="LAST_COMMIT_MESSAGE" value="features: moved constants into separate files&#10;added final gap calculation and scale factor calculation to simgaphandler" />
+    <MESSAGE value="features: moved a bunch of files around to fix import problems..." />
+    <option name="LAST_COMMIT_MESSAGE" value="features: moved a bunch of files around to fix import problems..." />
   </component>
 </project>
