@@ -147,20 +147,15 @@ class SimulationGapHandler:
         return max([max([gap_object.max_abs_acc() for gap_object in gap_objects])
                     for gap_objects in self._sim_gap_data.values()])
 
-    def get_scale_factors(self) -> tuple[float,float]:
-        avg_pos = self.avg_abs_pos()
-        avg_vel = self.avg_abs_vel()
-        avg_acc = self.avg_abs_acc()
-        print(avg_pos)
-        print(avg_vel)
-        print(avg_acc)
-        return avg_pos / avg_vel, avg_pos / avg_acc
+    def get_scale_factors(self) -> tuple[float,float,float]:
+        return self.max_abs_pos(), self.max_abs_vel(), self.max_abs_acc()
 
-    def set_scale_factors(self, vel_gap_factor: float, acc_gap_factor : float):
+    def set_scale_factors(self, max_pos : float, max_vel : float, max_acc : float):
         for gap_list in self._sim_gap_data.values():
             for gap_object in gap_list:
-                gap_object.vel_gap_factor = vel_gap_factor
-                gap_object.acc_gap_factor = acc_gap_factor
+                gap_object.pos_gap_factor = max_pos
+                gap_object.vel_gap_factor = max_vel
+                gap_object.acc_gap_factor = max_acc
 
     # -------- properties --------
 

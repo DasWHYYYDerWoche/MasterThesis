@@ -37,8 +37,11 @@ class SimulationParameters:
         """
         self._target_param_set_id : str = target_param_set_id
         self._source_param_set_id : Optional[str] = source_param_set_id
-
-        self._Kd, self._Kd, self._contactKd, self._contactKp = ThesisCSVReplayHandler.get_default().values()
+        defaults = ThesisCSVReplayHandler.get_default()
+        self._Kd = defaults["Kd"]
+        self._Kp = defaults["Kp"]
+        self._contactKd = defaults["contactKd"]
+        self._contactKp  = defaults["contactKp"]
         self._joint_parameters: dict[str, Joint] = NaoV6H25Handler.get_default()
         #setting source parameter
         if self._source_param_set_id:

@@ -37,6 +37,7 @@ class ExperimentParameters:
         self._param_set_id: str = param_set_id
         self._recording_date: str = recording_date
         self._log_index: int = log_index
+        self._move_robot = True if action_name == "standup_front" or action_name == "standup_back" else False
 
     def exists_log(self) -> bool:
         """
@@ -114,6 +115,10 @@ class ExperimentParameters:
     @property
     def log_index(self) -> int:
         return self._log_index
+
+    @property
+    def move_robot(self) -> bool:
+        return self._move_robot
 
     @property
     def log_path_relative(self) -> Path:

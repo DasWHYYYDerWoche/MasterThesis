@@ -35,7 +35,8 @@ class ConfigurationHandler:
             self._thesisLogExtractionHandler.write_to_file()
         else:
             self._loggerCfgHandler.set_replay(parameters.extraction_path_relative.as_posix(),
-                                              parameters.replay_path_relative.as_posix())
+                                              parameters.replay_path_relative.as_posix(),
+                                              parameters.move_robot)
             self._loggerCfgHandler.write_to_file()
             self._thesisLogExtractionHandler.set_default()
             self._thesisLogExtractionHandler.write_to_file()

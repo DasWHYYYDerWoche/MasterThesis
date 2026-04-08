@@ -1,3 +1,4 @@
+from os import mkdir
 from typing import Optional
 import numpy as np
 import random
@@ -5,6 +6,10 @@ from deap import base
 from deap import creator
 from deap import tools
 from deap import algorithms
+from datetime import datetime
+import pandas as pd
+import os
+from pathlib import Path
 
 from ..Constants import JOINT_TYPES
 from ..Simulator import Simulator
@@ -37,10 +42,10 @@ class SimOptimizer:
         self._initialization_offset = 0.1
         self._lower_bound_factor = 0.001
         self._upper_bound_factor = 100
-        self._population_size = 20
+        self._population_size = 3
         self._crossover_pb = 0.5
         self._mutation_pb = 0.2
-        self._max_gen = 20
+        self._max_gen = 5
 
         self._simulator = Simulator()
         self._simulator.batch_size = 5
@@ -119,16 +124,18 @@ class SimOptimizer:
         self._toolbox.register("select", tools.selTournament, tournsize=3)
 
     def run(self, seed : int = None):
+        current_time_str = datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
+        directory = Path("run_" + current_time_str)
+        self._create_log_file(directory)
+
         random.seed(seed)
-
-
         population = self._toolbox.population(n=self._population_size)
         stats = tools.Statistics(lambda ind: ind.fitness.values)
         stats.register("avg", np.mean)
         stats.register("min", np.min)
         stats.register("max", np.max)
 
-        halloffame = tools.HallOfFame(1)
+        halloffame = tools.HallOfFame(5)
 
         population, logbook = algorithms.eaSimple(
             population,
@@ -138,7 +145,32 @@ class SimOptimizer:
             cxpb=self._crossover_pb,
             mutpb=self._mutation_pb,
             ngen=self._max_gen)
+        df = pd.DataFrame(logbook)
+        df.to_csv(directory / "logbook", index=False)
+        df = pd.DataFrame(halloffame)
+        df.columns = self._global_attribute_names + self._per_joint_type_attribute_names
+        df.to_csv(directory / "hallOfFame", index=False)
+
         return population, logbook, stats
+
+    def _create_log_file(self, directory : Path):
+        full_path = os.getcwd() / directory / "Hyperparameters.txt"
+        full_path.parent.mkdir(parents=True)
+        text = ""
+        text += "population_size =" + str(self._population_size) + "\n"
+        text += "crossover_pb =" + str(self._crossover_pb) + "\n"
+        text += "mutation_pb =" + str(self._mutation_pb) + "\n"
+        text += "generations =" + str(self._max_gen) + "\n"
+        text += "initialization_offset =" + str(self._initialization_offset) + "\n"
+        f = None
+        try:
+            f = open(full_path, "w")
+            f.write(text)
+        except Exception as e:
+            raise e
+        finally:
+            if f is not None:
+                f.close()
 
     # -------- static methods --------
 

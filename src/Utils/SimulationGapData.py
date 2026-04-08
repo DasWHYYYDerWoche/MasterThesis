@@ -25,6 +25,7 @@ class SimulationGapData:
         self._log_index: int = log_index
         self._num_frames: int = -1
         self.load()
+        self._pos_gap_factor = 1
         self._vel_gap_factor = 1
         self._acc_gap_factor = 1
 
@@ -164,7 +165,7 @@ class SimulationGapData:
         Returns the squared difference between the position of the extraction and replay for the given joints and frames
         """
         return self._calculate_gap(self.get_pos_extraction(joint_names, start_index, end_index),
-                                   self.get_pos_replay(joint_names, start_index, end_index))
+                                   self.get_pos_replay(joint_names, start_index, end_index), self._pos_gap_factor)
 
     def get_vel_gaps(self,
                      joint_names: Optional[list[str]] = None,
@@ -410,12 +411,20 @@ class SimulationGapData:
         return self._num_frames
 
     @property
+    def pos_gap_factor(self):
+        return self._pos_gap_factor
+
+    @property
     def vel_gap_factor(self):
         return self._vel_gap_factor
 
     @property
     def acc_gap_factor(self):
         return self._acc_gap_factor
+
+    @pos_gap_factor.setter
+    def pos_gap_factor(self, value):
+        self._pos_gap_factor = value
 
     @vel_gap_factor.setter
     def vel_gap_factor(self, value):
@@ -498,7 +507,7 @@ class SimulationGapData:
     def _calculate_gap(self, d_extraction :  dict[str, list[float]], d_replay :  dict[str, list[float]], factor : float = 1) -> dict[str, list[float]]:
         gap = {}
         for joint_name in d_extraction.keys():
-            gap[joint_name] = [pow((p_replay - p_extraction) * factor, 2) for p_extraction, p_replay in zip(d_extraction[joint_name], d_replay[joint_name])]
+            gap[joint_name] = [pow((p_replay - p_extraction)/factor, 2) for p_extraction, p_replay in zip(d_extraction[joint_name], d_replay[joint_name])]
         return gap
 
     def _get_weighted_joint_average(self, dictionary: dict[str, list[float]]) -> list[float]:

@@ -120,7 +120,7 @@ class Simulator:
             self._configurationHandler.set_experiment_parameters(ep)
             #wait for a space so that the number of active processes does not exceed the batch_size
             self._wait_for_spot(process_list)
-            process_list.append(ProcessContainer(subprocess.Popen(str(PATH_EXECUTABLE) + " " + str(scene_path) + ".ros2",
+            process_list.append(ProcessContainer(subprocess.Popen(str(PATH_EXECUTABLE) + " " + str(scene_path) + ".ros2" + " -platform offscreen",
                                          stdout=subprocess.PIPE, text=True), ep_index))
         #wait for all remaining processes to be ready
         self._wait_for_ready(process_list)

@@ -32,19 +32,20 @@ class LoggerCfgHandler(CfgHandler):
             'logExtractionActive' : False,
             'csvReplayActive' : False,
             'logExtractionPath' : "",
-            'csvReplayPath' : ""
+            'csvReplayPath' : "",
+            'moveRobot' : False
         }
 
     def set(self, logging_active: bool, log_extraction_active: bool, csv_replay_active: bool,
-            log_extraction_path: str, csv_replay_path: str):
+            log_extraction_path: str, csv_replay_path: str, move_robot : bool):
         self._set_values(keys=list(self.get_default().keys()),
                          values=[logging_active, log_extraction_active, csv_replay_active,
-                                 log_extraction_path, csv_replay_path])
+                                 log_extraction_path, csv_replay_path, move_robot])
 
     def set_extract(self, log_extraction_folder_name: str):
         self.set(logging_active=True, log_extraction_active=True, csv_replay_active=False,
-                 log_extraction_path=log_extraction_folder_name, csv_replay_path="")
+                 log_extraction_path=log_extraction_folder_name, csv_replay_path="", move_robot=False)
 
-    def set_replay(self, log_extraction_folder_name : str, csv_replay_folder_name: str):
+    def set_replay(self, log_extraction_folder_name : str, csv_replay_folder_name: str, move_robot : bool):
         self.set(logging_active=True, log_extraction_active=False, csv_replay_active=True,
-                 log_extraction_path=log_extraction_folder_name, csv_replay_path=csv_replay_folder_name)
+                 log_extraction_path=log_extraction_folder_name, csv_replay_path=csv_replay_folder_name, move_robot=move_robot)
