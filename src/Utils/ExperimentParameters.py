@@ -15,9 +15,8 @@ class ExperimentType(Enum):
     CSV_REPLAY = 1
 
 class ExperimentMode(Enum):
-    FULL = 0 #TODO full doesnt make any sense if everything is extracted at most once
-    PARTIAL = 1
-    DEL_EXISTING = 2
+    PARTIAL = 0
+    DEL_EXISTING = 1
 
 class ExperimentParameters:
     """
@@ -37,7 +36,11 @@ class ExperimentParameters:
         self._param_set_id: str = param_set_id
         self._recording_date: str = recording_date
         self._log_index: int = log_index
-        self._move_robot = True if action_name == "standup_front" or action_name == "standup_back" else False
+        self._move_robot = -1
+        if action_name == "standup_back":
+            self._move_robot = 0
+        if action_name == "standup_front":
+            self._move_robot = 1
 
     def exists_log(self) -> bool:
         """
@@ -117,7 +120,7 @@ class ExperimentParameters:
         return self._log_index
 
     @property
-    def move_robot(self) -> bool:
+    def move_robot(self) -> int:
         return self._move_robot
 
     @property

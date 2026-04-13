@@ -177,6 +177,7 @@ class Simulator:
         logger.info("Starting Log Replaying")
         # create eps
         eps = ExperimentParameters.create_experiment_parameters(settings.target_param_set_id, data)
+        print(eps)
         # preprocessing
         if mode is ExperimentMode.DEL_EXISTING:
             for ep in eps:

@@ -55,7 +55,7 @@ class SimulationParameters:
         if self._type is SimulationParameters.Type.NEW or \
                 self._type is SimulationParameters.Type.NEW_WITH_BASE:
             if self.path_settings_target.exists():
-                logger.error("The target %s already exists and will be overwritten", self._target_param_set_id)
+                logger.warning("The target %s already exists and will be overwritten", self._target_param_set_id)
         if self._type is SimulationParameters.Type.REPEAT or \
             self._type is SimulationParameters.Type.NEW_WITH_BASE:
             if not self.path_settings_source.exists():
