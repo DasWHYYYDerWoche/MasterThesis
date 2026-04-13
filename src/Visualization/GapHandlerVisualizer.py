@@ -46,7 +46,7 @@ class GapHandlerVisualizer:
     def plt_all_gap_avg_for_frames(self, action_name: str,f_name : str,
                                    method: Callable[[SimulationGapData], list[float]],
                                    start_frame = 0, end_frame = -1,
-                                   line_type: str = "_"):
+                                   line_type: str = "-"):
         plt.figure(figsize=(20, 5))
         plt.title("value of " + f_name + " for " + action_name)
         plt.xlabel("frame")

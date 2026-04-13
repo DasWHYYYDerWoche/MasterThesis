@@ -33,6 +33,9 @@ class SimulationGapData:
         if self.loaded:
             return True
         path_replays: Path = get_replay_path_full(self._param_set_id, self._action_name, self._recording_date, self._log_index).parent
+        print(path_replays)
+        print(get_extraction_path_full(
+                self._action_name, self._recording_date, self._log_index).with_suffix(".csv"))
         #load extraction csv
         extraction : Optional[pandas.DataFrame] = pandas.read_csv(
             get_extraction_path_full(
@@ -507,7 +510,7 @@ class SimulationGapData:
     def _calculate_gap(self, d_extraction :  dict[str, list[float]], d_replay :  dict[str, list[float]], factor : float = 1) -> dict[str, list[float]]:
         gap = {}
         for joint_name in d_extraction.keys():
-            gap[joint_name] = [pow((p_replay - p_extraction)/factor, 2) for p_extraction, p_replay in zip(d_extraction[joint_name], d_replay[joint_name])]
+            gap[joint_name] = [pow((replay_value - extraction_value)/factor, 2) for extraction_value, replay_value in zip(d_extraction[joint_name], d_replay[joint_name])]
         return gap
 
     def _get_weighted_joint_average(self, dictionary: dict[str, list[float]]) -> list[float]:

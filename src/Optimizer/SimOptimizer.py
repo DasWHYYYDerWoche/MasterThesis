@@ -14,7 +14,7 @@ from pathlib import Path
 from ..Constants import JOINT_TYPES
 from ..Simulator import Simulator
 from ..Structs import Joint
-from ..Utils import SimulationGapData, ExperimentMode, SimulationParameters
+from ..Utils import SimulationGapHandler, SimulationGapData, ExperimentMode, SimulationParameters, ExperimentParameters
 
 import logging
 logger = logging.getLogger("global_logger")
@@ -24,7 +24,11 @@ class SimOptimizer:
     def __init__(self,
                  global_attributes : list[str],
                  per_joint_type_attributes : list[str],
-                 experiments : Optional[list[tuple[Optional[str], Optional[str], Optional[int]]]] = None):
+                 experiments : Optional[list[tuple[Optional[str], Optional[str], Optional[int]]]] = None,
+                 population_size : int = 20,
+                 max_gen : int = 100,
+                 crossover_pb : float = 0.5,
+                 mutation_pb : float = 0.2):
         """
         :param attribute_bounds: a dictionary containing the name of the attributes as keys and the lower and upper
         initialization bound as values
@@ -42,16 +46,27 @@ class SimOptimizer:
         self._initialization_offset = 0.1
         self._lower_bound_factor = 0.001
         self._upper_bound_factor = 100
-        self._population_size = 3
-        self._crossover_pb = 0.5
-        self._mutation_pb = 0.2
-        self._max_gen = 5
+
+        self._population_size = population_size
+        self._crossover_pb = crossover_pb
+        self._mutation_pb = mutation_pb
+        self._max_gen = max_gen
 
         self._simulator = Simulator()
         self._simulator.batch_size = 5
+
+        settings = SimulationParameters("default")
+        default_gap_handler = self._simulator.simulation_gap(settings)
+        self._pos_scale_factor, self._vel_scale_factor, self._acc_scale_factor = default_gap_handler.get_scale_factors()
+        print([self._pos_scale_factor, self._vel_scale_factor, self._acc_scale_factor])
+        default_gap_handler.unload()
+
         self._toolbox = base.Toolbox()
         self._create_classes()
         self._init_toolbox()
+
+
+
 
     def _create_classes(self):
         # create classes given a name, a baseclass and arguments given to the class during creation
@@ -63,8 +78,11 @@ class SimOptimizer:
         # creates a method attr_name for each attribute that samples a random value from their within its boundaries
         #global parameters
         for attribute_name in self._global_attributes:
+            print(attribute_name)
             value = self._simulator.get_default_value(attribute_name)
-            if type(value) is not float:
+            if type(value) is None:
+                print(attribute_name)
+                print(value)
                 logger.error("Global Parameter %s was not found", attribute_name)
             identifier = f"g_{attribute_name}"
             self._global_attribute_names.append(identifier)
@@ -103,9 +121,10 @@ class SimOptimizer:
         self._toolbox.register("population", tools.initRepeat, list, self._toolbox.individual)
 
         # creates a new method called evaluate based on the evaluate method above this class
-        # prefills 3 parameters, so only requires the individual
+        # prefills the given parameters, so only requires the individual
         self._toolbox.register("evaluate", SimOptimizer.evaluate,
-                               self._experiments, self._simulator, self._global_attribute_names, self._per_joint_type_attribute_names)
+                               self._experiments, self._simulator, self._global_attribute_names, self._per_joint_type_attribute_names,
+                               self._pos_scale_factor, self._vel_scale_factor, self._acc_scale_factor)
 
         def mate(individual1, individual2):
             i1, i2 = tools.cxBlend(individual1, individual2, alpha = 0.5)
@@ -179,6 +198,9 @@ class SimOptimizer:
                  simulator: Simulator,
                  global_attribute_names: list[str],
                  per_joint_type_attribute_names: list[str],
+                 pos_scale_factor : float,
+                 vel_scale_factor : float,
+                 acc_scale_factor : float,
                  individual) -> tuple[float]:
         """
         Maps individual genes to simulator parameters,
@@ -202,7 +224,7 @@ class SimOptimizer:
         # Run simulation
         gap_handler = simulator.simulation_gap(simulator_parameters, experiments,
                                                replay_mode=ExperimentMode.DEL_EXISTING)
-        gap_handler.set_scale_factors(0.1, 0.001)
+        gap_handler.set_scale_factors(pos_scale_factor, vel_scale_factor, acc_scale_factor)
         gap = gap_handler.get_final_FINAL_gap_avg(lambda gap_object: SimulationGapData.get_total_gap_avg(gap_object))
         # Return tuple (DEAP requirement)
         return (gap,)

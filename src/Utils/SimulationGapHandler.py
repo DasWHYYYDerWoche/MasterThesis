@@ -47,6 +47,11 @@ class SimulationGapHandler:
             return self._sim_gap_data[action_name][index]
         return None
 
+    def unload(self):
+        for gap_data_list in self._sim_gap_data.values():
+            for gap_data in gap_data_list:
+                gap_data.unload()
+
     # -------- averages over all replays of the same action --------
 
     def get_gap_avg_for_joints(self,
