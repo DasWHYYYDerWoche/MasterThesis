@@ -26,7 +26,7 @@ class GapHandlerVisualizer:
         plt.ylabel("value")
         for i, gap_object in enumerate(self._gap_handler.get_all(action_name)):
             data = method(gap_object)[joint_name]
-            plt.plot(gap_object.get_time_steps()[start_frame:end_frame], data, line_type, label=str(i))
+            plt.plot(gap_object.get_time_steps(start_frame,end_frame), data, line_type, label=str(i))
         plt.legend()
         plt.show()
 
@@ -53,7 +53,7 @@ class GapHandlerVisualizer:
         plt.ylabel("pos/vel/acc (gap)")
         for i, gap_object in enumerate(self._gap_handler.get_all(action_name)):
             data = method(gap_object)
-            plt.plot(gap_object.get_time_steps()[start_frame:end_frame], data, line_type, label=str(i))
+            plt.plot(gap_object.get_time_steps(start_frame, end_frame), data, line_type, label=str(i))
         plt.legend()
         plt.show()
 

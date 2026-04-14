@@ -63,7 +63,7 @@ class SimulationGapHandler:
         result = {}
         for action_name in action_names:
             result[action_name] = {}
-            partial_results : list[dict[str, float]]= []
+            partial_results : list[dict[str, float]] = []
             weights : list[float] = []
             for gap_object in self._sim_gap_data[action_name]:
                 partial_results.append(method(gap_object))

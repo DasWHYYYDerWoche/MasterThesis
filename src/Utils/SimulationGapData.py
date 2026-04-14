@@ -33,9 +33,6 @@ class SimulationGapData:
         if self.loaded:
             return True
         path_replays: Path = get_replay_path_full(self._param_set_id, self._action_name, self._recording_date, self._log_index).parent
-        print(path_replays)
-        print(get_extraction_path_full(
-                self._action_name, self._recording_date, self._log_index).with_suffix(".csv"))
         #load extraction csv
         extraction : Optional[pandas.DataFrame] = pandas.read_csv(
             get_extraction_path_full(
@@ -58,13 +55,11 @@ class SimulationGapData:
         self._merged = pandas.merge(left=extraction, right=replay, left_on="time", right_on="replayed_frame",
                                                 how='inner')
         self._merged.drop(columns=['replayed_frame'])
-        # correctly format time column
+        # normalize and rename time column
         self._merged.rename(columns={"time_x": "time"}, inplace=True)
         self._merged['time'] = self._merged['time'] - self._merged['time'][0]
 
         self._num_frames = len(self._merged)
-
-
         logger.info("Successfully loaded replays of log %s",
                     self._param_set_id + "," + self._action_name + "," + self._recording_date + "," + str(self._log_index))
         return True
@@ -80,7 +75,7 @@ class SimulationGapData:
             end_index = len(self._merged.index)
         if start_index > end_index:
             return []
-        return list(self._merged['time'])[start_index:end_index]
+        return list(self._merged['time'][start_index:end_index])
 
     # -------- get extraction/replay values --------
 
@@ -515,6 +510,6 @@ class SimulationGapData:
 
     def _get_weighted_joint_average(self, dictionary: dict[str, list[float]]) -> list[float]:
         keys = list(dictionary.keys())
-        values_as_matrix = np.array([dictionary[k] for k in keys])  # shape: (n_keys, list_length)
-        weights_as_matrix = np.array([WEIGHTS[k] for k in keys]) # shape: (n_keys, 1)
-        return np.average(values_as_matrix, weights=weights_as_matrix, axis=0).tolist() # axis 0 = rows
+        values_as_matrix = numpy.array([dictionary[k] for k in keys])  # shape: (n_keys, list_length)
+        weights_as_matrix = numpy.array([WEIGHTS[k] for k in keys]) # shape: (n_keys, 1)
+        return numpy.average(values_as_matrix, weights=weights_as_matrix, axis=0).tolist() # axis 0 = rows
