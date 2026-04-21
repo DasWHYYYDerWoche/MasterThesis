@@ -147,7 +147,7 @@ class GapObjectVisualizer:
         plt.ylabel(y_label)
         plt.grid(visible=True)
         for i, d in enumerate(data):
-            plt.plot(x_axis, d, line_type, color=colors[i], label=labels[i])
+            plt.plot(x_axis, d, linestyle=line_type, color=colors[i], label=labels[i], marker=".")
         plt.legend()
         plt.show()
 

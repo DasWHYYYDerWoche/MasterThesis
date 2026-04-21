@@ -1,11 +1,17 @@
 from __future__ import annotations
+
+from collections import Counter
 from typing import Optional
 from pathlib import Path
+import warnings
+
 
 import numpy
 import numpy as np
 import pandas
 from statistics import fmean
+
+from pandas.errors import PerformanceWarning
 
 from ..Constants import WEIGHTS, NAMES, get_extraction_path_full, get_replay_path_full
 
@@ -51,17 +57,22 @@ class SimulationGapData:
             logger.error("No replay at s% exist for log %s", path_replays, self._log_index)
             return False
         #merge extraction and replay
-        replay.drop(columns=['time'])
-        self._merged = pandas.merge(left=extraction, right=replay, left_on="time", right_on="replayed_frame",
+        if any([x > 12 for x in numpy.diff(replay['time'])]):
+            print(self.identifier)
+
+        replay = replay.drop(columns=['time'])
+        extraction = extraction.drop(columns=['time'])
+        self._merged = pandas.merge(left=extraction, right=replay, left_on="time_step", right_on="replayed_frame",
                                                 how='inner')
         self._merged.drop(columns=['replayed_frame'])
         # normalize and rename time column
-        self._merged.rename(columns={"time_x": "time"}, inplace=True)
-        self._merged['time'] = self._merged['time'] - self._merged['time'][0]
-
+        self._merged.rename(columns={"time_step_x": "time_step"}, inplace=True)
+        self._merged['time_step'] = self._merged['time_step'] - self._merged['time_step'][0]
         self._num_frames = len(self._merged)
         logger.info("Successfully loaded replays of log %s",
                     self._param_set_id + "," + self._action_name + "," + self._recording_date + "," + str(self._log_index))
+
+
         return True
 
     def unload(self):
@@ -75,7 +86,7 @@ class SimulationGapData:
             end_index = len(self._merged.index)
         if start_index > end_index:
             return []
-        return list(self._merged['time'][start_index:end_index])
+        return list(self._merged['time_step'][start_index:end_index])
 
     # -------- get extraction/replay values --------
 
@@ -199,24 +210,10 @@ class SimulationGapData:
         d_a = self.get_acc_gaps(joint_names, start_index, end_index)
         d_total = {}
         for joint in d_p.keys():
-            l_p = d_p[joint]
-            l_v = d_v[joint]
-            l_a = d_a[joint]
-            d_total[joint] = [p + v + a for p,v,a in zip(l_p, l_v, l_a)]
+            d_total[joint] = [p + v + a for p,v,a in zip(d_p[joint], d_v[joint], d_a[joint])]
         return d_total
 
     # -------- average for joints --------
-
-    def get_pos_gap_for_joints_TEST(self,
-                                    joint_names: Optional[list[str]] = None,
-                                    start_index: int = 0,
-                                    end_index: int = -1)\
-            -> dict[str, tuple[float, float]]:
-        """
-        Returns the average position sim gap for the given joints by averaging over all given frames.
-        """
-        return {joint_name : (float(np.average(sim_gaps)), float(np.std(sim_gaps))) for joint_name,sim_gaps in
-                self.get_pos_gaps(joint_names, start_index, end_index).items()}
 
     def get_pos_gap_for_joints(self,
                                joint_names: Optional[list[str]] = None,
@@ -226,7 +223,7 @@ class SimulationGapData:
         """
         Returns the average position sim gap for the given joints by averaging over all given frames.
         """
-        return {joint_name : fmean(sim_gaps) for joint_name,sim_gaps in
+        return {joint_name : float(np.nanmean(sim_gaps)) for joint_name,sim_gaps in
                 self.get_pos_gaps(joint_names, start_index, end_index).items()}
 
     def get_vel_gap_for_joints(self,
@@ -237,7 +234,7 @@ class SimulationGapData:
         """
         Returns the average velocity sim gap for the given joints by averaging over all given frames.
         """
-        return {joint_name : fmean(sim_gaps) for joint_name,sim_gaps in
+        return {joint_name : float(np.nanmean(sim_gaps)) for joint_name,sim_gaps in
                 self.get_vel_gaps(joint_names, start_index, end_index).items()}
 
     def get_acc_gap_for_joints(self,
@@ -248,7 +245,7 @@ class SimulationGapData:
         """
         Returns the average acceleration sim gap for the given joints by averaging over all given frames.
         """
-        return {joint_name : fmean(sim_gaps) for joint_name,sim_gaps in
+        return {joint_name : float(np.nanmean(sim_gaps)) for joint_name, sim_gaps in
                 self.get_acc_gaps(joint_names, start_index, end_index).items()}
 
     def get_total_gap_for_joints(self,
@@ -259,7 +256,7 @@ class SimulationGapData:
         """
         Returns the average total sim gap for the given joints by averaging over all given frames.
         """
-        return {joint_name : fmean(sim_gaps) for joint_name,sim_gaps in
+        return {joint_name : float(np.nanmean(sim_gaps)) for joint_name,sim_gaps in
                 self.get_total_gaps(joint_names, start_index, end_index).items()}
 
     # -------- average over all joints --------
@@ -310,39 +307,39 @@ class SimulationGapData:
         """
         Returns the position sim gap. Calculated by averaging over all given frames and joints
         """
-        return fmean(self.get_pos_gap_for_frames(joint_names, start_index, end_index))
+        return float(np.nanmean(self.get_pos_gap_for_frames(joint_names, start_index, end_index)))
 
     def get_vel_gap_avg(self, joint_names: Optional[list[str]] = None, start_index: int = 0, end_index: int = -1) -> float:
         """
         Returns the velocity sim gap. Calculated by averaging over all given frames and joints
         """
-        return fmean(self.get_vel_gap_for_frames(joint_names, start_index, end_index))
+        return float(np.nanmean(self.get_vel_gap_for_frames(joint_names, start_index, end_index)))
 
     def get_acc_gap_avg(self, joint_names: Optional[list[str]] = None, start_index: int = 0, end_index: int = -1) -> float:
         """
         Returns the acceleration sim gap. Calculated by averaging over all given frames and joints
         """
-        return fmean(self.get_acc_gap_for_frames(joint_names, start_index, end_index))
+        return float(np.nanmean(self.get_acc_gap_for_frames(joint_names, start_index, end_index)))
 
     def get_total_gap_avg(self, joint_names: Optional[list[str]] = None, start_index: int = 0, end_index: int = -1) -> float:
         """
         Returns the total velocity sim gap. Calculated by averaging over all given frames and joints
         """
-        return fmean(self.get_total_gap_for_frames(joint_names, start_index, end_index))
+        return float(np.nanmean(self.get_total_gap_for_frames(joint_names, start_index, end_index)))
 
     # testing methods (these should yield the same result (apart from small rounding errors) as the ones above)
 
     def _get_pos_gap_avg_test(self, joint_names: Optional[list[str]] = None, start_index: int = 0, end_index: int = -1) -> float:
-        return fmean(self.get_pos_gap_for_joints(joint_names, start_index, end_index).values())
+        return self._get_weighted_joint_average_single(self.get_pos_gap_for_joints(joint_names, start_index, end_index))
 
     def _get_vel_gap_avg_test(self, joint_names: Optional[list[str]] = None, start_index: int = 0, end_index: int = -1) -> float:
-        return fmean(self.get_vel_gap_for_joints(joint_names, start_index, end_index).values())
+        return self._get_weighted_joint_average_single(self.get_vel_gap_for_joints(joint_names, start_index, end_index))
 
     def _get_acc_gap_avg_test(self, joint_names: Optional[list[str]] = None, start_index: int = 0, end_index: int = -1) -> float:
-        return fmean(self.get_acc_gap_for_joints(joint_names, start_index, end_index).values())
+        return self._get_weighted_joint_average_single(self.get_acc_gap_for_joints(joint_names, start_index, end_index))
 
     def _get_total_gap_avg_test(self, joint_names: Optional[list[str]] = None, start_index: int = 0, end_index: int = -1) -> float:
-        return fmean(self.get_total_gap_for_joints(joint_names, start_index, end_index).values())
+        return self._get_weighted_joint_average_single(self.get_total_gap_for_joints(joint_names, start_index, end_index))
 
     # -------- utility methods --------
 
@@ -474,7 +471,7 @@ class SimulationGapData:
         result: dict[str, list[float]] = {}
         for joint_name in joint_names:
             positions = (self._merged["JSD_" + joint_name + column_name_extension]).to_numpy()
-            frames = (self._merged["time"].to_numpy()) / 1000
+            frames = (self._merged['time_step'].to_numpy()) / 1000 #1000 for ms
             result[joint_name] = ([0] + (numpy.diff(positions) / numpy.diff(frames)).tolist())[start_index:end_index]
         return result
 
@@ -497,7 +494,7 @@ class SimulationGapData:
         result: dict[str, list[float]] = {}
         for joint_name in joint_names:
             positions = (self._merged["JSD_" + joint_name + column_name_extension]).to_numpy()
-            frames = (self._merged["time"].to_numpy()) / 1000
+            frames = (self._merged['time_step'].to_numpy()) / 1000 #1000 for ms
             velocity = ((numpy.diff(positions) / numpy.diff(frames)).tolist())
             result[joint_name] = ([0,0] + (numpy.diff(velocity) / numpy.diff(frames[1:])).tolist())[start_index:end_index]
         return result
@@ -509,7 +506,13 @@ class SimulationGapData:
         return gap
 
     def _get_weighted_joint_average(self, dictionary: dict[str, list[float]]) -> list[float]:
-        keys = list(dictionary.keys())
-        values_as_matrix = numpy.array([dictionary[k] for k in keys])  # shape: (n_keys, list_length)
-        weights_as_matrix = numpy.array([WEIGHTS[k] for k in keys]) # shape: (n_keys, 1)
-        return numpy.average(values_as_matrix, weights=weights_as_matrix, axis=0).tolist() # axis 0 = rows
+        return (numpy.average([dictionary[k] for k in dictionary.keys()],
+                             weights=[WEIGHTS[k] for k in dictionary.keys()],
+                             axis=0)
+                .tolist()) # axis 0 = rows
+
+    def _get_weighted_joint_average_single(self, dictionary: dict[str, float]) -> float:
+        return (numpy.average([dictionary[k] for k in dictionary.keys()],
+                             weights=[WEIGHTS[k] for k in dictionary.keys()],
+                             axis=0)
+                .tolist()) # axis 0 = rows

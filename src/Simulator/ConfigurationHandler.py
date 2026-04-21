@@ -29,14 +29,14 @@ class ConfigurationHandler:
 
     def set_experiment_parameters(self, parameters : ExperimentParameters):
         if parameters.param_set_id is None:
-            self._loggerCfgHandler.set_extract(parameters.extraction_path_relative.as_posix())
+            self._loggerCfgHandler.set_extract(parameters.extraction_path_relative.as_posix(), parameters.recording_duration)
             self._loggerCfgHandler.write_to_file()
             self._thesisLogExtractionHandler.set(parameters.log_path_relative.as_posix())
             self._thesisLogExtractionHandler.write_to_file()
         else:
             self._loggerCfgHandler.set_replay(parameters.extraction_path_relative.as_posix(),
                                               parameters.replay_path_relative.as_posix(),
-                                              parameters.move_robot)
+                                              parameters.move_robot, parameters.recording_duration)
             self._loggerCfgHandler.write_to_file()
             self._thesisLogExtractionHandler.set_default()
             self._thesisLogExtractionHandler.write_to_file()

@@ -5,7 +5,8 @@ from typing import Optional
 from ..Constants import (PATH_FIELD_LOGS, PATH_LOGS_AS_CSVS,
                         get_field_logs_path_partial, get_replay_path_full,
                        get_replay_path_partial, get_extraction_path_partial,
-                       get_extraction_path_full, get_field_logs_path_full)
+                       get_extraction_path_full, get_field_logs_path_full,
+                         RECORDING_DURATIONS)
 
 import logging
 logger = logging.getLogger("global_logger")
@@ -41,6 +42,7 @@ class ExperimentParameters:
             self._move_robot = 0
         if action_name == "standup_front":
             self._move_robot = 1
+        self._recording_duration = RECORDING_DURATIONS[action_name]
 
     def exists_log(self) -> bool:
         """
@@ -122,6 +124,10 @@ class ExperimentParameters:
     @property
     def move_robot(self) -> int:
         return self._move_robot
+
+    @property
+    def recording_duration(self) -> int:
+        return self._recording_duration
 
     @property
     def log_path_relative(self) -> Path:
