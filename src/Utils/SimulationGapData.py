@@ -30,6 +30,7 @@ class SimulationGapData:
         self._recording_date: str = recording_date
         self._log_index: int = log_index
         self._num_frames: int = -1
+        self._dt = None
         self.load()
         self._pos_gap_factor = 1
         self._vel_gap_factor = 1
@@ -57,13 +58,11 @@ class SimulationGapData:
             logger.error("No replay at s% exist for log %s", path_replays, self._log_index)
             return False
         #merge extraction and replay
-        if any([x > 12 for x in numpy.diff(replay['time'])]):
-            print(self.identifier)
-
         replay = replay.drop(columns=['time'])
         extraction = extraction.drop(columns=['time'])
-        self._merged = pandas.merge(left=extraction, right=replay, left_on="time_step", right_on="replayed_frame",
-                                                how='inner')
+        self._merged = pandas.merge(left=extraction, right=replay,
+                                    left_on="time_step", right_on="replayed_frame",
+                                    how='inner')
         self._merged.drop(columns=['replayed_frame'])
         # normalize and rename time column
         self._merged.rename(columns={"time_step_x": "time_step"}, inplace=True)
@@ -72,7 +71,25 @@ class SimulationGapData:
         logger.info("Successfully loaded replays of log %s",
                     self._param_set_id + "," + self._action_name + "," + self._recording_date + "," + str(self._log_index))
 
+        self._dt = np.diff(self._merged['time_step'] / 1000)
 
+        self._gyro_x_pos_diff = pow(np.cumsum(self._merged['ISD_x_gyro_x'][:-1] * self._dt) -
+                              np.cumsum(self._merged['ISD_x_gyro_y'][:-1] * self._dt), 2)
+        self._gyro_y_pos_diff = pow(np.cumsum(self._merged['ISD_y_gyro_x'][:-1] * self._dt) -
+                              np.cumsum(self._merged['ISD_y_gyro_y'][:-1] * self._dt),2)
+        self._gyro_z_pos_diff = pow(np.cumsum(self._merged['ISD_z_gyro_x'][:-1] * self._dt) -
+                              np.cumsum(self._merged['ISD_z_gyro_y'][:-1] * self._dt),2)
+
+
+
+        gyro_x_vel_diff = abs(self._merged['ISD_x_gyro_x'] - self._merged['ISD_x_gyro_y'])
+        gyro_y_vel_diff = abs(self._merged['ISD_y_gyro_x'] - self._merged['ISD_y_gyro_y'])
+        gyro_z_vel_diff = abs(self._merged['ISD_z_gyro_x'] - self._merged['ISD_z_gyro_y'])
+        '''
+        gyro_x_acc_diff = abs(np.diff(self._merged['ISD_x_gyro_x']) - np.diff(self._merged['ISD_x_gyro_y']))
+        gyro_y_acc_diff = abs(np.diff(self._merged['ISD_y_gyro_x']) - np.diff(self._merged['ISD_y_gyro_y']))
+        gyro_z_acc_diff = abs(np.diff(self._merged['ISD_z_gyro_x']) - np.diff(self._merged['ISD_z_gyro_y']))
+        '''
         return True
 
     def unload(self):
@@ -88,7 +105,213 @@ class SimulationGapData:
             return []
         return list(self._merged['time_step'][start_index:end_index])
 
+    # -------- get punish factor --------
+
+    def get_punish_factor(self, start_index: int = 0,
+                           end_index: int = -1) \
+            -> list[float]:
+        if start_index < 0:
+            start_index = 0
+        if end_index == -1:
+            end_index = len(self._merged.index)
+        if start_index > end_index:
+            return []
+
+    # -------- get gyro extraction/replay values --------
+
+    def get_gyro_pos_extraction(self,
+                                start_index: int = 0,
+                                end_index: int = -1) \
+            -> tuple[list[float],list[float],list[float]]:
+        if start_index < 0:
+            start_index = 0
+        if end_index == -1:
+            end_index = len(self._merged.index)
+        if start_index > end_index:
+            return [],[],[]
+        gyro_x = ([float('nan')] + list(np.cumsum(self._merged['ISD_x_gyro_x'][:-1] * self._dt)))[start_index:end_index]
+        gyro_y = ([float('nan')] + list(np.cumsum(self._merged['ISD_y_gyro_x'][:-1] * self._dt)))[start_index:end_index]
+        gyro_z = ([float('nan')] + list(np.cumsum(self._merged['ISD_z_gyro_x'][:-1] * self._dt)))[start_index:end_index]
+        return gyro_x, gyro_y, gyro_z
+
+    def get_gyro_pos_replay(self,
+                                start_index: int = 0,
+                                end_index: int = -1) \
+            -> tuple[list[float],list[float],list[float]]:
+        if start_index < 0:
+            start_index = 0
+        if end_index == -1:
+            end_index = len(self._merged.index)
+        if start_index > end_index:
+            return [],[],[]
+        gyro_x = ([float('nan')] + list(np.cumsum(self._merged['ISD_x_gyro_y'][:-1] * self._dt)))[start_index:end_index]
+        gyro_y = ([float('nan')] + list(np.cumsum(self._merged['ISD_y_gyro_y'][:-1] * self._dt)))[start_index:end_index]
+        gyro_z = ([float('nan')] + list(np.cumsum(self._merged['ISD_z_gyro_y'][:-1] * self._dt)))[start_index:end_index]
+        return gyro_x, gyro_y, gyro_z
+
+    def get_gyro_vel_extraction(self,
+                                start_index: int = 0,
+                                end_index: int = -1) \
+            -> tuple[list[float],list[float],list[float]]:
+        if start_index < 0:
+            start_index = 0
+        if end_index == -1:
+            end_index = len(self._merged.index)
+        if start_index > end_index:
+            return [],[],[]
+        gyro_x = list(self._merged['ISD_x_gyro_x'][start_index:end_index])
+        gyro_y = list(self._merged['ISD_y_gyro_x'][start_index:end_index])
+        gyro_z = list(self._merged['ISD_z_gyro_x'][start_index:end_index])
+        return gyro_x, gyro_y, gyro_z
+
+    def get_gyro_vel_replay(self,
+                                start_index: int = 0,
+                                end_index: int = -1) \
+            -> tuple[list[float],list[float],list[float]]:
+        if start_index < 0:
+            start_index = 0
+        if end_index == -1:
+            end_index = len(self._merged.index)
+        if start_index > end_index:
+            return [],[],[]
+        gyro_x = list(self._merged['ISD_x_gyro_y'][start_index:end_index])
+        gyro_y = list(self._merged['ISD_y_gyro_y'][start_index:end_index])
+        gyro_z = list(self._merged['ISD_z_gyro_y'][start_index:end_index])
+        return gyro_x, gyro_y, gyro_z
+
+    def get_gyro_acc_extraction(self,
+                                start_index: int = 0,
+                                end_index: int = -1) \
+            -> tuple[list[float],list[float],list[float]]:
+        if start_index < 0:
+            start_index = 0
+        if end_index == -1:
+            end_index = len(self._merged.index)
+        if start_index > end_index:
+            return [],[],[]
+        gyro_x = ([float('nan')] + list(np.diff(self._merged['ISD_x_gyro_x']) / self._dt))[start_index:end_index]
+        gyro_y = ([float('nan')] + list(np.diff(self._merged['ISD_y_gyro_x']) / self._dt))[start_index:end_index]
+        gyro_z = ([float('nan')] + list(np.diff(self._merged['ISD_z_gyro_x']) / self._dt))[start_index:end_index]
+        return gyro_x, gyro_y, gyro_z
+
+    def get_gyro_acc_replay(self,
+                                start_index: int = 0,
+                                end_index: int = -1) \
+            -> tuple[list[float],list[float],list[float]]:
+        if start_index < 0:
+            start_index = 0
+        if end_index == -1:
+            end_index = len(self._merged.index)
+        if start_index > end_index:
+            return [],[],[]
+        gyro_x = ([float('nan')] + list(np.diff(self._merged['ISD_x_gyro_y']) / self._dt))[start_index:end_index]
+        gyro_y = ([float('nan')] + list(np.diff(self._merged['ISD_y_gyro_y']) / self._dt))[start_index:end_index]
+        gyro_z = ([float('nan')] + list(np.diff(self._merged['ISD_z_gyro_y']) / self._dt))[start_index:end_index]
+        return gyro_x, gyro_y, gyro_z
+
+    # -------- get accelerometer extraction/replay values --------
+
+    def get_accelerometer_pos_replay(self,
+                                start_index: int = 0,
+                                end_index: int = -1) \
+            -> tuple[list[float],list[float],list[float]]:
+        if start_index < 0:
+            start_index = 0
+        if end_index == -1:
+            end_index = len(self._merged.index)
+        if start_index > end_index:
+            return [], [], []
+        acc_vel_x = list(np.cumsum(self._merged['ISD_z_acc_x'][:-1] * self._dt))
+        acc_vel_y = list(np.cumsum(self._merged['ISD_y_acc_x'][:-1] * self._dt))
+        acc_vel_z = list(np.cumsum(self._merged['ISD_x_acc_x'][:-1] * self._dt))
+        acc_x = ([float('nan'),float('nan')] + list(np.cumsum(acc_vel_x[:-1] * self._dt[:-1])))[start_index:end_index]
+        acc_y = ([float('nan'),float('nan')] + list(np.cumsum(acc_vel_y[:-1] * self._dt[:-1])))[start_index:end_index]
+        acc_z = ([float('nan'),float('nan')] + list(np.cumsum(acc_vel_z[:-1] * self._dt[:-1])))[start_index:end_index]
+        return acc_x, acc_y, acc_z
+
+    def get_accelerometer_pos_extraction(self,
+                                start_index: int = 0,
+                                end_index: int = -1) \
+            -> tuple[list[float],list[float],list[float]]:
+        if start_index < 0:
+            start_index = 0
+        if end_index == -1:
+            end_index = len(self._merged.index)
+        if start_index > end_index:
+            return [], [], []
+        acc_vel_x = list(np.cumsum(self._merged['ISD_z_acc_y'][:-1] * self._dt))
+        acc_vel_y = list(np.cumsum(self._merged['ISD_y_acc_y'][:-1] * self._dt))
+        acc_vel_z = list(np.cumsum(self._merged['ISD_x_acc_y'][:-1] * self._dt))
+        acc_x = ([float('nan'), float('nan')] + list(np.cumsum(acc_vel_x[:-1] * self._dt[:-1])))[start_index:end_index]
+        acc_y = ([float('nan'), float('nan')] + list(np.cumsum(acc_vel_y[:-1] * self._dt[:-1])))[start_index:end_index]
+        acc_z = ([float('nan'), float('nan')] + list(np.cumsum(acc_vel_z[:-1] * self._dt[:-1])))[start_index:end_index]
+        return acc_x, acc_y, acc_z
+
+    def get_accelerometer_vel_replay(self,
+                             start_index: int = 0,
+                             end_index: int = -1) \
+            -> tuple[list[float], list[float], list[float]]:
+        if start_index < 0:
+            start_index = 0
+        if end_index == -1:
+            end_index = len(self._merged.index)
+        if start_index > end_index:
+            return [], [], []
+        acc_x = ([float('nan')] + list(np.cumsum(self._merged['ISD_x_acc_x'][:-1] * self._dt)))[start_index:end_index]
+        acc_y = ([float('nan')] + list(np.cumsum(self._merged['ISD_y_acc_x'][:-1] * self._dt)))[start_index:end_index]
+        acc_z = ([float('nan')] + list(np.cumsum(self._merged['ISD_z_acc_x'][:-1] * self._dt)))[start_index:end_index]
+        return acc_x, acc_y, acc_z
+
+    def get_accelerometer_vel_extraction(self,
+                                 start_index: int = 0,
+                                 end_index: int = -1) \
+            -> tuple[list[float], list[float], list[float]]:
+        if start_index < 0:
+            start_index = 0
+        if end_index == -1:
+            end_index = len(self._merged.index)
+        if start_index > end_index:
+            return [], [], []
+        acc_x = ([float('nan')] + list(np.cumsum(self._merged['ISD_x_acc_y'][:-1] * self._dt)))[start_index:end_index]
+        acc_y = ([float('nan')] + list(np.cumsum(self._merged['ISD_y_acc_y'][:-1] * self._dt)))[start_index:end_index]
+        acc_z = ([float('nan')] + list(np.cumsum(self._merged['ISD_z_acc_y'][:-1] * self._dt)))[start_index:end_index]
+        return acc_x, acc_y, acc_z
+
+    def get_accelerometer_acc_replay(self,
+                             start_index: int = 0,
+                             end_index: int = -1) \
+            -> tuple[list[float], list[float], list[float]]:
+        if start_index < 0:
+            start_index = 0
+        if end_index == -1:
+            end_index = len(self._merged.index)
+        if start_index > end_index:
+            return [], [], []
+        acc_x = list(self._merged['ISD_x_acc_x'][start_index:end_index])
+        acc_y = list(self._merged['ISD_y_acc_x'][start_index:end_index])
+        acc_z = list(self._merged['ISD_z_acc_x'][start_index:end_index])
+        return acc_x, acc_y, acc_z
+
+    def get_accelerometer_acc_extraction(self,
+                                 start_index: int = 0,
+                                 end_index: int = -1) \
+            -> tuple[list[float], list[float], list[float]]:
+        if start_index < 0:
+            start_index = 0
+        if end_index == -1:
+            end_index = len(self._merged.index)
+        if start_index > end_index:
+            return [], [], []
+        acc_x = list(self._merged['ISD_x_acc_y'][start_index:end_index])
+        acc_y = list(self._merged['ISD_y_acc_y'][start_index:end_index])
+        acc_z = list(self._merged['ISD_z_acc_y'][start_index:end_index])
+        return acc_x, acc_y, acc_z
+
+
     # -------- get extraction/replay values --------
+
+
+
 
     def get_pos_extraction(self,
                            joint_names: Optional[list[str]] = None,
