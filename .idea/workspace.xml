@@ -8,7 +8,6 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/main.ipynb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Utils/SimulationGapData.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Utils/SimulationGapData.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Visualization/GapObjectVisualizer.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Visualization/GapObjectVisualizer.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/testing/gap_object_test.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/testing/gap_object_test.ipynb" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -60,7 +59,7 @@
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;master&quot;,
     &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;
+    &quot;settings.editor.selected.configurable&quot;: &quot;org.jetbrains.plugins.github.ui.GithubSettingsConfigurable&quot;
   }
 }</component>
   <component name="PyConsoleOptionsProvider">
@@ -146,14 +145,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1767698678177</updated>
-    </task>
-    <task id="LOCAL-00013" summary="feature:&#10;- added additional logging to set_value and set_values methods in FileHandler&#10;- made methods set_values and set_value private">
-      <option name="closed" value="true" />
-      <created>1769684468121</created>
-      <option name="number" value="00013" />
-      <option name="presentableId" value="LOCAL-00013" />
-      <option name="project" value="LOCAL" />
-      <updated>1769684468121</updated>
     </task>
     <task id="LOCAL-00014" summary="fix:&#10;-changed logging level for file loading to info&#10;-changed logging level for set_value(s) to warning when the key does not exist">
       <option name="closed" value="true" />
@@ -539,7 +530,15 @@
       <option name="project" value="LOCAL" />
       <updated>1776767147126</updated>
     </task>
-    <option name="localTasksCounter" value="62" />
+    <task id="LOCAL-00062" summary="added visualization for gyro and accelerometer">
+      <option name="closed" value="true" />
+      <created>1776842826186</created>
+      <option name="number" value="00062" />
+      <option name="presentableId" value="LOCAL-00062" />
+      <option name="project" value="LOCAL" />
+      <updated>1776842826186</updated>
+    </task>
+    <option name="localTasksCounter" value="63" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -554,7 +553,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="feature:&#10;moved path building into constants class&#10;started work on loading csvs to calculate sim gap" />
     <MESSAGE value="- feature: test sim gap can be calculated for each joint" />
     <MESSAGE value="- fix: batches now work correctly for replays with multiple copies" />
     <MESSAGE value="feature:&#10;updated run method to allow for better multithreading" />
@@ -579,6 +577,7 @@
     <MESSAGE value="fix: changed loggerT variables from bool to int" />
     <MESSAGE value="fix: GapVisualizer now correctly passes the start and end frames&#10;formatting: removed prints and empty liens from GapData and GapHandler" />
     <MESSAGE value="feature: time column in csvs renamed to time_step.&#10;feature: added recording duration to logger csv and added constants in Actions.py" />
-    <option name="LAST_COMMIT_MESSAGE" value="feature: time column in csvs renamed to time_step.&#10;feature: added recording duration to logger csv and added constants in Actions.py" />
+    <MESSAGE value="added visualization for gyro and accelerometer" />
+    <option name="LAST_COMMIT_MESSAGE" value="added visualization for gyro and accelerometer" />
   </component>
 </project>
