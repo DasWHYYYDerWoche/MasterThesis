@@ -23,7 +23,8 @@ class SimulationGapData:
     can load extracted log and its replay to calculate various parts of the simulation gap
     """
 
-    def __init__(self, param_set_id: str, action_name: str, recording_date: str, log_index: int):
+    def __init__(self, param_set_id: str, action_name: str, recording_date: str, log_index: int,
+                 pos_scale_factor : float = 1, vel_scale_factor : float = 1, acc_scale_factor : float = 1):
         self._merged : Optional[pandas.DataFrame] = None
         self._param_set_id: str = param_set_id
         self._action_name: str = action_name
@@ -32,9 +33,9 @@ class SimulationGapData:
         self._num_frames: int = -1
         self._dt = None
         self.load()
-        self._pos_gap_factor = 1
-        self._vel_gap_factor = 1
-        self._acc_gap_factor = 1
+        self._pos_gap_factor = pos_scale_factor
+        self._vel_gap_factor = vel_scale_factor
+        self._acc_gap_factor = acc_scale_factor
 
     def load(self) -> bool:
         if self.loaded:
@@ -72,24 +73,6 @@ class SimulationGapData:
                     self._param_set_id + "," + self._action_name + "," + self._recording_date + "," + str(self._log_index))
 
         self._dt = np.diff(self._merged['time_step'] / 1000)
-
-        self._gyro_x_pos_diff = pow(np.cumsum(self._merged['ISD_x_gyro_x'][:-1] * self._dt) -
-                              np.cumsum(self._merged['ISD_x_gyro_y'][:-1] * self._dt), 2)
-        self._gyro_y_pos_diff = pow(np.cumsum(self._merged['ISD_y_gyro_x'][:-1] * self._dt) -
-                              np.cumsum(self._merged['ISD_y_gyro_y'][:-1] * self._dt),2)
-        self._gyro_z_pos_diff = pow(np.cumsum(self._merged['ISD_z_gyro_x'][:-1] * self._dt) -
-                              np.cumsum(self._merged['ISD_z_gyro_y'][:-1] * self._dt),2)
-
-
-
-        gyro_x_vel_diff = abs(self._merged['ISD_x_gyro_x'] - self._merged['ISD_x_gyro_y'])
-        gyro_y_vel_diff = abs(self._merged['ISD_y_gyro_x'] - self._merged['ISD_y_gyro_y'])
-        gyro_z_vel_diff = abs(self._merged['ISD_z_gyro_x'] - self._merged['ISD_z_gyro_y'])
-        '''
-        gyro_x_acc_diff = abs(np.diff(self._merged['ISD_x_gyro_x']) - np.diff(self._merged['ISD_x_gyro_y']))
-        gyro_y_acc_diff = abs(np.diff(self._merged['ISD_y_gyro_x']) - np.diff(self._merged['ISD_y_gyro_y']))
-        gyro_z_acc_diff = abs(np.diff(self._merged['ISD_z_gyro_x']) - np.diff(self._merged['ISD_z_gyro_y']))
-        '''
         return True
 
     def unload(self):
@@ -583,6 +566,8 @@ class SimulationGapData:
     def max_abs_pos(self) -> float:
         extraction_max = max([max([abs(value) for value in values]) for values in self.get_pos_extraction().values()])
         replay_max = max([max([abs(value) for value in values]) for values in self.get_pos_replay().values()])
+        if extraction_max > 191 or replay_max > 191:
+            print(self.identifier)
         return max(extraction_max, replay_max)
 
     def max_abs_vel(self) -> float:

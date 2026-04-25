@@ -27,19 +27,21 @@ class ConfigurationHandler:
         self._thesisCSVReplayHandler = ThesisCSVReplayHandler()
         self._thesisLogExtractionHandler = ThesisLogExtractionHandler()
 
-    def set_experiment_parameters(self, parameters : ExperimentParameters):
-        if parameters.param_set_id is None:
-            self._loggerCfgHandler.set_extract(parameters.extraction_path_relative.as_posix(), parameters.recording_duration)
-            self._loggerCfgHandler.write_to_file()
-            self._thesisLogExtractionHandler.set(parameters.log_path_relative.as_posix())
-            self._thesisLogExtractionHandler.write_to_file()
-        else:
-            self._loggerCfgHandler.set_replay(parameters.extraction_path_relative.as_posix(),
-                                              parameters.replay_path_relative.as_posix(),
-                                              parameters.move_robot, parameters.recording_duration)
-            self._loggerCfgHandler.write_to_file()
-            self._thesisLogExtractionHandler.set_default()
-            self._thesisLogExtractionHandler.write_to_file()
+    def set_extraction_parameters(self, parameters : ExperimentParameters):
+        self._loggerCfgHandler.set_extract(parameters.extraction_path_relative.as_posix(), parameters.recording_duration)
+        self._loggerCfgHandler.write_to_file()
+        self._thesisLogExtractionHandler.set(parameters.log_path_relative.as_posix())
+        self._thesisLogExtractionHandler.write_to_file()
+
+    def set_replay_parameters(self, eps : list[ExperimentParameters]):
+        self._loggerCfgHandler.set_default()
+        for ep in eps:
+            self._loggerCfgHandler.append_replay(ep.extraction_path_relative.as_posix(),
+                                                 ep.replay_path_relative.as_posix(),
+                                                 ep.move_robot)
+        self._loggerCfgHandler.write_to_file()
+        self._thesisLogExtractionHandler.set_default()
+        self._thesisLogExtractionHandler.write_to_file()
 
     def set_simulation_parameters(self, parameters : SimulationParameters):
         if parameters.Kd:

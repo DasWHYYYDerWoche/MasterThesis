@@ -22,23 +22,31 @@ class CfgHandler(FileHandler, ABC):
         f = None
         try:
             f = open(self._path, "r")
-            text = f.read()
-            pattern = re_compile(r'(\w+)\s*=\s*(.+?);')
-            for key, raw_value in pattern.findall(text):
-                value = raw_value.strip()
-                # Convert value to appropriate Python type
-                if value.lower() == "true":
+            for line in f:
+                line = line.strip()
+                if not line or "=" not in line:
+                    continue
+                key,raw_value = line.split("=")
+                key = key.strip()
+                raw_value = raw_value.strip().rstrip(";")
+                if raw_value.lower() == "true":
                     value = True
-                elif value.lower() == "false":
+                elif raw_value.lower() == "false":
                     value = False
-                elif value.startswith('"') and value.endswith('"'):
-                    value = value[1:-1]  # remove quotes
+                elif raw_value.startswith('"') and raw_value.endswith('"'):
+                    value = raw_value[1:-1]  # remove quotes
+                elif raw_value.startswith('[') and raw_value.endswith(']'):
+                    raw_value = raw_value[1:-1] #remove brackets
+                    value = [element for element in raw_value.split(',')]
+                    try:
+                        value = [int(element) for element in value]
+                    except ValueError:
+                        pass
                 else:
                     try:
-                        value = int(value)
+                        value = int(raw_value)
                     except ValueError:
-                        # leave value as string
-                        pass
+                        value = raw_value
                 self._data[key] = value
         except Exception as e:
             raise e
@@ -53,7 +61,15 @@ class CfgHandler(FileHandler, ABC):
             if isinstance(value, bool):
                 val_str = "true" if value else "false"
             elif isinstance(value, str):
-                val_str = f'"{value}"'
+                val_str = value
+            elif isinstance(value, list):
+                val_str = "["
+                for element in value:
+                    val_str += str(element)
+                    val_str += ","
+                if len(val_str) > 1:
+                    val_str = val_str[0:-1]
+                val_str += "]"
             else:
                 val_str = str(value)
             text += f"{key} = {val_str};\n"

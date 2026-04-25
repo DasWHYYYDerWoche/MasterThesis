@@ -13,10 +13,8 @@ import logging
 logger = logging.getLogger("global_logger")
 
 
-class Simulator:
+class SimulatorHandler:
     """
-    TODO: rename to SimulatorHandler
-
     Controls the simulator. Can create and run instances of it in parallel to perform experiments.
 
     This is a singleton to ensure the simulator is only started from one source at a time.
@@ -36,12 +34,14 @@ class Simulator:
         self._initialized = True
 
         self._configurationHandler = ConfigurationHandler()
-        self._MAX_INSTANCES = 5
+        self._MAX_INSTANCES = 30
 
-        self._batch_size = 2
-        self._max_wait_for_ready = 10
-        self._max_wait_for_finish = 20
-        self._show_ui = True #TODO
+        self._num_instances = 2
+        self._replays_per_instance = 2
+
+        self._max_wait_for_ready = 5
+        self._max_wait_for_finish = 60
+        self._show_ui = True
 
 
     def _wait_for_ready(self, process_list : list[ProcessContainer]):
@@ -56,7 +56,23 @@ class Simulator:
                     p.terminate()
                     logger.warning("Process %s was terminated for not being ready after %s seconds", p.ep_index,
                                    self._max_wait_for_ready)
-            time.sleep(self._max_wait_for_ready / 10)
+            time.sleep(0.001)
+
+    def _check_finished(self, process_list : list[ProcessContainer]):
+        """
+        waits till one process in the list either finishes or times out
+        :param process_list:
+        :return:
+        """
+        for p_index, p in enumerate(process_list):
+            if p.finished:
+                logger.info("Process %s finished", p.ep_index)
+                process_list.pop(p_index)
+            elif p.finished_timed_out(self._max_wait_for_finish):
+                logger.info("Process %s was terminated after not finishing in %s", p.ep_index,
+                            self._max_wait_for_finish)
+                process_list.pop(p_index)
+                p.terminate()
 
     def _wait_for_spot(self, process_list : list[ProcessContainer]):
         """
@@ -64,17 +80,9 @@ class Simulator:
         :param process_list:
         :return:
         """
-        while len(process_list) >= self._batch_size:
-            for p_index, p in enumerate(process_list):
-                if p.finished:
-                    logger.info("Process %s finished", p.ep_index)
-                    process_list.pop(p_index)
-                elif p.finished_timed_out(self._max_wait_for_finish):
-                    logger.info("Process %s was terminated after not finishing in %s", p.ep_index,
-                                self._max_wait_for_finish)
-                    process_list.pop(p_index)
-                    p.terminate()
-            time.sleep(self._max_wait_for_ready / 10)
+        while len(process_list) >= self._num_instances:
+            self._check_finished(process_list)
+            time.sleep(0.001)
 
     def _wait_for_finished(self, process_list : list[ProcessContainer]):
         """
@@ -83,16 +91,8 @@ class Simulator:
         :return:
         """
         while len(process_list) > 0:
-            for p_index, p  in enumerate(process_list):
-                if p.finished:
-                    logger.info("Process %s finished", p.ep_index)
-                    process_list.pop(p_index)
-                elif p.finished_timed_out(self._max_wait_for_finish):
-                    logger.info("Process %s was terminated after not finishing in %s", p.ep_index,
-                                self._max_wait_for_finish)
-                    process_list.pop(p_index)
-                    p.terminate()
-            time.sleep(self._max_wait_for_ready / 10)
+            self._check_finished(process_list)
+            time.sleep(0.001)
 
     def run(self,
             scene_path : Path,
@@ -111,18 +111,28 @@ class Simulator:
         self._configurationHandler.reset_all()
         if simulator_parameters:
             self._configurationHandler.set_simulation_parameters(simulator_parameters)
-        logger.info("Running %s experiments with a batch size of %s",len(experiment_parameters), self._batch_size)
+        logger.info("Running %s experiments with a batch size of %s", len(experiment_parameters), self._num_instances)
         process_list : list[ProcessContainer] = []
-        for ep_index, ep in enumerate(experiment_parameters):
+        ep_index = 0
+        while ep_index < len(experiment_parameters):
+            ep = experiment_parameters[ep_index]
             #wait for all processes to be ready
             self._wait_for_ready(process_list)
             #set parameters
-            self._configurationHandler.set_experiment_parameters(ep)
+            if simulator_parameters:
+                new_ep_index = min(ep_index + self._replays_per_instance, len(experiment_parameters))
+                self._configurationHandler.set_replay_parameters(experiment_parameters[ep_index:new_ep_index])
+            else:
+                self._configurationHandler.set_extraction_parameters(ep)
+                new_ep_index = ep_index + 1
+            self._check_finished(process_list)
             #wait for a space so that the number of active processes does not exceed the batch_size
             self._wait_for_spot(process_list)
-            #
-            process_list.append(ProcessContainer(subprocess.Popen(str(PATH_EXECUTABLE) + " " + str(scene_path) + ".ros2" + " -platform offscreen",
-                                         stdout=subprocess.PIPE, text=True), ep_index))
+            p_open_str = str(PATH_EXECUTABLE) + " " + str(scene_path) + ".ros2"
+            if not self.show_ui:
+                p_open_str = p_open_str + " -platform offscreen"
+            process_list.append(ProcessContainer(subprocess.Popen(p_open_str, stdout=subprocess.PIPE, text=True), ep_index))
+            ep_index = new_ep_index
         #wait for all remaining processes to be ready
         self._wait_for_ready(process_list)
         self._configurationHandler.reset_all()
@@ -227,8 +237,12 @@ class Simulator:
         return self._configurationHandler.get_default_value(parameter_name)
 
     @property
-    def batch_size(self) -> int:
-        return self._batch_size
+    def num_instances(self) -> int:
+        return self._num_instances
+
+    @property
+    def replays_per_instance(self) -> int:
+        return self._replays_per_instance
 
     @property
     def max_wait_for_ready(self) -> float:
@@ -242,18 +256,22 @@ class Simulator:
     def show_ui(self) -> bool:
         return self._show_ui
 
-    @batch_size.setter
-    def batch_size(self, value):
+    @num_instances.setter
+    def num_instances(self, value):
         if value > self._MAX_INSTANCES:
             logger.warning("Given batch_size (%s) was larger than the allowed maximum (%s). The value will set to the allowed maximum",
                            value, self._MAX_INSTANCES)
-            self._batch_size = self._MAX_INSTANCES
+            self._num_instances = self._MAX_INSTANCES
         elif value < 1:
             logger.warning("Given batch_size (%s) was smaller than 1. The value will be set to 1",
-                           self._batch_size)
-            self._batch_size = 1
+                           self._num_instances)
+            self._num_instances = 1
         else:
-            self._batch_size = value
+            self._num_instances = value
+
+    @replays_per_instance.setter
+    def replays_per_instance(self, value):
+        self._replays_per_instance = value
 
     @max_wait_for_ready.setter
     def max_wait_for_ready(self, value):

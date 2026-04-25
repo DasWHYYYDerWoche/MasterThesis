@@ -2,8 +2,13 @@ from __future__ import annotations
 from itertools import zip_longest
 import numpy as np
 from typing import Optional, Callable, TypeVar
+import os
+from pathlib import Path
+
+import pandas
 
 from .SimulationGapData import SimulationGapData
+from ..Constants import get_project_root
 
 import logging
 logger = logging.getLogger("global_logger")
@@ -14,11 +19,19 @@ class SimulationGapHandler:
     def __init__(self, param_set_id: str):
         self._sim_gap_data : dict[str, list[SimulationGapData]] = {}
         self._param_set_id: str = param_set_id
+        path = get_project_root() / "executables/statistics/statistics.csv"
+        df = pandas.read_csv(path)[["statistic", "max"]]
+        self._max_pos = df.loc[df["statistic"] == "max_pos", "max"].iloc[0]
+        self._max_vel = df.loc[df["statistic"] == "max_vel", "max"].iloc[0]
+        self._max_acc = df.loc[df["statistic"] == "max_acc", "max"].iloc[0]
 
     def add(self, action_name: str, recording_date: str, log_index: int):
         if action_name not in self._sim_gap_data.keys():
             self._sim_gap_data[action_name] = []
-        self._sim_gap_data[action_name].append(SimulationGapData(self._param_set_id, action_name, recording_date, log_index))
+        self._sim_gap_data[action_name].append(
+            SimulationGapData(self._param_set_id, action_name, recording_date, log_index,
+                              self._max_pos, self._max_vel, self._max_acc)
+        )
 
     def remove(self, action_name: str, recording_date: str, log_index: int):
         if action_name not in self._sim_gap_data.keys():
@@ -167,6 +180,18 @@ class SimulationGapHandler:
     @property
     def actions(self) -> list[str]:
         return list(self._sim_gap_data.keys())
+
+    @property
+    def max_pos(self) -> float:
+        return self._max_pos
+
+    @property
+    def max_vel(self) -> float:
+        return self._max_vel
+
+    @property
+    def max_acc(self) -> float:
+        return self._max_acc
 
     # -------- helper methods --------
 

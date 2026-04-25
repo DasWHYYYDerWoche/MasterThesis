@@ -40,3 +40,6 @@ def get_field_logs_path_partial(action_name : str, recording_date : str, log_ind
 
 def get_field_logs_path_full(action_name : str, recording_date : str, log_index : int) -> Path:
     return PATH_LOGS / "ThesisFieldLogs"/ action_name /  recording_date / (str(log_index) + ".log")
+
+def get_project_root() -> Path:
+    return Path("C:/") / "Users" / "felix" / "PycharmProjects" / "Thesis"

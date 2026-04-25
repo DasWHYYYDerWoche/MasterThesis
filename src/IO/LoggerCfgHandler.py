@@ -29,22 +29,29 @@ class LoggerCfgHandler(CfgHandler):
     def get_default() -> dict:
         return {
             'loggingMode' : -1,
-            'logExtractionPath' : "",
-            'csvReplayPath' : "",
-            'moveRobot' : -1,
+            'logExtractionPath' : [],
+            'csvReplayPath' : [],
+            'moveRobot' : [],
             'recordingDuration' : -1
         }
 
     def set(self, logging_mode : int,
             log_extraction_path: str, csv_replay_path: str, move_robot : int, recording_duration : int):
         self._set_values(keys=list(self.get_default().keys()),
-                         values=[logging_mode,
-                                 log_extraction_path, csv_replay_path, move_robot, recording_duration])
+                         values=[logging_mode, [log_extraction_path], [csv_replay_path], [move_robot], recording_duration])
 
     def set_extract(self, log_extraction_folder_name: str, recording_duration : int):
         self.set(logging_mode=0,
                  log_extraction_path=log_extraction_folder_name, csv_replay_path="", move_robot=-1, recording_duration = recording_duration)
 
-    def set_replay(self, log_extraction_folder_name : str, csv_replay_folder_name: str, move_robot : int, recording_duration : int):
+    def set_replay(self, log_extraction_folder_name : str, csv_replay_folder_name: str, move_robot : int):
         self.set(logging_mode=1,
-                 log_extraction_path=log_extraction_folder_name, csv_replay_path=csv_replay_folder_name, move_robot=move_robot, recording_duration = recording_duration)
+                 log_extraction_path=log_extraction_folder_name, csv_replay_path=csv_replay_folder_name, move_robot=move_robot, recording_duration = -1)
+
+    def append_replay(self, log_extraction_folder_name : str, csv_replay_folder_name: str, move_robot : int):
+        if self._data["loggingMode"] == 0 or self._data["loggingMode"] == -1:
+            self.set_replay(log_extraction_folder_name, csv_replay_folder_name, move_robot)
+        else:
+            self._data["logExtractionPath"].append(log_extraction_folder_name)
+            self._data["csvReplayPath"].append(csv_replay_folder_name)
+            self._data["moveRobot"].append(move_robot)
