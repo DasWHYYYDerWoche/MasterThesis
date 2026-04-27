@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from src import SimulatorHandler, ExperimentParameters, get_extraction_path_full, NAMES
+from src import SimulatorHandler, ExperimentParameters, get_extraction_path_full, JOINT_NAMES
 import pandas
 import numpy as np
 
@@ -26,13 +26,13 @@ sim_handler.extract(data)
 
 eps = ExperimentParameters.create_experiment_parameters(None, data)
 
-data_points : dict[str, float] = {name : 0 for name in NAMES}
-min_pos : dict[str, float] = {name : 1000 for name in NAMES}
-max_pos : dict[str, float] = {name : -1000 for name in NAMES}
-min_vel : dict[str, float] = {name : 1000 for name in NAMES}
-max_vel : dict[str, float] = {name : -1000 for name in NAMES}
-min_acc : dict[str, float] = {name : 1000 for name in NAMES}
-max_acc : dict[str, float] = {name : -1000 for name in NAMES}
+data_points : dict[str, float] = {name : 0 for name in JOINT_NAMES}
+min_pos : dict[str, float] = {name : 1000 for name in JOINT_NAMES}
+max_pos : dict[str, float] = {name : -1000 for name in JOINT_NAMES}
+min_vel : dict[str, float] = {name : 1000 for name in JOINT_NAMES}
+max_vel : dict[str, float] = {name : -1000 for name in JOINT_NAMES}
+min_acc : dict[str, float] = {name : 1000 for name in JOINT_NAMES}
+max_acc : dict[str, float] = {name : -1000 for name in JOINT_NAMES}
 #TODO max force
 
 for ep in eps:
@@ -41,7 +41,7 @@ for ep in eps:
             ep.action_name, ep.recording_date, ep.log_index).with_suffix(".csv"),
         sep=None, engine="python")
     dt = np.diff((df["time_step"] - df["time_step"][0]) / 1000)
-    for joint_name in NAMES:
+    for joint_name in JOINT_NAMES:
         jr_iter = iter(df["JR_A_" + joint_name])
         jr_cur = next(jr_iter, None)
         start_angle = None
@@ -70,9 +70,9 @@ for ep in eps:
         min_acc[joint_name] = min(min_acc[joint_name], min(acc))
         max_acc[joint_name] = max(max_acc[joint_name], max(acc))
 
-max_pos_abs : dict[str, float] = {joint_name : max(abs(min_pos[joint_name]), max_pos[joint_name]) for joint_name in NAMES}
-max_vel_abs : dict[str, float] = {joint_name : max(abs(min_vel[joint_name]), max_vel[joint_name]) for joint_name in NAMES}
-max_acc_abs : dict[str, float] = {joint_name : max(abs(min_acc[joint_name]), max_acc[joint_name]) for joint_name in NAMES}
+max_pos_abs : dict[str, float] = {joint_name : max(abs(min_pos[joint_name]), max_pos[joint_name]) for joint_name in JOINT_NAMES}
+max_vel_abs : dict[str, float] = {joint_name : max(abs(min_vel[joint_name]), max_vel[joint_name]) for joint_name in JOINT_NAMES}
+max_acc_abs : dict[str, float] = {joint_name : max(abs(min_acc[joint_name]), max_acc[joint_name]) for joint_name in JOINT_NAMES}
 
 dicts = {"data_points" : data_points,
          "min_pos" : min_pos,

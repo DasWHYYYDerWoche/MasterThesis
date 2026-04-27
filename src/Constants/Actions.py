@@ -10,7 +10,7 @@ RECORDING_DURATIONS = {
     "calculate_statistics" : 1000000
 }
 
-ROBOT_TELEPORTATION_IDENTIFIER = {
+ROBOT_TELEPORTATION_INDEX = {
     "kick" : 2,
     "walk" : 2,
     "sidestep" : 2,

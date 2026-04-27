@@ -3,10 +3,10 @@ from enum import Enum
 from pathlib import Path
 from typing import Optional
 from ..Constants import (PATH_FIELD_LOGS, PATH_LOGS_AS_CSVS,
-                        get_field_logs_path_partial, get_replay_path_full,
-                       get_replay_path_partial, get_extraction_path_partial,
-                       get_extraction_path_full, get_field_logs_path_full,
-                         RECORDING_DURATIONS, ROBOT_TELEPORTATION_IDENTIFIER)
+                         get_field_logs_path_partial, get_replay_path_full,
+                         get_replay_path_partial, get_extraction_path_partial,
+                         get_extraction_path_full, get_field_logs_path_full,
+                         RECORDING_DURATIONS, ROBOT_TELEPORTATION_INDEX)
 
 import logging
 logger = logging.getLogger("global_logger")
@@ -37,7 +37,7 @@ class ExperimentParameters:
         self._param_set_id: str = param_set_id
         self._recording_date: str = recording_date
         self._log_index: int = log_index
-        self._move_robot = ROBOT_TELEPORTATION_IDENTIFIER[action_name]
+        self._move_robot = ROBOT_TELEPORTATION_INDEX[action_name]
         self._recording_duration = RECORDING_DURATIONS[action_name]
 
     def exists_log(self) -> bool:

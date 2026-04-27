@@ -6,7 +6,7 @@ from pathlib import Path
 
 from .. import ThesisCSVReplayHandler
 from ..IO import NaoV6H25Handler
-from ..Constants import NAMES, PATH_REPLAYS, JOINT_TYPES
+from ..Constants import JOINT_NAMES, PATH_REPLAYS, JOINT_TYPES
 from ..Structs import Joint
 
 logger = logging.getLogger("global_logger")
@@ -99,13 +99,13 @@ class SimulationParameters:
     def set(self, joint_name, joint : Joint) -> bool:
         if self._type is SimulationParameters.Type.NEW or \
                 self._type is SimulationParameters.Type.NEW_WITH_BASE:
-            if joint_name in NAMES:
+            if joint_name in JOINT_NAMES:
                 self._joint_parameters[joint_name] = joint
                 return True
         return False
 
     def get(self, joint_name) -> Optional[Joint]:
-        if joint_name in NAMES and joint_name in self._joint_parameters.keys():
+        if joint_name in JOINT_NAMES and joint_name in self._joint_parameters.keys():
             return self._joint_parameters[joint_name]
         return None
 

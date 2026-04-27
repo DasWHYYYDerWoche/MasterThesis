@@ -10,13 +10,22 @@ import numpy
 import numpy as np
 import pandas
 from statistics import fmean
+from enum import Enum
 
 from pandas.errors import PerformanceWarning
 
-from ..Constants import WEIGHTS, NAMES, get_extraction_path_full, get_replay_path_full
+from ..Constants import WEIGHTS, JOINT_NAMES, get_extraction_path_full, get_replay_path_full
 
 import logging
 logger = logging.getLogger("global_logger")
+
+EXTRACTION_SUFFIX = "_extraction"
+REPLAY_SUFFIX = "_replay"
+
+class DataType(Enum):
+    EXTRACTION = 0
+    REPLAY = 1
+
 
 class SimulationGapData:
     """
@@ -58,12 +67,13 @@ class SimulationGapData:
         if replay is None:
             logger.error("No replay at s% exist for log %s", path_replays, self._log_index)
             return False
-        #merge extraction and replay
+        # time column is not needed but gets automatically logged
         replay = replay.drop(columns=['time'])
         extraction = extraction.drop(columns=['time'])
+        # merge on "time_step" and "replayed_frame"
         self._merged = pandas.merge(left=extraction, right=replay,
                                     left_on="time_step", right_on="replayed_frame",
-                                    how='inner')
+                                    how='inner', suffixes=(EXTRACTION_SUFFIX, REPLAY_SUFFIX))
         self._merged.drop(columns=['replayed_frame'])
         # normalize and rename time column
         self._merged.rename(columns={"time_step_x": "time_step"}, inplace=True)
@@ -88,285 +98,106 @@ class SimulationGapData:
             return []
         return list(self._merged['time_step'][start_index:end_index])
 
-    # -------- get punish factor --------
+    # -------- gyro functions --------
 
-    def get_punish_factor(self, start_index: int = 0,
-                           end_index: int = -1) \
-            -> list[float]:
-        if start_index < 0:
-            start_index = 0
-        if end_index == -1:
-            end_index = len(self._merged.index)
-        if start_index > end_index:
-            return []
-
-    # -------- get gyro extraction/replay values --------
-
-    def get_gyro_pos_extraction(self,
+    def _get_gyro_pos_extraction(self,
+                                gyro_names : list[str],
                                 start_index: int = 0,
                                 end_index: int = -1) \
-            -> tuple[list[float],list[float],list[float]]:
-        if start_index < 0:
-            start_index = 0
-        if end_index == -1:
-            end_index = len(self._merged.index)
-        if start_index > end_index:
-            return [],[],[]
-        gyro_x = ([float('nan')] + list(np.cumsum(self._merged['ISD_x_gyro_x'][:-1] * self._dt)))[start_index:end_index]
-        gyro_y = ([float('nan')] + list(np.cumsum(self._merged['ISD_y_gyro_x'][:-1] * self._dt)))[start_index:end_index]
-        gyro_z = ([float('nan')] + list(np.cumsum(self._merged['ISD_z_gyro_x'][:-1] * self._dt)))[start_index:end_index]
-        return gyro_x, gyro_y, gyro_z
+            -> dict[str, list[float]]:
+        return self._integrate_all(self._get_gyro_vel_extraction(gyro_names, start_index, end_index))
 
-    def get_gyro_pos_replay(self,
+    def _get_gyro_pos_replay(self,
+                            gyro_names: list[str],
+                            start_index: int = 0,
+                            end_index: int = -1) \
+            -> dict[str, list[float]]:
+        return self._integrate_all(self._get_gyro_vel_replay(gyro_names, start_index, end_index))
+
+    def _get_gyro_vel_extraction(self,
+                                gyro_names: list[str],
                                 start_index: int = 0,
                                 end_index: int = -1) \
-            -> tuple[list[float],list[float],list[float]]:
-        if start_index < 0:
-            start_index = 0
-        if end_index == -1:
-            end_index = len(self._merged.index)
-        if start_index > end_index:
-            return [],[],[]
-        gyro_x = ([float('nan')] + list(np.cumsum(self._merged['ISD_x_gyro_y'][:-1] * self._dt)))[start_index:end_index]
-        gyro_y = ([float('nan')] + list(np.cumsum(self._merged['ISD_y_gyro_y'][:-1] * self._dt)))[start_index:end_index]
-        gyro_z = ([float('nan')] + list(np.cumsum(self._merged['ISD_z_gyro_y'][:-1] * self._dt)))[start_index:end_index]
-        return gyro_x, gyro_y, gyro_z
+            -> dict[str, list[float]]:
+        return self._get(EXTRACTION_SUFFIX, gyro_names, start_index,end_index)
 
-    def get_gyro_vel_extraction(self,
+    def _get_gyro_vel_replay(self,
+                            gyro_names: list[str],
+                            start_index: int = 0,
+                            end_index: int = -1) \
+            -> dict[str, list[float]]:
+        return self._get(REPLAY_SUFFIX, gyro_names, start_index,end_index)
+
+    def _get_gyro_acc_extraction(self,
+                                gyro_names: list[str],
                                 start_index: int = 0,
                                 end_index: int = -1) \
-            -> tuple[list[float],list[float],list[float]]:
-        if start_index < 0:
-            start_index = 0
-        if end_index == -1:
-            end_index = len(self._merged.index)
-        if start_index > end_index:
-            return [],[],[]
-        gyro_x = list(self._merged['ISD_x_gyro_x'][start_index:end_index])
-        gyro_y = list(self._merged['ISD_y_gyro_x'][start_index:end_index])
-        gyro_z = list(self._merged['ISD_z_gyro_x'][start_index:end_index])
-        return gyro_x, gyro_y, gyro_z
+            -> dict[str, list[float]]:
+        return self._differentiate_all(self._get_gyro_vel_extraction(gyro_names, start_index, end_index))
 
-    def get_gyro_vel_replay(self,
-                                start_index: int = 0,
-                                end_index: int = -1) \
-            -> tuple[list[float],list[float],list[float]]:
-        if start_index < 0:
-            start_index = 0
-        if end_index == -1:
-            end_index = len(self._merged.index)
-        if start_index > end_index:
-            return [],[],[]
-        gyro_x = list(self._merged['ISD_x_gyro_y'][start_index:end_index])
-        gyro_y = list(self._merged['ISD_y_gyro_y'][start_index:end_index])
-        gyro_z = list(self._merged['ISD_z_gyro_y'][start_index:end_index])
-        return gyro_x, gyro_y, gyro_z
-
-    def get_gyro_acc_extraction(self,
-                                start_index: int = 0,
-                                end_index: int = -1) \
-            -> tuple[list[float],list[float],list[float]]:
-        if start_index < 0:
-            start_index = 0
-        if end_index == -1:
-            end_index = len(self._merged.index)
-        if start_index > end_index:
-            return [],[],[]
-        gyro_x = ([float('nan')] + list(np.diff(self._merged['ISD_x_gyro_x']) / self._dt))[start_index:end_index]
-        gyro_y = ([float('nan')] + list(np.diff(self._merged['ISD_y_gyro_x']) / self._dt))[start_index:end_index]
-        gyro_z = ([float('nan')] + list(np.diff(self._merged['ISD_z_gyro_x']) / self._dt))[start_index:end_index]
-        return gyro_x, gyro_y, gyro_z
-
-    def get_gyro_acc_replay(self,
-                                start_index: int = 0,
-                                end_index: int = -1) \
-            -> tuple[list[float],list[float],list[float]]:
-        if start_index < 0:
-            start_index = 0
-        if end_index == -1:
-            end_index = len(self._merged.index)
-        if start_index > end_index:
-            return [],[],[]
-        gyro_x = ([float('nan')] + list(np.diff(self._merged['ISD_x_gyro_y']) / self._dt))[start_index:end_index]
-        gyro_y = ([float('nan')] + list(np.diff(self._merged['ISD_y_gyro_y']) / self._dt))[start_index:end_index]
-        gyro_z = ([float('nan')] + list(np.diff(self._merged['ISD_z_gyro_y']) / self._dt))[start_index:end_index]
-        return gyro_x, gyro_y, gyro_z
-
-    # -------- get accelerometer extraction/replay values --------
-
-    def get_accelerometer_pos_extraction(self,
-                                start_index: int = 0,
-                                end_index: int = -1) \
-            -> tuple[list[float],list[float],list[float]]:
-        if start_index < 0:
-            start_index = 0
-        if end_index == -1:
-            end_index = len(self._merged.index)
-        if start_index > end_index:
-            return [], [], []
-        acc_vel_x = list(np.cumsum(self._merged['ISD_z_acc_x'][:-1] * self._dt))
-        acc_vel_y = list(np.cumsum(self._merged['ISD_y_acc_x'][:-1] * self._dt))
-        acc_vel_z = list(np.cumsum(self._merged['ISD_x_acc_x'][:-1] * self._dt))
-        acc_x = ([float('nan'), float('nan')] + list(np.cumsum(acc_vel_x[:-1] * self._dt[:-1])))[start_index:end_index]
-        acc_y = ([float('nan'), float('nan')] + list(np.cumsum(acc_vel_y[:-1] * self._dt[:-1])))[start_index:end_index]
-        acc_z = ([float('nan'), float('nan')] + list(np.cumsum(acc_vel_z[:-1] * self._dt[:-1])))[start_index:end_index]
-        return acc_x, acc_y, acc_z
-
-    def get_accelerometer_pos_replay(self,
-                                start_index: int = 0,
-                                end_index: int = -1) \
-            -> tuple[list[float],list[float],list[float]]:
-        if start_index < 0:
-            start_index = 0
-        if end_index == -1:
-            end_index = len(self._merged.index)
-        if start_index > end_index:
-            return [], [], []
-        acc_vel_x = list(np.cumsum(self._merged['ISD_z_acc_y'][:-1] * self._dt))
-        acc_vel_y = list(np.cumsum(self._merged['ISD_y_acc_y'][:-1] * self._dt))
-        acc_vel_z = list(np.cumsum(self._merged['ISD_x_acc_y'][:-1] * self._dt))
-        acc_x = ([float('nan'),float('nan')] + list(np.cumsum(acc_vel_x[:-1] * self._dt[:-1])))[start_index:end_index]
-        acc_y = ([float('nan'),float('nan')] + list(np.cumsum(acc_vel_y[:-1] * self._dt[:-1])))[start_index:end_index]
-        acc_z = ([float('nan'),float('nan')] + list(np.cumsum(acc_vel_z[:-1] * self._dt[:-1])))[start_index:end_index]
-        return acc_x, acc_y, acc_z
-
-    def get_accelerometer_vel_extraction(self,
-                                 start_index: int = 0,
-                                 end_index: int = -1) \
-            -> tuple[list[float], list[float], list[float]]:
-        if start_index < 0:
-            start_index = 0
-        if end_index == -1:
-            end_index = len(self._merged.index)
-        if start_index > end_index:
-            return [], [], []
-        acc_x = ([float('nan')] + list(np.cumsum(self._merged['ISD_x_acc_x'][:-1] * self._dt)))[start_index:end_index]
-        acc_y = ([float('nan')] + list(np.cumsum(self._merged['ISD_y_acc_x'][:-1] * self._dt)))[start_index:end_index]
-        acc_z = ([float('nan')] + list(np.cumsum(self._merged['ISD_z_acc_x'][:-1] * self._dt)))[start_index:end_index]
-        return acc_x, acc_y, acc_z
-
-    def get_accelerometer_vel_replay(self,
-                             start_index: int = 0,
-                             end_index: int = -1) \
-            -> tuple[list[float], list[float], list[float]]:
-        if start_index < 0:
-            start_index = 0
-        if end_index == -1:
-            end_index = len(self._merged.index)
-        if start_index > end_index:
-            return [], [], []
-        acc_x = ([float('nan')] + list(np.cumsum(self._merged['ISD_x_acc_y'][:-1] * self._dt)))[start_index:end_index]
-        acc_y = ([float('nan')] + list(np.cumsum(self._merged['ISD_y_acc_y'][:-1] * self._dt)))[start_index:end_index]
-        acc_z = ([float('nan')] + list(np.cumsum(self._merged['ISD_z_acc_y'][:-1] * self._dt)))[start_index:end_index]
-        return acc_x, acc_y, acc_z
-
-    def get_accelerometer_acc_extraction(self,
-                                 start_index: int = 0,
-                                 end_index: int = -1) \
-            -> tuple[list[float], list[float], list[float]]:
-        if start_index < 0:
-            start_index = 0
-        if end_index == -1:
-            end_index = len(self._merged.index)
-        if start_index > end_index:
-            return [], [], []
-        acc_x = list(self._merged['ISD_x_acc_x'][start_index:end_index])
-        acc_y = list(self._merged['ISD_y_acc_x'][start_index:end_index])
-        acc_z = list(self._merged['ISD_z_acc_x'][start_index:end_index])
-        return acc_x, acc_y, acc_z
-
-    def get_accelerometer_acc_replay(self,
-                             start_index: int = 0,
-                             end_index: int = -1) \
-            -> tuple[list[float], list[float], list[float]]:
-        if start_index < 0:
-            start_index = 0
-        if end_index == -1:
-            end_index = len(self._merged.index)
-        if start_index > end_index:
-            return [], [], []
-        acc_x = list(self._merged['ISD_x_acc_y'][start_index:end_index])
-        acc_y = list(self._merged['ISD_y_acc_y'][start_index:end_index])
-        acc_z = list(self._merged['ISD_z_acc_y'][start_index:end_index])
-        return acc_x, acc_y, acc_z
+    def _get_gyro_acc_replay(self,
+                            gyro_names: list[str],
+                            start_index: int = 0,
+                            end_index: int = -1) \
+            -> dict[str, list[float]]:
+        return self._differentiate_all(self._get_gyro_vel_replay(gyro_names, start_index, end_index))
 
     # -------- get extraction/replay values --------
 
-
-
-
     def get_pos_extraction(self,
-                           joint_names: Optional[list[str]] = None,
+                           sensor_names: Optional[list[str]] = None,
                            start_index: int = 0,
                            end_index: int = -1) \
             -> dict[str, list[float]]:
-        """
-        Returns the joint positions of the extraction for the given joints and frames.
-        """
-        return self._get("_x", joint_names, start_index, end_index)
+        joint_names, gyro_names = self._split_sensor_names(sensor_names)
+        return (self._get(EXTRACTION_SUFFIX, joint_names, start_index, end_index)
+                | self._get_gyro_pos_extraction(gyro_names, start_index, end_index))
 
     def get_pos_replay(self,
-                       joint_names: Optional[list[str]] = None,
+                       sensor_names: Optional[list[str]] = None,
                        start_index: int = 0,
                        end_index: int = -1) \
             -> dict[str, list[float]]:
-        """
-        Returns the joint positions of the replay for the given joints and frames.
-        """
-        return self._get("_y", joint_names, start_index, end_index)
+        joint_names, gyro_names = self._split_sensor_names(sensor_names)
+        return (self._get(REPLAY_SUFFIX, joint_names, start_index, end_index)
+                | self._get_gyro_pos_replay(gyro_names, start_index, end_index))
 
     def get_vel_extraction(self,
-                           joint_names: Optional[list[str]] = None,
+                           sensor_names: Optional[list[str]] = None,
                            start_index: int = 0,
                            end_index: int = -1) \
             -> dict[str, list[float]]:
-        """
-        Returns the angular velocities of the extraction for the given joints and frames.
-
-        The velocity in step t is calculated as (p_{t+1} - p_{t-1}) / 2*step.
-        v_0 is 0. v_T is approximated as (p_{T} - p_{T-1}) / step
-        """
-        return self._calculate_velocity("_x", joint_names, start_index, end_index)
+        joint_names, gyro_names = self._split_sensor_names(sensor_names)
+        return (self._differentiate_all(self.get_pos_extraction(joint_names, start_index, end_index))
+                | self._get_gyro_vel_extraction(gyro_names, start_index, end_index))
 
     def get_vel_replay(self,
-                       joint_names: Optional[list[str]] = None,
+                       sensor_names: Optional[list[str]] = None,
                        start_index: int = 0,
                        end_index: int = -1) \
             -> dict[str, list[float]]:
-        """
-        Returns the angular velocities of the replay for the given joints and frames.
-
-        The velocity in step t is calculated as (p_{t+1} - p_{t-1}) / 2*step.
-        v_0 is 0. v_T is approximated as (p_{T} - p_{T-1}) / step
-        """
-        return self._calculate_velocity("_y", joint_names, start_index, end_index)
+        joint_names, gyro_names = self._split_sensor_names(sensor_names)
+        return (self._differentiate_all(self.get_pos_replay(joint_names, start_index, end_index))
+                | self._get_gyro_vel_replay(gyro_names, start_index, end_index))
 
     def get_acc_extraction(self,
-                           joint_names: Optional[list[str]] = None,
+                           sensor_names: Optional[list[str]] = None,
                            start_index: int = 0,
                            end_index: int = -1) \
             -> dict[str, list[float]]:
-        """
-        Returns the angular accelerations of the extraction for the given joints and frames.
-
-        The acceleration in step t is calculated as (v_{t+1} - v_{t-1}) / 2*step.
-        a_0 is 0. a_T is approximated as (v_{T} - v_{T-1}) / step
-        """
-        return self._calculate_acceleration("_x", joint_names, start_index, end_index)
+        joint_names, gyro_names = self._split_sensor_names(sensor_names)
+        return (self._differentiate_all(self.get_pos_extraction(joint_names, start_index, end_index), n = 2)
+                | self._get_gyro_acc_extraction(gyro_names, start_index, end_index))
 
 
     def get_acc_replay(self,
-                       joint_names: Optional[list[str]] = None,
+                       sensor_names: Optional[list[str]] = None,
                        start_index: int = 0,
                        end_index: int = -1) \
             -> dict[str, list[float]]:
-        """
-        Returns the angular accelerations of the replay for the given joints and frames.
-
-        The acceleration in step t is calculated as (v_{t+1} - v_{t-1}) / 2*step.
-        a_0 is 0. a_T is approximated as (v_{T} - v_{T-1}) / step
-        """
-        return self._calculate_acceleration("_y", joint_names, start_index, end_index)
+        joint_names, gyro_names = self._split_sensor_names(sensor_names)
+        return (self._differentiate_all(self.get_pos_replay(joint_names, start_index, end_index), n=2)
+                | self._get_gyro_acc_replay(gyro_names, start_index, end_index))
 
     # -------- partial gaps --------
 
@@ -546,40 +377,6 @@ class SimulationGapData:
     def _get_total_gap_avg_test(self, joint_names: Optional[list[str]] = None, start_index: int = 0, end_index: int = -1) -> float:
         return self._get_weighted_joint_average_single(self.get_total_gap_for_joints(joint_names, start_index, end_index))
 
-    # -------- utility methods --------
-
-    def avg_abs_pos(self) -> float:
-        extraction_max = fmean([fmean([abs(value) for value in values]) for values in self.get_pos_extraction().values()])
-        replay_max = fmean([fmean([abs(value) for value in values]) for values in self.get_pos_replay().values()])
-        return fmean([extraction_max, replay_max])
-
-    def avg_abs_vel(self) -> float:
-        extraction_max = fmean([fmean([abs(value) for value in values]) for values in self.get_vel_extraction().values()])
-        replay_max = fmean([fmean([abs(value) for value in values]) for values in self.get_vel_replay().values()])
-        return fmean([extraction_max, replay_max])
-
-    def avg_abs_acc(self) -> float:
-        extraction_max = fmean([fmean([abs(value) for value in values]) for values in self.get_acc_extraction().values()])
-        replay_max = fmean([fmean([abs(value) for value in values]) for values in self.get_acc_replay().values()])
-        return fmean([extraction_max, replay_max])
-
-    def max_abs_pos(self) -> float:
-        extraction_max = max([max([abs(value) for value in values]) for values in self.get_pos_extraction().values()])
-        replay_max = max([max([abs(value) for value in values]) for values in self.get_pos_replay().values()])
-        if extraction_max > 191 or replay_max > 191:
-            print(self.identifier)
-        return max(extraction_max, replay_max)
-
-    def max_abs_vel(self) -> float:
-        extraction_max = max([max([abs(value) for value in values]) for values in self.get_vel_extraction().values()])
-        replay_max = max([max([abs(value) for value in values]) for values in self.get_vel_replay().values()])
-        return max(extraction_max, replay_max)
-
-    def max_abs_acc(self) -> float:
-        extraction_max = max([max([abs(value) for value in values]) for values in self.get_acc_extraction().values()])
-        replay_max = max([max([abs(value) for value in values]) for values in self.get_acc_replay().values()])
-        return max(extraction_max, replay_max)
-
     # -------- properties --------
 
     @property
@@ -636,11 +433,15 @@ class SimulationGapData:
     def acc_gap_factor(self, value):
         self._acc_gap_factor = value
 
+    @property
+    def sensor_names(self) -> list[str]:
+        return JOINT_NAMES + ["x_gyro", "y_gyro", "z_gyro"]
+
     # -------- helper methods --------
 
     def _get(self,
-             column_name_extension : str,
-             joint_names: Optional[list[str]] = None,
+             column_suffix : str,
+             sensor_name: Optional[list[str]] = None,
              start_index: int = 0,
              end_index: int = -1)\
             -> dict[str, list[float]]:
@@ -652,64 +453,19 @@ class SimulationGapData:
             end_index = self.num_frames
         if start_index > end_index:
             return {}
-        if joint_names is None or len(joint_names) <= 0:
-            joint_names = NAMES
         result : dict[str, list[float]] = {}
-        for joint_name in joint_names:
-            result[joint_name] = ((self._merged["JSD_" + joint_name + column_name_extension])[start_index:end_index]).to_list()
+        for joint_name in sensor_name:
+            result[joint_name] = ((self._merged["sensor_" + joint_name + column_suffix])[start_index:end_index]).to_list()
         return result
 
-    def _calculate_velocity(self,
-                            column_name_extension : str,
-                            joint_names: Optional[list[str]] = None,
-                            start_index: int = 0,
-                            end_index: int = -1)\
-            -> dict[str, list[float]]:
-        if not self.loaded:
-            logger.error("SimulationGapData must be loaded before calling any methods. %s", self.identifier)
-        if start_index < 0:
-            start_index = 0
-        if end_index == -1:
-            end_index = len(self._merged.index)
-        if start_index > end_index:
-            return {}
-        if joint_names is None or len(joint_names) <= 0:
-            joint_names = NAMES
-        result: dict[str, list[float]] = {}
-        for joint_name in joint_names:
-            positions = (self._merged["JSD_" + joint_name + column_name_extension]).to_numpy()
-            frames = (self._merged['time_step'].to_numpy()) / 1000 #1000 for ms
-            result[joint_name] = ([0] + (numpy.diff(positions) / numpy.diff(frames)).tolist())[start_index:end_index]
-        return result
-
-    def _calculate_acceleration(self,
-                                column_name_extension : str,
-                                joint_names: Optional[list[str]] = None,
-                                start_index: int = 0,
-                                end_index: int = -1)\
-            -> dict[str, list[float]]:
-        if not self.loaded:
-            logger.error("SimulationGapData must be loaded before calling any methods. %s", self.identifier)
-        if start_index < 0:
-            start_index = 0
-        if end_index == -1:
-            end_index = len(self._merged.index)
-        if start_index > end_index:
-            return {}
-        if joint_names is None or len(joint_names) <= 0:
-            joint_names = NAMES
-        result: dict[str, list[float]] = {}
-        for joint_name in joint_names:
-            positions = (self._merged["JSD_" + joint_name + column_name_extension]).to_numpy()
-            frames = (self._merged['time_step'].to_numpy()) / 1000 #1000 for ms
-            velocity = ((numpy.diff(positions) / numpy.diff(frames)).tolist())
-            result[joint_name] = ([0,0] + (numpy.diff(velocity) / numpy.diff(frames[1:])).tolist())[start_index:end_index]
-        return result
-
-    def _calculate_gap(self, d_extraction :  dict[str, list[float]], d_replay :  dict[str, list[float]], factor : float = 1) -> dict[str, list[float]]:
+    def _calculate_gap(self,
+                       d_extraction : dict[str, list[float]],
+                       d_replay : dict[str, list[float]],
+                       factor : float = 1) -> dict[str, list[float]]:
         gap = {}
         for joint_name in d_extraction.keys():
-            gap[joint_name] = [pow((replay_value - extraction_value)/factor, 2) for extraction_value, replay_value in zip(d_extraction[joint_name], d_replay[joint_name])]
+            gap[joint_name] = [pow((v_replay - v_extraction) / factor, 2)
+                               for v_extraction, v_replay in zip(d_extraction[joint_name], d_replay[joint_name])]
         return gap
 
     def _get_weighted_joint_average(self, dictionary: dict[str, list[float]]) -> list[float]:
@@ -723,3 +479,45 @@ class SimulationGapData:
                              weights=[WEIGHTS[k] for k in dictionary.keys()],
                              axis=0)
                 .tolist()) # axis 0 = rows
+
+    def _split_sensor_names(self, sensor_names : list[str]) -> tuple[list[str], list[str]]:
+        if sensor_names is None or len(sensor_names) == 0:
+            return JOINT_NAMES, ["x_gyro", "y_gyro", "z_gyro"]
+        gyro_names = []
+        joint_names = []
+        for name in sensor_names:
+            if name.endswith("gyro"):
+                gyro_names.append(name)
+            else:
+                joint_names.append(name)
+        return joint_names, gyro_names
+
+    def _differentiate(self, data : list[float], n : int = 1, pad_front : bool = True) -> list[float]:
+        result = data
+        for i in range(n):
+            result = numpy.diff(result) / self._dt[i:]
+        result = list(result)
+        if pad_front:
+            result = [float("nan") for _ in range(n)] + result
+        return result
+
+    def _differentiate_all(self, data : dict[str, list[float]], n : int = 1, pad_front : bool = True) -> dict[str, list[float]]:
+        result = {}
+        for key in data.keys():
+            result[key] = self._differentiate(data[key], n, pad_front)
+        return result
+
+    def _integrate(self, data : list[float], n : int = 1, pad_front : bool = True) -> list[float]:
+        result = data[1:]
+        for i in range(n):
+            result = numpy.cumsum(result * self._dt)
+        result = list(result)
+        if pad_front:
+            result = [0] + result
+        return list(result)
+
+    def _integrate_all(self, data : dict[str, list[float]], n : int = 1, pad_front : bool = True) -> dict[str, list[float]]:
+        result = {}
+        for key in data.keys():
+            result[key] = self._integrate(data[key], n, pad_front)
+        return result

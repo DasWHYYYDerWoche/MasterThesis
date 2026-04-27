@@ -1,4 +1,4 @@
-NAMES = [
+JOINT_NAMES = [
 "headYaw","headPitch",
 "lShoulderPitch","lShoulderRoll","lElbowYaw","lElbowRoll","lWristYaw",
 "rShoulderPitch","rShoulderRoll","rElbowYaw","rElbowRoll","rWristYaw",
@@ -8,24 +8,24 @@ NAMES = [
 
 WEIGHTS = {
     # Head
-    "headYaw": 1,
-    "headPitch": 1,
+    "headYaw": 0.8,
+    "headPitch": 0.8,
 
     # Left Arm
     "lShoulderPitch": 1,
     "lShoulderRoll": 1,
     "lElbowYaw": 1,
     "lElbowRoll": 1,
-    "lWristYaw": 1,
-    "lHand" : 1,
+    "lWristYaw": 0.8,
+    "lHand" : 0,
 
     # Right Arm
     "rShoulderPitch": 1,
     "rShoulderRoll": 1,
     "rElbowYaw": 1,
     "rElbowRoll": 1,
-    "rWristYaw": 1,
-    "rHand" : 1,
+    "rWristYaw": 0.8,
+    "rHand" : 0,
 
     # Left Leg
     "lHipYawPitch": 1,
@@ -42,6 +42,10 @@ WEIGHTS = {
     "rKneePitch": 1,
     "rAnklePitch": 1,
     "rAnkleRoll": 1,
+
+    "x_gyro" : 1.2,
+    "y_gyro" : 1.2,
+    "z_gyro" : 1.2,
 }
 
 DEFLECTIONS = {
@@ -111,6 +115,11 @@ ABBREVIATIONS = {
     "rKneePitch": "RKP",
     "rAnklePitch": "RAP",
     "rAnkleRoll": "RAR",
+
+    "x_gyro" : "xG",
+    "y_gyro" : "yG",
+    "z_gyro" : "zG",
+
 }
 
 JOINT_TYPES = {
