@@ -59,7 +59,7 @@ class FileHandler(ABC):
         """
         try:
             self._write_to_file()
-            logger.info("%s written to %s", type(self).__name__, self._path)
+            logger.debug("%s set \"%s\" to \"%s\"", type(self).__name__, self._data.keys(), self._data.values())
         except Exception as e:
             logger.exception("%s failed to write due to %s", type(self).__name__, type(e).__name__)
 
@@ -101,7 +101,8 @@ class FileHandler(ABC):
             else:
                 not_contained_keys.append(key)
         if len(contained_keys) > 0:
-            logger.debug("%s set \"%s\" to \"%s\"", type(self).__name__, contained_keys, contained_values)
+            pass
+            #logger.debug("%s set \"%s\" to \"%s\"", type(self).__name__, contained_keys, contained_values)
         if len(not_contained_keys) > 0:
             logger.warning("%s does not contain key(s) \"%s\"", type(self).__name__, not_contained_keys)
 

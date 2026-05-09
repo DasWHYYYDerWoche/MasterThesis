@@ -41,7 +41,6 @@ class SimulationGapData:
         self._log_index: int = log_index
         self._num_frames: int = -1
         self._dt = None
-        self.load()
         self._pos_gap_factor = pos_scale_factor
         self._vel_gap_factor = vel_scale_factor
         self._acc_gap_factor = acc_scale_factor
@@ -51,21 +50,26 @@ class SimulationGapData:
             return True
         path_replays: Path = get_replay_path_full(self._param_set_id, self._action_name, self._recording_date, self._log_index).parent
         #load extraction csv
-        extraction : Optional[pandas.DataFrame] = pandas.read_csv(
-            get_extraction_path_full(
-                self._action_name, self._recording_date, self._log_index).with_suffix(".csv"),
-            sep=None, engine="python")
-        if extraction is None:
-            logger.error("No extraction at s% exist for log %s", path_replays, self._log_index)
+        try:
+            extraction : Optional[pandas.DataFrame] = pandas.read_csv(
+                get_extraction_path_full(
+                    self._action_name, self._recording_date, self._log_index).with_suffix(".csv"),
+                sep=None, engine="python")
+        except Exception as e:
+            logger.error("No extraction at s% exist for log %s. Error: %s", path_replays, self._log_index, e)
             return False
         #load replay csv
         replay: Optional[pandas.DataFrame] = None
+        replay_error = None
         for file in path_replays.iterdir():
             if file.name.startswith(str(self._log_index)):
-                replay = pandas.read_csv(path_replays / file.name, sep=None, engine="python")
+                try:
+                    replay = pandas.read_csv(path_replays / file.name, sep=None, engine="python")
+                except Exception as e:
+                    replay_error = e
                 break
         if replay is None:
-            logger.error("No replay at s% exist for log %s", path_replays, self._log_index)
+            logger.error("No replay at s% exist for log %s. Error: %s", path_replays, self._log_index, replay_error)
             return False
         # time column is not needed but gets automatically logged
         replay = replay.drop(columns=['time'])
@@ -79,10 +83,18 @@ class SimulationGapData:
         self._merged.rename(columns={"time_step_x": "time_step"}, inplace=True)
         self._merged['time_step'] = self._merged['time_step'] - self._merged['time_step'][0]
         self._num_frames = len(self._merged)
+        self._dt = np.diff(self._merged['time_step'] / 1000)
+        self._merged['sensor_x_gyro' + EXTRACTION_SUFFIX] = self._merged['sensor_x_gyro' + EXTRACTION_SUFFIX] - self._merged['sensor_x_gyro' + EXTRACTION_SUFFIX][0]
+        self._merged['sensor_x_gyro' + REPLAY_SUFFIX] = self._merged['sensor_x_gyro' + REPLAY_SUFFIX] - self._merged['sensor_x_gyro' + REPLAY_SUFFIX][0]
+        self._merged['sensor_y_gyro' + EXTRACTION_SUFFIX] = self._merged['sensor_y_gyro' + EXTRACTION_SUFFIX] - self._merged['sensor_y_gyro' + EXTRACTION_SUFFIX][0]
+        self._merged['sensor_y_gyro' + REPLAY_SUFFIX] = self._merged['sensor_y_gyro' + REPLAY_SUFFIX] - self._merged['sensor_y_gyro' + REPLAY_SUFFIX][0]
+        self._merged['sensor_z_gyro' + EXTRACTION_SUFFIX] = self._merged['sensor_z_gyro' + EXTRACTION_SUFFIX] - self._merged['sensor_z_gyro' + EXTRACTION_SUFFIX][0]
+        self._merged['sensor_z_gyro' + REPLAY_SUFFIX] = self._merged['sensor_z_gyro' + REPLAY_SUFFIX] - self._merged['sensor_z_gyro' + REPLAY_SUFFIX][0]
+
         logger.info("Successfully loaded replays of log %s",
                     self._param_set_id + "," + self._action_name + "," + self._recording_date + "," + str(self._log_index))
 
-        self._dt = np.diff(self._merged['time_step'] / 1000)
+
         return True
 
     def unload(self):
@@ -246,7 +258,7 @@ class SimulationGapData:
         d_a = self.get_acc_gaps(joint_names, start_index, end_index)
         d_total = {}
         for joint in d_p.keys():
-            d_total[joint] = [p + v + a for p,v,a in zip(d_p[joint], d_v[joint], d_a[joint])]
+            d_total[joint] = [(p + v + a)/3 for p,v,a in zip(d_p[joint], d_v[joint], d_a[joint])]
         return d_total
 
     # -------- average for joints --------

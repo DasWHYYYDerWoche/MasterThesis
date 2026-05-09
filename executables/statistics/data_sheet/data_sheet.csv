@@ -1,0 +1,9 @@
+Attribute,MotorType1,MotorType2A,MotorType2B,MotorType3A,MotorType3B,MotorType4,MotorType5
+Model,22NT Z13,17N,17N,16GT,16GT,DCX 16S,22NT Z20
+No load speed avg (rpm),8700,8400,8400,10700,10700,11400,8700
+No load speed tolerance (%),10,12,12,10,10,10,10
+Stall torque avg (mNm),65,9.4,9.4,14.3,14.3,22.4,65
+Stall torque tolerance (%),8,8,8,8,8,10,8
+Nominal torque (mNm max),17.8,4.9,4.9,6.2,6.2,2.6,17.8
+Speed Reduction Ratio,201.3,50.61,36.24,150.27,173.22,150.27,130.85
+Controlled joints,HipYP; HipR; AnkleR,WristY,Hand,HeadY; ElbowY,HeadP; ShoulderR; ElbowR,ShoulderP,HipP; KneeP; AnkleP

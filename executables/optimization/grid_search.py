@@ -45,8 +45,8 @@ for l in train_data_lists:
     for o in l:
         train_data.append(o)
 
-population_size = 80
-max_gen = 100
+population_size = 20
+max_gen = 30
 results_folder = (get_project_root() / "executables" / "optimization" / "grid_search_results") / datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
 optimizer = SimOptimizer(PARAMETERS_GLOBAL_0, PARAMETERS_PER_TYPE_0,
                          training_data=train_data, test_data=test_data, population_size=population_size,

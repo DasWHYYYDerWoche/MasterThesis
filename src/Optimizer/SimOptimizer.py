@@ -51,7 +51,7 @@ class SimOptimizer:
 
         self._simulator = SimulatorHandler()
         self._simulator.num_instances = 10
-        self._simulator.replays_per_instance = 12
+        self._simulator.replays_per_instance = 8
         self._simulator.show_ui = False
 
         self._toolbox = base.Toolbox()
@@ -125,14 +125,14 @@ class SimOptimizer:
             return i1,i2
 
         def mutate(individual):
-            tools.mutGaussian(individual, mu=0, sigma=5.0, indpb=0.2),
+            tools.mutGaussian(individual, mu=0, sigma=10.0, indpb=0.2),# TODO: add to hyperparameters
             SimOptimizer.clamp(individual, self._global_attribute_boundaries + self._per_joint_type_attribute_boundaries)
             return (individual,)
 
         # genetic operators to create new individuals
         self._toolbox.register("mate", mate)
         self._toolbox.register("mutate", mutate)
-        self._toolbox.register("select", tools.selTournament, tournsize=3)
+        self._toolbox.register("select", tools.selTournament, tournsize=3) #TODO: add to hyperparameters
 
     def run(self, seed : int = None):
         self._run_identifier = datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
@@ -219,6 +219,8 @@ class SimOptimizer:
         # Run simulation
         gap_handler = simulator.simulation_gap(simulator_parameters, experiments,
                                                replay_mode=ExperimentMode.DEL_EXISTING)
+        if len(gap_handler.invalid_logs) > 0:
+            logger.warning("%s invalid logs found: ", len(gap_handler.invalid_logs), gap_handler.invalid_logs)
         gap = gap_handler.get_final_FINAL_gap_avg(lambda gap_object: SimulationGapData.get_total_gap_avg(gap_object))
         # Return tuple (DEAP requirement)
         return (gap,)

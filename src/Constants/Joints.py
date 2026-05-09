@@ -119,7 +119,6 @@ ABBREVIATIONS = {
     "x_gyro" : "xG",
     "y_gyro" : "yG",
     "z_gyro" : "zG",
-
 }
 
 JOINT_TYPES = {
@@ -129,5 +128,7 @@ JOINT_TYPES = {
     3 : ["lShoulderPitch", "rShoulderPitch"],
     4 : ["lHipPitch", "rHipPitch", "lKneePitch", "rKneePitch", "lAnklePitch", "rAnklePitch"]
 }
+
+MAX_MOTOR_VELOCITY = {285.245901639344,1115.35269709544,1557.61589403974,469.954082651228,407.689643228265,500.698742263925,438.823079862438}
 
 RANGES = {key : abs(value[0] - value[1]) for key, value in DEFLECTIONS.items()}

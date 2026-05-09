@@ -21,17 +21,22 @@ class SimulationGapHandler:
         self._param_set_id: str = param_set_id
         path = get_project_root() / "executables/statistics/statistics.csv"
         df = pandas.read_csv(path)[["statistic", "max"]]
-        self._max_pos = df.loc[df["statistic"] == "max_pos", "max"].iloc[0]
-        self._max_vel = df.loc[df["statistic"] == "max_vel", "max"].iloc[0]
-        self._max_acc = df.loc[df["statistic"] == "max_acc", "max"].iloc[0]
+        self._max_pos = df.loc[df["statistic"] == "max_pos_abs", "max"].iloc[0]
+        self._max_vel = df.loc[df["statistic"] == "max_vel_abs", "max"].iloc[0]
+        self._max_acc = df.loc[df["statistic"] == "max_acc_abs", "max"].iloc[0]
+        self._loaded_logs = 0
+        self._invalid_logs = []
 
     def add(self, action_name: str, recording_date: str, log_index: int):
         if action_name not in self._sim_gap_data.keys():
             self._sim_gap_data[action_name] = []
-        self._sim_gap_data[action_name].append(
-            SimulationGapData(self._param_set_id, action_name, recording_date, log_index,
+        new_data = SimulationGapData(self._param_set_id, action_name, recording_date, log_index,
                               self._max_pos, self._max_vel, self._max_acc)
-        )
+        if new_data.load():
+            self._sim_gap_data[action_name].append(new_data)
+            self._loaded_logs += 1
+        else:
+            self._invalid_logs.append(new_data.identifier)
 
     def remove(self, action_name: str, recording_date: str, log_index: int):
         if action_name not in self._sim_gap_data.keys():
@@ -126,48 +131,6 @@ class SimulationGapHandler:
 
     # -------- method to find scale factor --------
 
-    def avg_abs_pos(self) -> float:
-        averages = []
-        weights = []
-        for gap_objects in self._sim_gap_data.values():
-            cur_weights = [gap_object.num_frames for gap_object in gap_objects]
-            averages.append(np.average([gap_object.avg_abs_pos() for gap_object in gap_objects], weights=cur_weights))
-            weights.append(len(cur_weights))
-        return np.average(averages, weights=weights)
-
-    def avg_abs_vel(self) -> float:
-        averages = []
-        weights = []
-        for gap_objects in self._sim_gap_data.values():
-            cur_weights = [gap_object.num_frames for gap_object in gap_objects]
-            averages.append(np.average([gap_object.avg_abs_vel() for gap_object in gap_objects], weights=cur_weights))
-            weights.append(len(cur_weights))
-        return np.average(averages, weights=weights)
-
-    def avg_abs_acc(self) -> float:
-        averages = []
-        weights = []
-        for gap_objects in self._sim_gap_data.values():
-            cur_weights = [gap_object.num_frames for gap_object in gap_objects]
-            averages.append(np.average([gap_object.avg_abs_acc() for gap_object in gap_objects], weights=cur_weights))
-            weights.append(len(cur_weights))
-        return np.average(averages, weights=weights)
-
-    def max_abs_pos(self) -> float:
-        return max([max([gap_object.max_abs_pos() for gap_object in gap_objects])
-                    for gap_objects in self._sim_gap_data.values()])
-
-    def max_abs_vel(self) -> float:
-        return max([max([gap_object.max_abs_vel() for gap_object in gap_objects])
-                    for gap_objects in self._sim_gap_data.values()])
-
-    def max_abs_acc(self) -> float:
-        return max([max([gap_object.max_abs_acc() for gap_object in gap_objects])
-                    for gap_objects in self._sim_gap_data.values()])
-
-    def get_scale_factors(self) -> tuple[float,float,float]:
-        return self.max_abs_pos(), self.max_abs_vel(), self.max_abs_acc()
-
     def set_scale_factors(self, max_pos : float, max_vel : float, max_acc : float):
         for gap_list in self._sim_gap_data.values():
             for gap_object in gap_list:
@@ -192,6 +155,14 @@ class SimulationGapHandler:
     @property
     def max_acc(self) -> float:
         return self._max_acc
+
+    @property
+    def loaded_logs(self) -> int:
+        return self._loaded_logs
+
+    @property
+    def invalid_logs(self) -> list[str]:
+        return self._invalid_logs
 
     # -------- helper methods --------
 
