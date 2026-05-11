@@ -23,8 +23,8 @@ for action_name in action_names:
     train_data.extend([(action_name, "260108", index) for index in train_indices])
     test_data.extend([(action_name, "260108", index) for index in test_indices])
 
-population_size = 5
-max_gen = 20
+population_size = 50
+max_gen = 200
 optimizer = SimOptimizer(PARAMETERS_GLOBAL_0, PARAMETERS_PER_TYPE_0,
                          training_data=train_data, test_data=test_data, population_size=population_size,
                          max_gen=max_gen)

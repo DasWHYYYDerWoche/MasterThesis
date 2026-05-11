@@ -50,8 +50,10 @@ class SimOptimizer:
         self._max_gen = max_gen
 
         self._simulator = SimulatorHandler()
-        self._simulator.num_instances = 10
-        self._simulator.replays_per_instance = 8
+        self._simulator.num_instances = 3
+        self._simulator.replays_per_instance = 1
+        self._simulator.max_run_duration = 5
+        self._simulator.max_wait_for_ready = 2
         self._simulator.show_ui = False
 
         self._toolbox = base.Toolbox()
@@ -220,7 +222,7 @@ class SimOptimizer:
         gap_handler = simulator.simulation_gap(simulator_parameters, experiments,
                                                replay_mode=ExperimentMode.DEL_EXISTING)
         if len(gap_handler.invalid_logs) > 0:
-            logger.warning("%s invalid logs found: ", len(gap_handler.invalid_logs), gap_handler.invalid_logs)
+            logger.warning("%s invalid logs found: %s", len(gap_handler.invalid_logs), gap_handler.invalid_logs)
         gap = gap_handler.get_final_FINAL_gap_avg(lambda gap_object: SimulationGapData.get_total_gap_avg(gap_object))
         # Return tuple (DEAP requirement)
         return (gap,)

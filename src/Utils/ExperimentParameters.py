@@ -207,6 +207,6 @@ class ExperimentParameters:
                     log_indices = [log_index]
                 for l_i in log_indices:
                     ep = ExperimentParameters(param_set_id=param_set_id, action_name=a_n, recording_date=r_d, log_index=l_i)
-                    if ep.exists_log() and (ep.exists_extraction() or param_set_id is None):
+                    if (ep.exists_extraction() or param_set_id is None):
                         eps.append(ep)
         return eps

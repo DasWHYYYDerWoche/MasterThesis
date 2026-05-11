@@ -28,11 +28,12 @@ class SimulationGapHandler:
         self._invalid_logs = []
 
     def add(self, action_name: str, recording_date: str, log_index: int):
-        if action_name not in self._sim_gap_data.keys():
-            self._sim_gap_data[action_name] = []
+
         new_data = SimulationGapData(self._param_set_id, action_name, recording_date, log_index,
                               self._max_pos, self._max_vel, self._max_acc)
         if new_data.load():
+            if action_name not in self._sim_gap_data.keys():
+                self._sim_gap_data[action_name] = []
             self._sim_gap_data[action_name].append(new_data)
             self._loaded_logs += 1
         else:
