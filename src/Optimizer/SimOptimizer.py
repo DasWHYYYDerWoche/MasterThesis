@@ -222,7 +222,7 @@ class SimOptimizer:
         gap_handler = simulator.simulation_gap(simulator_parameters, experiments,
                                                replay_mode=ExperimentMode.DEL_EXISTING)
         if len(gap_handler.invalid_logs) > 0:
-            logger.warning("%s invalid logs found: %s", len(gap_handler.invalid_logs), gap_handler.invalid_logs)
+            logger.warning("%s invalid logs found: ", len(gap_handler.invalid_logs), gap_handler.invalid_logs)
         gap = gap_handler.get_final_FINAL_gap_avg(lambda gap_object: SimulationGapData.get_total_gap_avg(gap_object))
         # Return tuple (DEAP requirement)
         return (gap,)

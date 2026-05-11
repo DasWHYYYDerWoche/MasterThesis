@@ -24,8 +24,9 @@ class SimulationGapHandler:
         self._max_pos = df.loc[df["statistic"] == "max_pos_abs", "max"].iloc[0]
         self._max_vel = df.loc[df["statistic"] == "max_vel_abs", "max"].iloc[0]
         self._max_acc = df.loc[df["statistic"] == "max_acc_abs", "max"].iloc[0]
-        self._loaded_logs = 0
-        self._invalid_logs = []
+        self._num_loaded_logs = 0
+        self._invalid_logs = {}
+        self._num_invalid_logs = 0
 
     def add(self, action_name: str, recording_date: str, log_index: int):
 
@@ -35,9 +36,13 @@ class SimulationGapHandler:
             if action_name not in self._sim_gap_data.keys():
                 self._sim_gap_data[action_name] = []
             self._sim_gap_data[action_name].append(new_data)
-            self._loaded_logs += 1
+            self._num_loaded_logs += 1
         else:
-            self._invalid_logs.append(new_data.identifier)
+            self._num_invalid_logs += 1
+            if action_name not in self._invalid_logs.keys():
+                self._invalid_logs[action_name] = 1
+            else:
+                self._invalid_logs[action_name] =+ 1
 
     def remove(self, action_name: str, recording_date: str, log_index: int):
         if action_name not in self._sim_gap_data.keys():
@@ -122,12 +127,21 @@ class SimulationGapHandler:
     # -------- actual final gap --------
 
     def get_final_FINAL_gap_avg(self, method: Callable[[SimulationGapData], float]) -> float:
+        if float(len(self._invalid_logs)) / float(self._num_loaded_logs) > 0.1:
+            return float("inf")
         gap_per_action = self.get_gap_avg(None, method)
         weights = []
         values = []
         for action_name in gap_per_action.keys():
-            weights.append(sum([gap_object.num_frames for gap_object in self._sim_gap_data[action_name]]))
-            values.append(gap_per_action[action_name])
+            gap = gap_per_action[action_name]
+            weight = sum([gap_object.num_frames for gap_object in self._sim_gap_data[action_name]])
+            # punish missing logs with 1.5 times the average
+            gap_per_run = gap / len(self._sim_gap_data[action_name])
+            gap += gap_per_run * 1.5 * self._invalid_logs[action_name]
+            weight_per_run = weight / len(self._sim_gap_data[action_name])
+            weight += weight_per_run * self._invalid_logs[action_name]
+            weights.append(weight)
+            values.append(gap)
         return np.average(values, weights=weights)
 
     # -------- method to find scale factor --------
@@ -159,11 +173,11 @@ class SimulationGapHandler:
 
     @property
     def loaded_logs(self) -> int:
-        return self._loaded_logs
+        return self._num_loaded_logs
 
     @property
-    def invalid_logs(self) -> list[str]:
-        return self._invalid_logs
+    def num_invalid_logs(self) -> int:
+        return self._num_invalid_logs
 
     # -------- helper methods --------
 
