@@ -1,5 +1,5 @@
 from __future__ import annotations
-from src import SimOptimizer, PARAMETERS_GLOBAL_0, PARAMETERS_PER_TYPE_0, get_project_root, Hyperparameters, SimulatorHandler
+from src import SimOptimizer, get_project_root, Hyperparameters, SimulatorHandler, PARAMETER_SET_0, PARAMETER_SET_1
 
 import logging
 logger = logging.getLogger("global_logger")
@@ -33,8 +33,7 @@ sim_handler.replays_per_instance = 1
 sim_handler.max_wait_for_ready = 2
 sim_handler.max_run_duration = 5
 
-optimizer = SimOptimizer(global_attributes=PARAMETERS_GLOBAL_0,
-                         per_joint_type_attributes=PARAMETERS_PER_TYPE_0,
+optimizer = SimOptimizer(PARAMETER_SET_0,
                          hyperparameters=hyperparameters,
                          sim_handler=sim_handler,
                          training_data=train_data,

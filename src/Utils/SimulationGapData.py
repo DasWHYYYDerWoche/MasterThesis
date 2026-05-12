@@ -69,7 +69,7 @@ class SimulationGapData:
                     replay_error = e
                 break
         if replay is None:
-            logger.warning("No replay at s% exist for log %s. Error: %s", path_replays, self._log_index, replay_error)
+            logger.warning("No replay at %s exist for log %d. Error: %s", path_replays.__str__(), self._log_index, replay_error)
             return False
         # time column is not needed but gets automatically logged
         replay = replay.drop(columns=['time'])
