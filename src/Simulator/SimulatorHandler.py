@@ -40,7 +40,7 @@ class SimulatorHandler:
         self._replays_per_instance = 2
 
         self._max_wait_for_ready = 5
-        self._max_wait_for_finish = 60
+        self._max_wait_for_finish = 10
         self._show_ui = True
 
 
@@ -50,6 +50,7 @@ class SimulatorHandler:
         :param process_list:
         """
         while any([not p.ready for p in process_list]):
+            # there are still processes that are not ready, check if any timed out
             for p_index, p in enumerate(process_list):
                 if p.ready_timed_out(self._max_wait_for_ready):
                     process_list.pop(p_index)
@@ -66,11 +67,11 @@ class SimulatorHandler:
         """
         for p_index, p in enumerate(process_list):
             if p.finished:
-                logger.info("Process %s finished", p.ep_index)
+                logger.debug("Process %s finished", p.ep_index)
                 process_list.pop(p_index)
             elif p.finished_timed_out(self._max_wait_for_finish):
-                logger.info("Process %s was terminated after not finishing in %s", p.ep_index,
-                            self._max_wait_for_finish)
+                logger.warning("Process %s was terminated after not finishing in %s", p.ep_index,
+                               self._max_wait_for_finish)
                 process_list.pop(p_index)
                 p.terminate()
 
@@ -111,9 +112,13 @@ class SimulatorHandler:
         self._configurationHandler.reset_all()
         if simulator_parameters:
             self._configurationHandler.set_simulation_parameters(simulator_parameters)
-        logger.info("Running %s experiments with a batch size of %s", len(experiment_parameters), self._num_instances)
+            logger.info("Replaying %s experiments with %d parallel instances and %d replays per instance", len(experiment_parameters),
+                        self._num_instances, self._replays_per_instance)
+        else:
+            logger.info("Extracting %s experiments with %d parallel instances.", len(experiment_parameters), self._num_instances)
         process_list : list[ProcessContainer] = []
         ep_index = 0
+        process_index = 0
         while ep_index < len(experiment_parameters):
             ep = experiment_parameters[ep_index]
             #wait for all processes to be ready
@@ -131,12 +136,19 @@ class SimulatorHandler:
             p_open_str = str(PATH_EXECUTABLE) + " " + str(scene_path) + ".ros2"
             if not self.show_ui:
                 p_open_str = p_open_str + " -platform offscreen"
-            process_list.append(ProcessContainer(subprocess.Popen(p_open_str, stdout=subprocess.PIPE, text=True), ep_index))
+            logger.debug("Process %d created with eps %d to %d", process_index, ep_index, new_ep_index - 1)
+            process_list.append(ProcessContainer(subprocess.Popen(p_open_str, stdout=subprocess.PIPE, text=True), process_index))
             ep_index = new_ep_index
+            process_index += 1
         #wait for all remaining processes to be ready
         self._wait_for_ready(process_list)
         self._configurationHandler.reset_all()
         self._wait_for_finished(process_list)
+        if simulator_parameters:
+            logger.info("Finished replaying.")
+        else:
+            logger.info("Finished extraction.")
+
 
     def extract(self,
                 data : Optional[list[tuple[Optional[str], Optional[str], Optional[int]]]] = None,
@@ -150,7 +162,6 @@ class SimulatorHandler:
         :param mode: either PARTIAL (only extract missing logs) or DELETE_EXISTING (delete existing extractions and
         re-extract all)
         """
-        logger.info("Starting Log Extraction")
         # create eps
         eps = ExperimentParameters.create_experiment_parameters(None, data)
         # preprocessing
@@ -168,7 +179,6 @@ class SimulatorHandler:
                 self.run(PATH_LOG_EXTRACTION_SCENE, eps, None)
             except Exception as e:
                 logger.exception("%s failed to run due to %s", type(self).__name__, type(e).__name__)
-        logger.info("Finished Log Extraction")
 
     def replay(self,
                settings : SimulationParameters,
@@ -184,7 +194,6 @@ class SimulatorHandler:
         :param mode: either PARTIAL (only replay missing logs) or DELETE_EXISTING (delete existing replay and
         re-replay all)
         """
-        logger.info("Starting Log Replaying")
         # create eps
         eps = ExperimentParameters.create_experiment_parameters(settings.target_param_set_id, data)
         # preprocessing
@@ -201,7 +210,6 @@ class SimulatorHandler:
                 self.run(PATH_CSV_REPLAY_SCENE, eps, settings)
             except Exception as e:
                 logger.exception("%s failed to run due to %s", type(self).__name__, type(e).__name__)
-        logger.info("Finished Log Replay")
 
     def simulation_gap(self,
                        settings : SimulationParameters,
