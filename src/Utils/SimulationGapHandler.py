@@ -136,10 +136,11 @@ class SimulationGapHandler:
             gap = gap_per_action[action_name]
             weight = sum([gap_object.num_frames for gap_object in self._sim_gap_data[action_name]])
             # punish missing logs with 1.5 times the average
-            gap_per_run = gap / len(self._sim_gap_data[action_name])
-            gap += gap_per_run * 1.5 * self._invalid_logs[action_name]
-            weight_per_run = weight / len(self._sim_gap_data[action_name])
-            weight += weight_per_run * self._invalid_logs[action_name]
+            if action_name in self._invalid_logs.keys():
+                gap_per_run = gap / len(self._sim_gap_data[action_name])
+                gap += gap_per_run * 1.5 * self._invalid_logs[action_name]
+                weight_per_run = weight / len(self._sim_gap_data[action_name])
+                weight += weight_per_run * self._invalid_logs[action_name]
             weights.append(weight)
             values.append(gap)
         return np.average(values, weights=weights)

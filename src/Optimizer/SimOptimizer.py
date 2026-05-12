@@ -50,9 +50,9 @@ class SimOptimizer:
         self._max_gen = max_gen
 
         self._simulator = SimulatorHandler()
-        self._simulator.num_instances = 3
-        self._simulator.replays_per_instance = 1
-        self._simulator.max_run_duration = 5
+        self._simulator.num_instances = 2
+        self._simulator.replays_per_instance = 4
+        self._simulator.max_run_duration = 10
         self._simulator.max_wait_for_ready = 2
         self._simulator.show_ui = False
 
