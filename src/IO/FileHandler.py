@@ -49,7 +49,7 @@ class FileHandler(ABC):
             if len(self._data.keys()) is not len(self.get_default().keys()):
                 raise ValueError("Inconsistent number of keys")
             self._initial_data = self._data.copy()
-            logger.info("%s loaded from %s", type(self).__name__, self._path)
+            logger.debug("%s loaded from %s", type(self).__name__, self._path)
         except Exception as e:
             logger.exception("%s failed to load due to %s", type(self).__name__, type(e).__name__)
 
@@ -73,10 +73,8 @@ class FileHandler(ABC):
         """
         if self._data.keys().__contains__(key):
             self._data[key] = value
-            logger.debug("%s set \"%s\" to \"%s\"", type(self).__name__, key, value)
             return True
         else:
-            logger.warning("%s does not contain key \"%s\"", type(self).__name__, key)
             return False
 
     def _set_values(self, keys: list[str], values: list[Any]):
@@ -88,23 +86,10 @@ class FileHandler(ABC):
         :return:
         """
         if len(keys) != len(values):
-            logger.debug("%s values \"%s\" and keys \"%s\" have different length", type(self).__name__, keys, values)
             return
-        contained_keys = []
-        contained_values = []
-        not_contained_keys = []
-        for key, value in zip(keys, values):
+        for key,value in zip(keys,values):
             if key in self._data.keys():
                 self._data[key] = value
-                contained_keys.append(key)
-                contained_values.append(value)
-            else:
-                not_contained_keys.append(key)
-        if len(contained_keys) > 0:
-            pass
-            #logger.debug("%s set \"%s\" to \"%s\"", type(self).__name__, contained_keys, contained_values)
-        if len(not_contained_keys) > 0:
-            logger.warning("%s does not contain key(s) \"%s\"", type(self).__name__, not_contained_keys)
 
     def get_value(self, key : str) -> Any:
         if key in self._data.keys():
@@ -115,7 +100,6 @@ class FileHandler(ABC):
         """
         Sets the _data object to the dict returned by get_default
         """
-        logger.debug("%s set to default", type(self).__name__)
         self._data = self.get_default()
 
     def set_to_initial_values(self):
@@ -123,7 +107,6 @@ class FileHandler(ABC):
         Sets the _data object to be a shallow copy of _initial_data
         :return:
         """
-        logger.debug("%s set to initial values", type(self).__name__)
         self._data = self._initial_data.copy()
 
     @property
