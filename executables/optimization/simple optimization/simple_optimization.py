@@ -39,7 +39,7 @@ sim_handler.show_ui = False
 sim_handler.num_instances = 3
 sim_handler.replays_per_instance = 4
 sim_handler.max_wait_for_ready = 2
-sim_handler.max_run_duration = 5
+sim_handler.max_run_duration = 10
 
 optimizer = SimOptimizer(parameters=PARAMETER_SET_0,
                          hyperparameters=hyperparameters,
