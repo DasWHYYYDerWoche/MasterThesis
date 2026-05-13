@@ -5,8 +5,8 @@ RECORDING_DURATIONS = {
     "walk" : 3000,
     "sidestep" : 3000,
     "turn" : 3000,
-    "standup_back" : 6000,
-    "standup_front" : 6000,
+    "standup_back" : 8000,
+    "standup_front" : 8000,
     "calculate_statistics" : 1000000
 }
 

@@ -9,6 +9,7 @@ sim_handler = SimulatorHandler()
 sim_handler.num_instances = 5
 sim_handler.replays_per_instance = 10
 sim_handler.show_ui = False
+sim_handler.dt = -1
 
 sim_handler.extract(data, ExperimentMode.DEL_EXISTING)
 settings = SimulationParameters("default")

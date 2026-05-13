@@ -1,11 +1,8 @@
 from __future__ import annotations
 from itertools import zip_longest
 import numpy as np
-from typing import Optional, Callable, TypeVar
-import os
-from pathlib import Path
-
 import pandas
+from typing import Optional, Callable, TypeVar
 
 from .SimulationGapData import SimulationGapData
 from ..Constants import get_project_root
@@ -139,8 +136,6 @@ class SimulationGapHandler:
     # -------- actual final gap --------
 
     def get_final_FINAL_gap_avg(self, method: Callable[[SimulationGapData], float]) -> float:
-        if float(len(self._invalid_logs)) / float(self._num_loaded_logs) > 0.1:
-            return float("inf")
         gap_per_action = self.get_gap_avg(None, method)
         weights = []
         values = []
@@ -169,7 +164,7 @@ class SimulationGapHandler:
                 weight_per_run = weight / len(self._sim_gap_data[action_name])
                 gap += gap_per_run * self._INVALID_LOG_PUNISH_FACTOR * self._invalid_logs[action_name]
                 weight += weight_per_run * self._invalid_logs[action_name]
-                logger.warning("Action %s has invalid logs. Each invalid log is valued as 1.5 times the average gap of the action: $f",
+                logger.warning("Action %s has invalid logs. Each invalid log is valued as 1.5 times the average gap of the action. $f",
                                action_name, gap_per_run * self._INVALID_LOG_PUNISH_FACTOR)
             weights.append(weight)
             values.append(gap)

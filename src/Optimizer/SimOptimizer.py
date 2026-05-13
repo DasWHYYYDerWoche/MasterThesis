@@ -126,12 +126,12 @@ class SimOptimizer:
         if not full_path.exists():
             full_path.mkdir(parents=True)
         df = pd.DataFrame(self._logbook)
-        df.to_csv(full_path / "logbook", index=False)
+        df.to_csv(full_path / "logbook.csv", index=False)
 
         df = pd.DataFrame(self._hall_of_fame)
         df.columns = [parameter.identifier() for parameter in self._parameters]
         df.insert(len(df.columns), "test results", self._test_results)
-        df.to_csv(full_path / "hallOfFame", index=False)
+        df.to_csv(full_path / "hallOfFame.csv", index=False)
 
         f = None
         try:

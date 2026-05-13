@@ -10,7 +10,7 @@ logging.basicConfig(filename='info.log',
                     level=logging.DEBUG,
                     datefmt="%Y-%m-%d %H:%M:%S")
 
-results_folder = (get_project_root() / "executables" / "optimization" / "single run optimization")
+results_folder = (get_project_root() / "executables" / "optimization" / "single_example")
 
 train_data = [("kick", "260108", 0)]
 test_data = [("kick", "260108", 0)]
