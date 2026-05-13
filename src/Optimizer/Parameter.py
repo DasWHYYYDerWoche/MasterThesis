@@ -3,7 +3,7 @@ from __future__ import annotations
 import random
 from abc import abstractmethod, ABC
 from typing import Optional
-
+import numpy
 from ..Utils import SimulationParameters
 
 class Parameter(ABC):
@@ -22,7 +22,8 @@ class Parameter(ABC):
         self._upper_bound = upper_bound if upper_bound is not None else self._init_mu * 10
 
     def get_random_initial_value(self):
-        return random.gauss(self._init_mu, self._init_sigma)
+        value = random.gauss(self._init_mu, self._init_sigma)
+        return numpy.clip(value, self._lower_bound, self._upper_bound)
 
     def identifier(self) -> str:
         return self._name
@@ -105,11 +106,11 @@ p2 = MotorParameter("p", 20, 2)
 p3 = MotorParameter("p", 20, 3)
 p4 = MotorParameter("p", 20, 4)
 
-d0 = MotorParameter("d", 0, 0, 2, 1, -100, 100)
-d1 = MotorParameter("d", 0, 1, 2, 1, -100, 100)
-d2 = MotorParameter("d", 0, 2, 2, 1, -100, 100)
-d3 = MotorParameter("d", 0, 3, 2, 1, -100, 100)
-d4 = MotorParameter("d", 0, 4, 2, 1, -100, 100)
+d0 = MotorParameter("d", 0.3, 0, 0.15, 0.1)
+d1 = MotorParameter("d", 0.3, 1, 0.15, 0.1)
+d2 = MotorParameter("d", 0.3, 2, 0.15, 0.1)
+d3 = MotorParameter("d", 0.3, 3, 0.15, 0.1)
+d4 = MotorParameter("d", 0.3, 4, 0.15, 0.1)
 
 PARAMETER_SET_0 = [kp, kd,contactKd, p0,p1,p2,p3,p4]
 PARAMETER_SET_1 = [kp, kd,contactKd, p0,p1,p2,p3,p4, d0,d1,d2,d3,d4]

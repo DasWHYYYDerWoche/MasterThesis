@@ -1,4 +1,4 @@
 from .ExperimentParameters import *
 from .SimulationGapData import SimulationGapData
 from .SimulationGapHandler import SimulationGapHandler
-from .SimulationParameters import SimulationParameters
+from .SimulationParameters import SimulationParameters, sim_params_from_file

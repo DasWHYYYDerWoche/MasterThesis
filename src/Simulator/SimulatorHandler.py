@@ -7,7 +7,7 @@ from pathlib import Path
 from .ProcessContainer import ProcessContainer
 from .ConfigurationHandler import ConfigurationHandler
 from ..Constants import PATH_EXECUTABLE, PATH_LOG_EXTRACTION_SCENE, PATH_CSV_REPLAY_SCENE
-from ..Utils import ExperimentParameters , SimulationGapHandler, ExperimentMode, SimulationParameters
+from ..Utils import ExperimentParameters , SimulationGapHandler, ExperimentMode, SimulationParameters, sim_params_from_file
 
 import logging
 logger = logging.getLogger("global_logger")
@@ -41,6 +41,8 @@ class SimulatorHandler:
 
         self._max_wait_for_ready = 5
         self._max_wait_for_finish = 10
+
+        self._dt = -1
         self._show_ui = True
 
 
@@ -111,7 +113,7 @@ class SimulatorHandler:
         """
         self._configurationHandler.reset_all()
         if simulator_parameters:
-            self._configurationHandler.set_simulation_parameters(simulator_parameters)
+            self._configurationHandler.set_simulation_parameters(simulator_parameters, self._dt)
             logger.info("Replaying %s experiments with %d parallel instances and %d replays per instance", len(experiment_parameters),
                         self._num_instances, self._replays_per_instance)
         else:
@@ -244,6 +246,23 @@ class SimulatorHandler:
     def get_default_value(self, parameter_name) -> Any:
         return self._configurationHandler.get_default_value(parameter_name)
 
+    def set_configurations(self, eps : list[ExperimentParameters], sim_params : Optional[SimulationParameters] = None):
+        if sim_params is not None:
+            self._configurationHandler.set_replay_parameters(eps)
+            self._configurationHandler.set_simulation_parameters(sim_params, self._dt)
+        else:
+            self._configurationHandler.set_extraction_parameters(eps[0])
+
+    def set_configurations_from_file(self,
+                                     action : str,
+                                     recording_date : str,
+                                     log_index : int,
+                                     path : Optional[Path] = None,
+                                     sim_params_index : Optional[int] = None):
+        sim_params = sim_params_from_file(path, sim_params_index)
+        ep = ExperimentParameters(sim_params.target_param_set_id, action, recording_date, log_index)
+        self.set_configurations([ep], sim_params)
+
     @property
     def num_instances(self) -> int:
         return self._num_instances
@@ -263,6 +282,10 @@ class SimulatorHandler:
     @property
     def show_ui(self) -> bool:
         return self._show_ui
+
+    @property
+    def dt(self) -> int:
+        return self._dt
 
     @num_instances.setter
     def num_instances(self, value):
@@ -304,3 +327,7 @@ class SimulatorHandler:
     @show_ui.setter
     def show_ui(self, value):
         self._show_ui = value
+
+    @dt.setter
+    def dt(self, value):
+        self._dt = value

@@ -6,8 +6,9 @@ logging.basicConfig(filename='info.log',format='%(levelname)s: %(message)s', enc
 data = [(action_name, None, None) for action_name in ACTION_NAMES]
 
 sim_handler = SimulatorHandler()
-sim_handler.num_instances = 5
-sim_handler.show_ui = False
+sim_handler.num_instances = 1
+sim_handler.show_ui = True
+sim_handler.dt = -1
 
 settings = SimulationParameters("default")
 sim_handler.replay(settings, data)

@@ -1,7 +1,7 @@
 from typing import Any
 
 from ..Utils import ExperimentParameters, SimulationParameters
-from ..IO import LoggerCfgHandler, NaoV6H25Handler, ThesisCSVReplayHandler, ThesisLogExtractionHandler
+from ..IO import LoggerCfgHandler, NaoV6H25Handler, ThesisCSVReplayRosHandler, ThesisLogExtractionHandler, ThesisCSVReplayConHandler
 
 class ConfigurationHandler:
     """
@@ -24,7 +24,8 @@ class ConfigurationHandler:
         self._initialized = True
         self._loggerCfgHandler = LoggerCfgHandler()
         self._naoV6H25Handler = NaoV6H25Handler()
-        self._thesisCSVReplayHandler = ThesisCSVReplayHandler()
+        self._thesisCSVReplayRosHandler = ThesisCSVReplayRosHandler()
+        self._thesisCSVReplayConHandler = ThesisCSVReplayConHandler()
         self._thesisLogExtractionHandler = ThesisLogExtractionHandler()
 
     def set_extraction_parameters(self, parameters : ExperimentParameters):
@@ -40,22 +41,25 @@ class ConfigurationHandler:
                                                  ep.replay_path_relative.as_posix(),
                                                  ep.move_robot)
         self._loggerCfgHandler.write_to_file()
+
         self._thesisLogExtractionHandler.set_default()
         self._thesisLogExtractionHandler.write_to_file()
 
-    def set_simulation_parameters(self, parameters : SimulationParameters):
+    def set_simulation_parameters(self, parameters : SimulationParameters, dt : int = -1):
         if parameters.Kd:
-            self._thesisCSVReplayHandler.kd = parameters.Kd
+            self._thesisCSVReplayRosHandler.kd = parameters.Kd
         if parameters.Kp:
-            self._thesisCSVReplayHandler.kp = parameters.Kp
+            self._thesisCSVReplayRosHandler.kp = parameters.Kp
         if parameters.contactKd:
-            self._thesisCSVReplayHandler.contact_kd = parameters.contactKd
+            self._thesisCSVReplayRosHandler.contact_kd = parameters.contactKd
         if parameters.contactKp:
-            self._thesisCSVReplayHandler.contact_kp = parameters.contactKp
-        self._thesisCSVReplayHandler.write_to_file()
+            self._thesisCSVReplayRosHandler.contact_kp = parameters.contactKp
+        self._thesisCSVReplayRosHandler.write_to_file()
         for hinge_name, hinge in parameters.joint_parameters.items():
             self._naoV6H25Handler.set_joint_parameters(hinge_name, hinge)
         self._naoV6H25Handler.write_to_file()
+        self._thesisCSVReplayConHandler.set(dt)
+        self._thesisCSVReplayConHandler.write_to_file()
 
     def reset_experiment_parameters(self):
         self._loggerCfgHandler.set_default()
@@ -64,10 +68,12 @@ class ConfigurationHandler:
         self._thesisLogExtractionHandler.write_to_file()
 
     def reset_simulation_parameters(self):
-        self._thesisCSVReplayHandler.set_default()
-        self._thesisCSVReplayHandler.write_to_file()
+        self._thesisCSVReplayRosHandler.set_default()
+        self._thesisCSVReplayRosHandler.write_to_file()
         self._naoV6H25Handler.set_default()
         self._naoV6H25Handler.write_to_file()
+        self._thesisCSVReplayConHandler.set_default()
+        self._thesisCSVReplayConHandler.write_to_file()
 
     def reset_all(self):
         self.reset_experiment_parameters()
@@ -80,7 +86,7 @@ class ConfigurationHandler:
         val = self._naoV6H25Handler.get_value(parameter_name)
         if val is not None:
             return val
-        val = self._thesisCSVReplayHandler.get_value(parameter_name)
+        val = self._thesisCSVReplayRosHandler.get_value(parameter_name)
         if val is not None:
             return val
         val = self._thesisLogExtractionHandler.get_value(parameter_name)
@@ -93,7 +99,7 @@ class ConfigurationHandler:
         d = self._naoV6H25Handler.get_default()
         if parameter_name in d.keys():
             return d[parameter_name]
-        d = self._thesisCSVReplayHandler.get_default()
+        d = self._thesisCSVReplayRosHandler.get_default()
         if parameter_name in d.keys():
             return d[parameter_name]
         d = self._thesisLogExtractionHandler.get_default()

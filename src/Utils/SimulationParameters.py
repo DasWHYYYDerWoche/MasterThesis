@@ -3,8 +3,9 @@ import logging
 
 from typing import Optional, Any
 from pathlib import Path
+import pandas as pd
 
-from .. import ThesisCSVReplayHandler
+from .. import ThesisCSVReplayRosHandler
 from ..IO import NaoV6H25Handler
 from ..Constants import JOINT_NAMES, PATH_REPLAYS, JOINT_TYPES
 from ..Structs import Joint
@@ -37,7 +38,7 @@ class SimulationParameters:
         """
         self._target_param_set_id : str = target_param_set_id
         self._source_param_set_id : Optional[str] = source_param_set_id
-        defaults = ThesisCSVReplayHandler.get_default()
+        defaults = ThesisCSVReplayRosHandler.get_default()
         self._Kd = defaults["Kd"]
         self._Kp = defaults["Kp"]
         self._contactKd = defaults["contactKd"]
@@ -95,6 +96,7 @@ class SimulationParameters:
         self._joint_parameters = {
             name: Joint.from_dict(h_data) for name, h_data in data["hinge_parameters"].items()
         }
+
 
     def set(self, joint_name, joint : Joint) -> bool:
         if self._type is SimulationParameters.Type.NEW or \
@@ -181,3 +183,24 @@ class SimulationParameters:
                 self._type is SimulationParameters.Type.NEW_WITH_BASE:
             self._contactKd = value
 
+
+def sim_params_from_file(path : Path, index : int) -> Optional[SimulationParameters]:
+    df = pd.read_csv(path)
+    if index < 0 or index >= len(df):
+        return None
+    as_dict = df.iloc[index].to_dict()
+    sim_params = SimulationParameters(path.parent.name)
+    if "Kp" in as_dict.keys():
+        sim_params.Kp = as_dict["Kp"]
+    if "Kd" in as_dict.keys():
+        sim_params.Kd = as_dict["Kd"]
+    if "contactKd" in as_dict.keys():
+        sim_params.contactKd = as_dict["contactKd"]
+    if "contactKp" in as_dict.keys():
+        sim_params.contactKp = as_dict["contactKp"]
+    for i in range(len(JOINT_TYPES.keys())):
+        if "p" + str(i) in as_dict.keys():
+            sim_params.set_for_joint_type(i, "p", as_dict["p" + str(i)])
+        if "d" + str(i) in as_dict.keys():
+            sim_params.set_for_joint_type(i, "d", as_dict["d" + str(i)])
+    return sim_params

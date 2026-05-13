@@ -62,7 +62,7 @@ individual = []
 opt_mutation_pb = 0
 opt_crossover_pb = 0
 for result in results_folder.iterdir():
-    df = pandas.read_csv(result / "hallOfFame")
+    df = pandas.read_csv(result / "hallOfFame.csv")
     min_row = df.loc[df["test results"].idxmin()]
     if min_row["test results"] < smallest_test_result:
         smallest_test_result = min_row["test results"]

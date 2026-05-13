@@ -12,7 +12,7 @@ logging.basicConfig(filename='info.log',
                     level=logging.DEBUG,
                     datefmt="%Y-%m-%d %H:%M:%S")
 
-results_folder = (get_project_root() / "executables" / "optimization" / "simple optimization")
+results_folder = (get_project_root() / "executables" / "optimization" / "full_run")
 
 action_names = ACTION_NAMES
 train_indices = [0,1,2,3]
