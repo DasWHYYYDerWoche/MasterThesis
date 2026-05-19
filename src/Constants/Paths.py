@@ -23,6 +23,8 @@ PATH_REPLAYS : Path = PATH_CSV_LOGGER / "replays"
 # path to the executable
 PATH_EXECUTABLE : Path = PATH / "Build" / "simulator-multiconfig" / "Release" / "SimRobot.exe"
 
+
+
 def get_extraction_path_partial(action_name : str, recording_date : str, log_index : int) -> Path:
     return Path("logsAsCSVs") / action_name / recording_date / str(log_index)
 
@@ -43,3 +45,9 @@ def get_field_logs_path_full(action_name : str, recording_date : str, log_index 
 
 def get_project_root() -> Path:
     return Path("C:/") / "Users" / "felix" / "PycharmProjects" / "Thesis"
+
+# paths to datasheets
+PATH_OUTPUT_MAX_FORCE = get_project_root() / "executables/statistics/max_values/output.csv"
+PATH_OUTPUT_MAX_VELOCITY = PATH_OUTPUT_MAX_FORCE
+
+PATH_OUTPUT_NORM_FACTORS = get_project_root() / "executables/statistics/normalization_factors/output.csv"

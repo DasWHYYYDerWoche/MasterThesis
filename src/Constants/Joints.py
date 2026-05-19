@@ -121,13 +121,27 @@ ABBREVIATIONS = {
     "z_gyro" : "zG",
 }
 
-JOINT_TYPES = {
+
+
+JOINT_TYPES_5 = {
     0 : ["lHipYawPitch", "rHipYawPitch", "lHipRoll", "rHipRoll", "lAnkleRoll", "rAnkleRoll"],
     1 : ["lWristYaw", "rWristYaw"],
     2 : ["headYaw", "lElbowYaw", "rElbowYaw", "headPitch", "lShoulderRoll", "rShoulderRoll", "lElbowRoll", "rElbowRoll"],
     3 : ["lShoulderPitch", "rShoulderPitch"],
     4 : ["lHipPitch", "rHipPitch", "lKneePitch", "rKneePitch", "lAnklePitch", "rAnklePitch"]
 }
+
+JOINT_TYPES_7 = {
+    0 : ["lHipYawPitch", "rHipYawPitch", "lHipRoll", "rHipRoll", "lAnkleRoll", "rAnkleRoll"],
+    1 : ["lWristYaw", "rWristYaw"],
+    1.5 : [],
+    2 : ["headYaw", "lElbowYaw", "rElbowYaw", "headPitch", "lShoulderRoll", "rShoulderRoll", "lElbowRoll", "rElbowRoll"],
+    2.5 : ["headPitch", "lShoulderRoll", "rShoulderRoll", "lElbowRoll", "rElbowRoll"],
+    3 : ["lShoulderPitch", "rShoulderPitch"],
+    4 : ["lHipPitch", "rHipPitch", "lKneePitch", "rKneePitch", "lAnklePitch", "rAnklePitch"]
+}
+
+JOINT_GROUPS = {5 : JOINT_TYPES_5, 7 : JOINT_TYPES_7}
 
 MAX_MOTOR_VELOCITY = {285.245901639344,1115.35269709544,1557.61589403974,469.954082651228,407.689643228265,500.698742263925,438.823079862438}
 

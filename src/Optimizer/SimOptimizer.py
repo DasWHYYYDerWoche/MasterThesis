@@ -7,7 +7,7 @@ from datetime import datetime
 import pandas as pd
 from pathlib import Path
 
-from ..Constants import JOINT_TYPES
+from ..Constants import JOINT_TYPES_5
 from ..Simulator import SimulatorHandler
 from ..Structs import Joint, Hyperparameters
 from ..Utils import ExperimentMode, SimulationParameters

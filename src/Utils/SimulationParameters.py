@@ -7,7 +7,7 @@ import pandas as pd
 
 from .. import ThesisCSVReplayRosHandler
 from ..IO import NaoV6H25Handler
-from ..Constants import JOINT_NAMES, PATH_REPLAYS, JOINT_TYPES
+from ..Constants import JOINT_NAMES, PATH_REPLAYS, JOINT_TYPES_7, PATH_OUTPUT_MAX_FORCE, PATH_OUTPUT_MAX_VELOCITY
 from ..Structs import Joint
 
 logger = logging.getLogger("global_logger")
@@ -77,8 +77,7 @@ class SimulationParameters:
                 "contactKp": self._contactKp,
                 "contactKd": self._contactKd,
                 "hinge_parameters": {
-                    name: hinge.to_dict()
-                    for name, hinge in self._joint_parameters.items()
+                    name: hinge.to_dict() for name, hinge in self._joint_parameters.items()
                 },
             }
             with open(self.path_settings_target, "w") as f:
@@ -89,30 +88,55 @@ class SimulationParameters:
     def _load_from_file(self):
         with open(self.path_settings_source, "r") as f:
             data = json.load(f)
-        self._Kp = data["kp"]
-        self._Kd = data["kd"]
-        self._contactKp = data["contact_kp"]
-        self._contactKd = data["contact_kd"]
+        self._Kp = data["Kp"]
+        self._Kd = data["Kd"]
+        self._contactKp = data["contactKp"]
+        self._contactKd = data["contactKd"]
         self._joint_parameters = {
             name: Joint.from_dict(h_data) for name, h_data in data["hinge_parameters"].items()
         }
 
+    def load_max_force(self):
+        data = pd.read_csv(PATH_OUTPUT_MAX_FORCE)
+        max_force_list = data["MaxTorque"].to_list()
+        for max_force, joint_list in zip(max_force_list, JOINT_TYPES_7.values()):
+            for joint in [self._joint_parameters[joint_name] for joint_name in joint_list]:
+                joint.max_force = max_force
 
-    def set(self, joint_name, joint : Joint) -> bool:
-        if self._type is SimulationParameters.Type.NEW or \
-                self._type is SimulationParameters.Type.NEW_WITH_BASE:
-            if joint_name in JOINT_NAMES:
-                self._joint_parameters[joint_name] = joint
-                return True
-        return False
+    def load_max_velocity(self):
+        data = pd.read_csv(PATH_OUTPUT_MAX_FORCE)
+        max_velocity_list = data["MaxSpeed_rad_per_s"].to_list()
+        print(max_velocity_list)
+        for max_velocity, joint_list in zip(max_velocity_list, JOINT_TYPES_7.values()):
+            for joint in [self._joint_parameters[joint_name] for joint_name in joint_list]:
+                joint.max_velocity = max_velocity
+
+    def set(self,
+            joint_name : str,
+            max_velocity : Optional[float] = None,
+            max_force : Optional[float] = None,
+            p : Optional[float] = None,
+            i : Optional[float] = None,
+            d : Optional[float] = None):
+        joint = self._joint_parameters[joint_name]
+        if max_velocity is not None:
+            joint.max_velocity = max_velocity
+        if max_force is not None:
+            joint.max_velocity = max_force
+        if p is not None:
+            joint.max_velocity = p
+        if i is not None:
+            joint.max_velocity = i
+        if d is not None:
+            joint.max_velocity = d
 
     def get(self, joint_name) -> Optional[Joint]:
         if joint_name in JOINT_NAMES and joint_name in self._joint_parameters.keys():
             return self._joint_parameters[joint_name]
         return None
 
-    def set_for_joint_type(self, joint_type : int, parameter_name : str, value : Any):
-        for joint in [self._joint_parameters[joint_name] for joint_name in JOINT_TYPES[joint_type]]:
+    def set_for_joint_type(self, joint_type : float, parameter_name : str, value : Any):
+        for joint in [self._joint_parameters[joint_name] for joint_name in JOINT_TYPES_7[joint_type]]:
             setattr(joint, parameter_name, value)
 
     @property
@@ -198,7 +222,7 @@ def sim_params_from_file(path : Path, index : int) -> Optional[SimulationParamet
         sim_params.contactKd = as_dict["contactKd"]
     if "contactKp" in as_dict.keys():
         sim_params.contactKp = as_dict["contactKp"]
-    for i in range(len(JOINT_TYPES.keys())):
+    for i in range(len(JOINT_TYPES_7.keys())):
         if "p" + str(i) in as_dict.keys():
             sim_params.set_for_joint_type(i, "p", as_dict["p" + str(i)])
         if "d" + str(i) in as_dict.keys():
