@@ -7,7 +7,7 @@ import pandas as pd
 
 from .. import ThesisCSVReplayRosHandler
 from ..IO import NaoV6H25Handler
-from ..Constants import JOINT_NAMES, PATH_REPLAYS, JOINT_TYPES_7, PATH_OUTPUT_MAX_FORCE, PATH_OUTPUT_MAX_VELOCITY
+from ..Constants import JOINT_NAMES, PATH_REPLAYS, JOINT_TYPES_7, PATH_DATASHEET_OUTPUT
 from ..Structs import Joint
 
 logger = logging.getLogger("global_logger")
@@ -97,14 +97,14 @@ class SimulationParameters:
         }
 
     def load_max_force(self):
-        data = pd.read_csv(PATH_OUTPUT_MAX_FORCE)
+        data = pd.read_csv(PATH_DATASHEET_OUTPUT)
         max_force_list = data["MaxTorque"].to_list()
         for max_force, joint_list in zip(max_force_list, JOINT_TYPES_7.values()):
             for joint in [self._joint_parameters[joint_name] for joint_name in joint_list]:
                 joint.max_force = max_force
 
     def load_max_velocity(self):
-        data = pd.read_csv(PATH_OUTPUT_MAX_FORCE)
+        data = pd.read_csv(PATH_DATASHEET_OUTPUT)
         max_velocity_list = data["MaxSpeed_rad_per_s"].to_list()
         print(max_velocity_list)
         for max_velocity, joint_list in zip(max_velocity_list, JOINT_TYPES_7.values()):

@@ -1,7 +1,6 @@
 import math
 
 import pandas as pd
-gearbox_efficiency = 0.8
 
 # Load CSV
 df = pd.read_csv("input.csv", index_col=0)
@@ -17,7 +16,7 @@ max_output_rpm = (no_load_speed * (1 + speed_tol / 100)) / gear_ratio
 # Convert rpm -> deg/s
 max_deg_s = max_output_rpm * 6
 max_rad_s = max_deg_s * math.pi / 180
-sim_torque = stall_torque * gear_ratio * gearbox_efficiency / 1000
+sim_torque = stall_torque * gear_ratio / 1000
 
 result = pd.DataFrame({
     "MaxSpeed_deg_per_s": max_deg_s,

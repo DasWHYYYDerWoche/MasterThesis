@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from src import SimulatorHandler, ExperimentParameters, get_extraction_path_full, JOINT_NAMES
+from src import SimulatorHandler, ExperimentParameters, get_extraction_path_full, JOINT_NAMES, DEFLECTIONS
 import pandas
 import numpy as np
 

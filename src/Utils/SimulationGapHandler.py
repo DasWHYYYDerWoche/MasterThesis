@@ -144,15 +144,19 @@ class SimulationGapHandler:
             weights.append(sum([gap_object.num_frames for gap_object in self._sim_gap_data[action_name]]))
         return np.average(values, weights=weights)
 
-    def get_optimization_target(self):
+    def get_optimization_target(self, method: Callable[[SimulationGapData], float] = lambda gap_object: SimulationGapData.get_total_gap_avg(gap_object)):
         if self._num_loaded_logs == 0:
             # cant revaluate when no logs are loaded
             logger.warning("Attempted calculating the optimization target for 0 loaded logs. Returned float(inf) instead.")
             return float("inf")
-        if float(len(self._invalid_logs)) / float(self._num_loaded_logs) > self._INVALID_LOG_THRESHOLD:
+        if float(self._num_invalid_logs) / float(self._num_loaded_logs) > self._INVALID_LOG_THRESHOLD:
             logger.warning("Attempted calculating the optimization target for more than %s invalid logs. Returned float(inf) instead.")
             return float("inf")
-        gap_per_action = self.get_gap_avg(None, lambda gap_object: SimulationGapData.get_total_gap_avg(gap_object))
+        for invalid_action in self._invalid_logs.keys():
+            if invalid_action not in self._sim_gap_data.keys():
+                logger.warning("Action %s has no valid logs. Returned float(inf) as optimization target.",invalid_action)
+                return float("inf")
+        gap_per_action = self.get_gap_avg(None, method)
         weights = []
         values = []
         for action_name in gap_per_action.keys():
@@ -164,7 +168,7 @@ class SimulationGapHandler:
                 weight_per_run = weight / len(self._sim_gap_data[action_name])
                 gap += gap_per_run * self._INVALID_LOG_PUNISH_FACTOR * self._invalid_logs[action_name]
                 weight += weight_per_run * self._invalid_logs[action_name]
-                logger.warning("Action %s has invalid logs. Each invalid log is valued as 1.5 times the average gap of the action. $f",
+                logger.warning("Action %s has invalid logs. Each invalid log is valued as 1.5 times the average gap of the action. %f",
                                action_name, gap_per_run * self._INVALID_LOG_PUNISH_FACTOR)
             weights.append(weight)
             values.append(gap)
@@ -173,6 +177,9 @@ class SimulationGapHandler:
     # -------- method to find scale factor --------
 
     def set_scale_factors(self, max_pos : float, max_vel : float, max_acc : float):
+        self._max_pos = max_pos
+        self._max_vel = max_vel
+        self._max_acc = max_acc
         for gap_list in self._sim_gap_data.values():
             for gap_object in gap_list:
                 gap_object.pos_gap_factor = max_pos

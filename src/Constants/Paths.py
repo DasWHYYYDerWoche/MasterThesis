@@ -47,7 +47,6 @@ def get_project_root() -> Path:
     return Path("C:/") / "Users" / "felix" / "PycharmProjects" / "Thesis"
 
 # paths to datasheets
-PATH_OUTPUT_MAX_FORCE = get_project_root() / "executables/statistics/max_values/output.csv"
-PATH_OUTPUT_MAX_VELOCITY = PATH_OUTPUT_MAX_FORCE
+PATH_DATASHEET_OUTPUT = get_project_root() / "executables/statistics/max_values/output.csv"
 
 PATH_OUTPUT_NORM_FACTORS = get_project_root() / "executables/statistics/normalization_factors/output.csv"

@@ -4,22 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b8d71ec4-48b2-4ec5-b1a5-6fe6d26ab8b8" name="Changes" comment="feature: added way to load hallOfFame&#10;&#10;feature: added dt parameter to simulator and created filehandler to set it&#10;&#10;fix: changed init values for d parameter">
-      <change afterPath="$PROJECT_DIR$/executables/statistics/max_values/run_max_values.py" afterDir="false" />
+    <list default="true" id="b8d71ec4-48b2-4ec5-b1a5-6fe6d26ab8b8" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/executables/optimization/max_force/run_max_force.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/executables/statistics/normalization_factors/run_norm_factors_2.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/executables/extraction and replaying/extract_missing.py" beforeDir="false" afterPath="$PROJECT_DIR$/executables/extract_replay/extract_missing.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/executables/extraction and replaying/redo_all.py" beforeDir="false" afterPath="$PROJECT_DIR$/executables/extract_replay/redo_all.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/executables/extraction and replaying/replay_missing.py" beforeDir="false" afterPath="$PROJECT_DIR$/executables/extract_replay/replay_missing.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/executables/optimization/single_example/single_example.py" beforeDir="false" afterPath="$PROJECT_DIR$/executables/optimization/single_example/single_example.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/executables/statistics/calculate_statistics.py" beforeDir="false" afterPath="$PROJECT_DIR$/executables/statistics/normalization_factors/run_norm_factors.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/executables/statistics/data_sheet/data_sheet.csv" beforeDir="false" afterPath="$PROJECT_DIR$/executables/statistics/max_values/input.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/executables/statistics/data_sheet/data_sheet_analysis.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/main.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Constants/Joints.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Constants/Joints.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/executables/statistics/max_values/run_max_values.py" beforeDir="false" afterPath="$PROJECT_DIR$/executables/statistics/max_values/run_max_values.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/executables/statistics/normalization_factors/run_norm_factors.py" beforeDir="false" afterPath="$PROJECT_DIR$/executables/statistics/normalization_factors/run_norm_factors.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Constants/Paths.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Constants/Paths.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Optimizer/Parameter.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Optimizer/Parameter.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Optimizer/SimOptimizer.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Optimizer/SimOptimizer.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Simulator/ConfigurationHandler.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Simulator/ConfigurationHandler.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Utils/SimulationGapData.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Utils/SimulationGapData.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Utils/SimulationGapHandler.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Utils/SimulationGapHandler.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Utils/SimulationParameters.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Utils/SimulationParameters.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/testing/gap_handler_test.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/testing/gap_handler_test.ipynb" afterDir="false" />
@@ -66,6 +58,7 @@
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
     &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;Python.Joint.executor&quot;: &quot;Run&quot;,
     &quot;Python.OneMaxTest.executor&quot;: &quot;Run&quot;,
     &quot;Python.OneMaxTestShort.executor&quot;: &quot;Run&quot;,
     &quot;Python.calculate_maximums (1).executor&quot;: &quot;Run&quot;,
@@ -79,6 +72,9 @@
     &quot;Python.redo_all (1).executor&quot;: &quot;Run&quot;,
     &quot;Python.redo_all.executor&quot;: &quot;Run&quot;,
     &quot;Python.replay_missing.executor&quot;: &quot;Run&quot;,
+    &quot;Python.run_max_force.executor&quot;: &quot;Run&quot;,
+    &quot;Python.run_max_values.executor&quot;: &quot;Run&quot;,
+    &quot;Python.run_norm_factors_2.executor&quot;: &quot;Run&quot;,
     &quot;Python.simple_optimization (1).executor&quot;: &quot;Run&quot;,
     &quot;Python.simple_optimization.executor&quot;: &quot;Run&quot;,
     &quot;Python.single_example.executor&quot;: &quot;Run&quot;,
@@ -114,8 +110,8 @@
       <recent name="C:\Users\felix\PycharmProjects\Thesis\executables\optimization\single run optimization" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.data_sheet_analysis">
-    <configuration name="calculate_statistics" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+  <component name="RunManager" selected="Python.run_norm_factors_2">
+    <configuration name="Joint" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="Thesis" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -124,11 +120,11 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/executables/statistics/normalizationFactors" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src/Structs" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/executables/statistics/normalizationFactors/calculate_statistics.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/Structs/Joint.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -159,7 +155,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="redo_all" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="run_max_force" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="Thesis" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -168,11 +164,11 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/executables/extraction and replaying" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/executables/optimization/max_force" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/executables/extraction and replaying/redo_all.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/executables/optimization/max_force/run_max_force.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -181,7 +177,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="replay_missing" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="run_max_values" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="Thesis" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -190,11 +186,11 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/executables/extraction and replaying" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/executables/statistics/max_values" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/executables/extraction and replaying/replay_missing.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/executables/statistics/max_values/run_max_values.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -203,7 +199,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="single_example" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="run_norm_factors_2" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="Thesis" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -212,11 +208,11 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/executables/optimization/single_example" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/executables/statistics/normalization_factors" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/executables/optimization/single_example/single_example.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/executables/statistics/normalization_factors/run_norm_factors_2.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -227,11 +223,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.run_norm_factors_2" />
+        <item itemvalue="Python.run_max_force" />
+        <item itemvalue="Python.Joint" />
+        <item itemvalue="Python.run_max_values" />
         <item itemvalue="Python.data_sheet_analysis" />
-        <item itemvalue="Python.calculate_statistics" />
-        <item itemvalue="Python.single_example" />
-        <item itemvalue="Python.redo_all" />
-        <item itemvalue="Python.replay_missing" />
       </list>
     </recent_temporary>
   </component>
@@ -249,14 +245,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1767698678177</updated>
-    </task>
-    <task id="LOCAL-00022" summary="feature:&#10;- moved batch creation to simulator&#10;- renamed extraction data to experiment data and added attional parameters">
-      <option name="closed" value="true" />
-      <created>1770653927686</created>
-      <option name="number" value="00022" />
-      <option name="presentableId" value="LOCAL-00022" />
-      <option name="project" value="LOCAL" />
-      <updated>1770653927686</updated>
     </task>
     <task id="LOCAL-00023" summary="feature:&#10;- experiment data has experiment type enum&#10;- replaced log_extraction, csv_replay and logging parameters with experiment type&#10;- removed unused imports and methods from log extractor">
       <option name="closed" value="true" />
@@ -642,7 +630,15 @@
       <option name="project" value="LOCAL" />
       <updated>1778674877846</updated>
     </task>
-    <option name="localTasksCounter" value="71" />
+    <task id="LOCAL-00071" summary="fix: renamed folders for name consistency&#10;&#10;feature: added support for 6/7 joint types&#10;&#10;feature: added maxForce, maxVelocity and combined paramsettings">
+      <option name="closed" value="true" />
+      <created>1779183750434</created>
+      <option name="number" value="00071" />
+      <option name="presentableId" value="LOCAL-00071" />
+      <option name="project" value="LOCAL" />
+      <updated>1779183750434</updated>
+    </task>
+    <option name="localTasksCounter" value="72" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -657,7 +653,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="fix: comments comments comments" />
     <MESSAGE value="features: massive" />
     <MESSAGE value="features: massive changes to ExperimentParameter generation." />
     <MESSAGE value="fix: updated SimulationGapData to fix missindexing of vel and acc.&#10;feature: added a test to gap_analysis.ipynb" />
@@ -682,6 +677,7 @@
     <MESSAGE value="fix: reduced logging and logging levels &#10;&#10;feature: Optimizer now has a buffer class for all hyperparameters&#10;&#10;fix: renamed methods and method internal parameters in GapHandler and GapData to reflect that not only joints can be passed" />
     <MESSAGE value="fix: cleaned up optimizer&#10;&#10;fix: updated logging in SimulatorParameters to fix logging error" />
     <MESSAGE value="feature: added way to load hallOfFame&#10;&#10;feature: added dt parameter to simulator and created filehandler to set it&#10;&#10;fix: changed init values for d parameter" />
-    <option name="LAST_COMMIT_MESSAGE" value="feature: added way to load hallOfFame&#10;&#10;feature: added dt parameter to simulator and created filehandler to set it&#10;&#10;fix: changed init values for d parameter" />
+    <MESSAGE value="fix: renamed folders for name consistency&#10;&#10;feature: added support for 6/7 joint types&#10;&#10;feature: added maxForce, maxVelocity and combined paramsettings" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix: renamed folders for name consistency&#10;&#10;feature: added support for 6/7 joint types&#10;&#10;feature: added maxForce, maxVelocity and combined paramsettings" />
   </component>
 </project>
