@@ -73,7 +73,7 @@ class MotorParameter(Parameter):
     def __init__(self,
                  name : str,
                  init_mu : float,
-                 motor_index : int,
+                 motor_index : float,
                  init_sigma : Optional[float] = None,
                  mutate_sigma : Optional[float] = None,
                  lower_bound: Optional[float] = None,
@@ -105,12 +105,15 @@ p1 = MotorParameter("p", 20, 1)
 p2 = MotorParameter("p", 20, 2)
 p3 = MotorParameter("p", 20, 3)
 p4 = MotorParameter("p", 20, 4)
+p25 = MotorParameter("p", 20, 2.5)
 
-d0 = MotorParameter("d", 0.3, 0, 0.15, 0.1, 0)
-d1 = MotorParameter("d", 0.3, 1, 0.15, 0.1, 0)
-d2 = MotorParameter("d", 0.3, 2, 0.15, 0.1, 0)
-d3 = MotorParameter("d", 0.3, 3, 0.15, 0.1, 0)
-d4 = MotorParameter("d", 0.3, 4, 0.15, 0.1, 0)
+d0 = MotorParameter("d", 0.3, 0, 0.15, 0.1)
+d1 = MotorParameter("d", 0.3, 1, 0.15, 0.1)
+d2 = MotorParameter("d", 0.3, 2, 0.15, 0.1)
+d3 = MotorParameter("d", 0.3, 3, 0.15, 0.1)
+d4 = MotorParameter("d", 0.3, 4, 0.15, 0.1)
+d25 = MotorParameter("d", 0.3, 2.5, 0.15, 0.1)
 
 PARAMETER_SET_0 = [kp, kd,contactKd, p0,p1,p2,p3,p4]
 PARAMETER_SET_1 = [kp, kd,contactKd, p0,p1,p2,p3,p4, d0,d1,d2,d3,d4]
+PARAMETER_SET_2 = [kp, kd,contactKd, p0,p1,p2,p25,p3,p4, d0,d1,d2,d25,d3,d4]

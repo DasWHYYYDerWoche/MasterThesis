@@ -16,11 +16,11 @@ class SimulationGapHandler:
     def __init__(self, param_set_id: str):
         self._sim_gap_data : dict[str, list[SimulationGapData]] = {}
         self._param_set_id: str = param_set_id
-        path = get_project_root() / "executables/statistics/statistics.csv"
-        df = pandas.read_csv(path)[["statistic", "max"]]
-        self._max_pos = df.loc[df["statistic"] == "max_pos_abs", "max"].iloc[0]
-        self._max_vel = df.loc[df["statistic"] == "max_vel_abs", "max"].iloc[0]
-        self._max_acc = df.loc[df["statistic"] == "max_acc_abs", "max"].iloc[0]
+        path = get_project_root() / "executables/statistics/normalization_factors/output.csv"
+        df = pandas.read_csv(path)[["output", "max"]]
+        self._max_pos = 119.5
+        self._max_vel = df.loc[df["output"] == "max_vel_abs", "max"].iloc[0]
+        self._max_acc = df.loc[df["output"] == "max_acc_abs", "max"].iloc[0]
         self._num_loaded_logs = 0
         self._invalid_logs = {}
         self._num_invalid_logs = 0
@@ -144,15 +144,19 @@ class SimulationGapHandler:
             weights.append(sum([gap_object.num_frames for gap_object in self._sim_gap_data[action_name]]))
         return np.average(values, weights=weights)
 
-    def get_optimization_target(self):
+    def get_optimization_target(self, method: Callable[[SimulationGapData], float] = lambda gap_object: SimulationGapData.get_total_gap_avg(gap_object)):
         if self._num_loaded_logs == 0:
             # cant revaluate when no logs are loaded
             logger.warning("Attempted calculating the optimization target for 0 loaded logs. Returned float(inf) instead.")
             return float("inf")
-        if float(len(self._invalid_logs)) / float(self._num_loaded_logs) > self._INVALID_LOG_THRESHOLD:
+        if float(self._num_invalid_logs) / float(self._num_loaded_logs) > self._INVALID_LOG_THRESHOLD:
             logger.warning("Attempted calculating the optimization target for more than %s invalid logs. Returned float(inf) instead.")
             return float("inf")
-        gap_per_action = self.get_gap_avg(None, lambda gap_object: SimulationGapData.get_total_gap_avg(gap_object))
+        for invalid_action in self._invalid_logs.keys():
+            if invalid_action not in self._sim_gap_data.keys():
+                logger.warning("Action %s has no valid logs. Returned float(inf) as optimization target.",invalid_action)
+                return float("inf")
+        gap_per_action = self.get_gap_avg(None, method)
         weights = []
         values = []
         for action_name in gap_per_action.keys():
@@ -173,6 +177,9 @@ class SimulationGapHandler:
     # -------- method to find scale factor --------
 
     def set_scale_factors(self, max_pos : float, max_vel : float, max_acc : float):
+        self._max_pos = max_pos
+        self._max_vel = max_vel
+        self._max_acc = max_acc
         for gap_list in self._sim_gap_data.values():
             for gap_object in gap_list:
                 gap_object.pos_gap_factor = max_pos

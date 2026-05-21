@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from src import SimulatorHandler, ExperimentParameters, get_extraction_path_full, JOINT_NAMES
+from src import SimulatorHandler, ExperimentParameters, get_extraction_path_full, JOINT_NAMES, DEFLECTIONS
 import pandas
 import numpy as np
 
@@ -98,11 +98,11 @@ dicts = {"data_points" : n_data_points,
          "max_acc_abs" : max_acc_abs}
 
 df = pandas.DataFrame.from_dict(dicts, orient="index")
-df.index.name = "statistic"
+df.index.name = "output"
 
 df["min"] = df.apply(np.nanmin, axis=1)
 df["max"] = df.apply(np.nanmax, axis=1)
-df.to_csv("statistics.csv")
+df.to_csv("output.csv")
 
 
 

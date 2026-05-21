@@ -43,3 +43,8 @@ def get_field_logs_path_full(action_name : str, recording_date : str, log_index 
 
 def get_project_root() -> Path:
     return Path("C:/") / "Users" / "pg-user" / "PycharmProjects" / "MasterThesis"
+
+# paths to datasheets
+PATH_DATASHEET_OUTPUT = get_project_root() / "executables/statistics/max_values/output.csv"
+
+PATH_OUTPUT_NORM_FACTORS = get_project_root() / "executables/statistics/normalization_factors/output.csv"

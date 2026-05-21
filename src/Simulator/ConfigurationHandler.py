@@ -5,7 +5,7 @@ from ..IO import LoggerCfgHandler, NaoV6H25Handler, ThesisCSVReplayRosHandler, T
 
 class ConfigurationHandler:
     """
-    Used by the Simulator to handle all configuration files needed for log extraction and replaying.
+    Used by the Simulator to handle all configuration files needed for log extract_replay.
 
     This is a singleton to ensure files are always only written to from one source.
     """

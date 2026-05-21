@@ -256,7 +256,7 @@ class SimulationGapData:
         d_a = self.get_acc_gaps(sensor_names, start_index, end_index)
         d_total = {}
         for joint in d_p.keys():
-            d_total[joint] = [(p + v + a)/3 for p,v,a in zip(d_p[joint], d_v[joint], d_a[joint])]
+            d_total[joint] = [(p + v + a) for p,v,a in zip(d_p[joint], d_v[joint], d_a[joint])]
         return d_total
 
     # -------- average for joints --------
