@@ -41,7 +41,7 @@ sim_handler.replays_per_instance = 4
 sim_handler.max_wait_for_ready = 2
 sim_handler.max_run_duration = 10
 
-optimizer = SimOptimizer(parameters=PARAMETER_SET_0,
+optimizer = SimOptimizer(parameters=PARAMETER_SET_1,
                          hyperparameters=hyperparameters,
                          sim_handler=sim_handler,
                          training_data=train_data,

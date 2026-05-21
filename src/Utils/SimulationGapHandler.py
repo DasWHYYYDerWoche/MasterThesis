@@ -164,7 +164,7 @@ class SimulationGapHandler:
                 weight_per_run = weight / len(self._sim_gap_data[action_name])
                 gap += gap_per_run * self._INVALID_LOG_PUNISH_FACTOR * self._invalid_logs[action_name]
                 weight += weight_per_run * self._invalid_logs[action_name]
-                logger.warning("Action %s has invalid logs. Each invalid log is valued as 1.5 times the average gap of the action. $f",
+                logger.warning("Action %s has invalid logs. Each invalid log is valued as 1.5 times the average gap of the action. %f",
                                action_name, gap_per_run * self._INVALID_LOG_PUNISH_FACTOR)
             weights.append(weight)
             values.append(gap)
