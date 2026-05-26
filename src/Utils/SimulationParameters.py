@@ -96,20 +96,19 @@ class SimulationParameters:
             name: Joint.from_dict(h_data) for name, h_data in data["hinge_parameters"].items()
         }
 
-    def load_max_force(self):
+    def load_max_force(self, scale_factor : float = 1):
         data = pd.read_csv(PATH_DATASHEET_OUTPUT)
         max_force_list = data["MaxTorque"].to_list()
         for max_force, joint_list in zip(max_force_list, JOINT_TYPES_7.values()):
             for joint in [self._joint_parameters[joint_name] for joint_name in joint_list]:
-                joint.max_force = max_force
+                joint.max_force = max_force * scale_factor
 
-    def load_max_velocity(self):
+    def load_max_velocity(self, scale_factor : float = 1):
         data = pd.read_csv(PATH_DATASHEET_OUTPUT)
         max_velocity_list = data["MaxSpeed_rad_per_s"].to_list()
-        print(max_velocity_list)
         for max_velocity, joint_list in zip(max_velocity_list, JOINT_TYPES_7.values()):
             for joint in [self._joint_parameters[joint_name] for joint_name in joint_list]:
-                joint.max_velocity = max_velocity
+                joint.max_velocity = max_velocity * scale_factor
 
     def set(self,
             joint_name : str,

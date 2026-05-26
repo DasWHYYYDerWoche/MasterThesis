@@ -4,14 +4,15 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b8d71ec4-48b2-4ec5-b1a5-6fe6d26ab8b8" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/executables/optimization/max_force/run_max_force.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/executables/statistics/normalization_factors/run_norm_factors_2.py" afterDir="false" />
+    <list default="true" id="b8d71ec4-48b2-4ec5-b1a5-6fe6d26ab8b8" name="Changes" comment="updated calculations for&#10;- invalid log punishment&#10;- max pos, max vel and max acc&#10;- max force&#10;&#10;created optimizer for max force">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/executables/extract_replay/extract_missing.py" beforeDir="false" afterPath="$PROJECT_DIR$/executables/extract_replay/extract_all.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/executables/optimization/max_force/run_max_force.py" beforeDir="false" afterPath="$PROJECT_DIR$/executables/optimization/max_force/run_max_force.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/executables/statistics/max_values/run_max_values.py" beforeDir="false" afterPath="$PROJECT_DIR$/executables/statistics/max_values/run_max_values.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/executables/statistics/normalization_factors/run_norm_factors.py" beforeDir="false" afterPath="$PROJECT_DIR$/executables/statistics/normalization_factors/run_norm_factors.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Constants/Paths.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Constants/Paths.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Utils/SimulationGapData.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Utils/SimulationGapData.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/executables/statistics/normalization_factors/run_norm_factors_2.py" beforeDir="false" afterPath="$PROJECT_DIR$/executables/statistics/normalization_factors/run_norm_factors_2.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/main.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Constants/Actions.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Constants/Actions.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Optimizer/Parameter.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Optimizer/Parameter.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Utils/SimulationGapHandler.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Utils/SimulationGapHandler.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Utils/SimulationParameters.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Utils/SimulationParameters.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/testing/gap_handler_test.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/testing/gap_handler_test.ipynb" afterDir="false" />
@@ -133,7 +134,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="data_sheet_analysis" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="redo_all" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="Thesis" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -142,11 +143,11 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/executables/statistics/data_sheet" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/executables/extract_replay" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/executables/statistics/data_sheet/data_sheet_analysis.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/executables/extract_replay/redo_all.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -224,10 +225,10 @@
     <recent_temporary>
       <list>
         <item itemvalue="Python.run_norm_factors_2" />
+        <item itemvalue="Python.redo_all" />
+        <item itemvalue="Python.run_max_values" />
         <item itemvalue="Python.run_max_force" />
         <item itemvalue="Python.Joint" />
-        <item itemvalue="Python.run_max_values" />
-        <item itemvalue="Python.data_sheet_analysis" />
       </list>
     </recent_temporary>
   </component>
@@ -245,14 +246,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1767698678177</updated>
-    </task>
-    <task id="LOCAL-00023" summary="feature:&#10;- experiment data has experiment type enum&#10;- replaced log_extraction, csv_replay and logging parameters with experiment type&#10;- removed unused imports and methods from log extractor">
-      <option name="closed" value="true" />
-      <created>1770721235223</created>
-      <option name="number" value="00023" />
-      <option name="presentableId" value="LOCAL-00023" />
-      <option name="project" value="LOCAL" />
-      <updated>1770721235223</updated>
     </task>
     <task id="LOCAL-00024" summary="feature:&#10;- further work on csv replayer, currently only starts scene very shortly">
       <option name="closed" value="true" />
@@ -638,7 +631,15 @@
       <option name="project" value="LOCAL" />
       <updated>1779183750434</updated>
     </task>
-    <option name="localTasksCounter" value="72" />
+    <task id="LOCAL-00072" summary="updated calculations for&#10;- invalid log punishment&#10;- max pos, max vel and max acc&#10;- max force&#10;&#10;created optimizer for max force">
+      <option name="closed" value="true" />
+      <created>1779380708352</created>
+      <option name="number" value="00072" />
+      <option name="presentableId" value="LOCAL-00072" />
+      <option name="project" value="LOCAL" />
+      <updated>1779380708352</updated>
+    </task>
+    <option name="localTasksCounter" value="73" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -653,7 +654,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="features: massive" />
     <MESSAGE value="features: massive changes to ExperimentParameter generation." />
     <MESSAGE value="fix: updated SimulationGapData to fix missindexing of vel and acc.&#10;feature: added a test to gap_analysis.ipynb" />
     <MESSAGE value="feature: continued work on gap_analysis.ipynb&#10;fix: renamed functions in gapData" />
@@ -678,6 +678,7 @@
     <MESSAGE value="fix: cleaned up optimizer&#10;&#10;fix: updated logging in SimulatorParameters to fix logging error" />
     <MESSAGE value="feature: added way to load hallOfFame&#10;&#10;feature: added dt parameter to simulator and created filehandler to set it&#10;&#10;fix: changed init values for d parameter" />
     <MESSAGE value="fix: renamed folders for name consistency&#10;&#10;feature: added support for 6/7 joint types&#10;&#10;feature: added maxForce, maxVelocity and combined paramsettings" />
-    <option name="LAST_COMMIT_MESSAGE" value="fix: renamed folders for name consistency&#10;&#10;feature: added support for 6/7 joint types&#10;&#10;feature: added maxForce, maxVelocity and combined paramsettings" />
+    <MESSAGE value="updated calculations for&#10;- invalid log punishment&#10;- max pos, max vel and max acc&#10;- max force&#10;&#10;created optimizer for max force" />
+    <option name="LAST_COMMIT_MESSAGE" value="updated calculations for&#10;- invalid log punishment&#10;- max pos, max vel and max acc&#10;- max force&#10;&#10;created optimizer for max force" />
   </component>
 </project>

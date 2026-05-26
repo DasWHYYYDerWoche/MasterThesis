@@ -1,10 +1,10 @@
 ACTION_NAMES = ["kick", "walk", "sidestep", "turn", "standup_back", "standup_front"]
 
 RECORDING_DURATIONS = {
-    "kick" : 1500,
-    "walk" : 3000,
-    "sidestep" : 3000,
-    "turn" : 3000,
+    "kick" : 2000,
+    "walk" : 4000,
+    "sidestep" : 4000,
+    "turn" : 4000,
     "standup_back" : 8000,
     "standup_front" : 8000,
     "calculate_statistics" : 1000000

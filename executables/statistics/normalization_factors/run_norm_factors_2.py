@@ -5,13 +5,12 @@ import math
 from src import DEFLECTIONS, PATH_DATASHEET_OUTPUT, ACTION_NAMES, SimulationGapHandler, SimulatorHandler, \
     SimulationParameters, JOINT_NAMES
 
-deflections = []
+max_pos = []
 for key in DEFLECTIONS.keys():
     if key != "lHand" and key != "rHand":
         lower, upper = DEFLECTIONS[key]
-        deflections.append(max(abs(lower), abs(upper)))
-print("pos_norm: " + str(np.average(deflections)))
-
+        max_pos.append(max(abs(lower), abs(upper)))
+max_max_pos = np.average(max_pos)
 
 max_velocities = pd.read_csv(PATH_DATASHEET_OUTPUT)["MaxSpeed_deg_per_s"].to_list()
 joint_types = {
@@ -24,7 +23,7 @@ joint_types = {
     4 : ["lHipPitch", "rHipPitch", "lKneePitch", "rKneePitch", "lAnklePitch", "rAnklePitch"]
 }
 weights = [len(value) for value in joint_types.values()]
-print("vel_norm (no hands): " + str(np.average(max_velocities, weights=weights)))
+max_max_vel = np.average(max_velocities, weights=weights)
 
 
 data = [(action_name, None, None) for action_name in ACTION_NAMES]
@@ -39,23 +38,10 @@ for gap_datas_for_action in gap_datas.values():
             accelerations[joint].extend([val for val in np.abs(acceleration) if val > 0])
 percentiles = []
 means = []
-percentiles_25 = []
-percentiles_75 = []
-max_non_outlier = []
 for joint_acceleration in accelerations.values():
-    percentiles.append(np.nanpercentile(joint_acceleration, 99.5))
-    mean = np.nanmean(joint_acceleration)
-    percentile_25 = np.nanpercentile(joint_acceleration, 25)
-    percentiles_25.append(percentile_25)
-    percentile_75 = np.nanpercentile(joint_acceleration, 75)
-    percentiles_75.append(percentile_75)
-    itqd = percentile_75 - percentile_25
+    percentiles.append(np.nanpercentile(joint_acceleration, 99.9))
+    means.append(np.nanmean(joint_acceleration))
 
-    means.append(mean)
-    max_non_outlier.append(percentile_75 + 1.5*itqd)
-
-print(percentiles_25)
-print(percentiles_75)
-
-print("acc_norm (percentile): " + str(np.average(percentiles)))
-print("acc_norm (average): " + str(np.average(max_non_outlier)))
+max_max_acc = np.nanmean(percentiles)
+df = pd.DataFrame.from_dict({"pos" : [max_max_pos], "vel" : [max_max_vel], "acc" : [max_max_acc]})
+df.to_csv("output2.csv")
