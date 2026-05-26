@@ -16,11 +16,11 @@ class SimulationGapHandler:
     def __init__(self, param_set_id: str):
         self._sim_gap_data : dict[str, list[SimulationGapData]] = {}
         self._param_set_id: str = param_set_id
-        path = get_project_root() / "executables/statistics/normalization_factors/output.csv"
-        df = pandas.read_csv(path)[["output", "max"]]
-        self._max_pos = 119.5
-        self._max_vel = df.loc[df["output"] == "max_vel_abs", "max"].iloc[0]
-        self._max_acc = df.loc[df["output"] == "max_acc_abs", "max"].iloc[0]
+        path = get_project_root() / "executables/statistics/normalization_factors/output2.csv"
+        df = pandas.read_csv(path)
+        self._max_pos = df["pos"].iloc[0]
+        self._max_vel = df["vel"].iloc[0]
+        self._max_acc = df["acc"].iloc[0]
         self._num_loaded_logs = 0
         self._invalid_logs = {}
         self._num_invalid_logs = 0
