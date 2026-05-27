@@ -7,7 +7,7 @@ data = [(action_name, None, None) for action_name in ACTION_NAMES]
 
 sim_handler = SimulatorHandler()
 sim_handler.num_instances = 5
-sim_handler.replays_per_instance = 10
+sim_handler.replays_per_instance = 1
 sim_handler.show_ui = False
 sim_handler.dt = -1
 

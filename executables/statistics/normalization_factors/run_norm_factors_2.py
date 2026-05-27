@@ -28,7 +28,7 @@ max_max_vel = np.average(max_velocities, weights=weights)
 
 data = [(action_name, None, None) for action_name in ACTION_NAMES]
 simulator = SimulatorHandler()
-replay_settings = SimulationParameters("default")
+replay_settings = SimulationParameters("defaultFive")
 gap_handler = simulator.simulation_gap(settings=replay_settings, data=data)
 gap_datas = gap_handler._sim_gap_data
 accelerations = {joint : [] for joint in JOINT_NAMES}
@@ -39,8 +39,7 @@ for gap_datas_for_action in gap_datas.values():
 percentiles = []
 means = []
 for joint_acceleration in accelerations.values():
-    percentiles.append(np.nanpercentile(joint_acceleration, 99.9))
-    means.append(np.nanmean(joint_acceleration))
+    percentile = np.nanpercentile(joint_acceleration, 99.9)
 
 max_max_acc = np.nanmean(percentiles)
 df = pd.DataFrame.from_dict({"pos" : [max_max_pos], "vel" : [max_max_vel], "acc" : [max_max_acc]})
