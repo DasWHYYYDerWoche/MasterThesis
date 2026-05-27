@@ -37,10 +37,10 @@ for gap_datas_for_action in gap_datas.values():
         for joint, acceleration in gap_data.get_acc_extraction(JOINT_NAMES).items():
             accelerations[joint].extend([val for val in np.abs(acceleration) if val > 0])
 percentiles = []
-means = []
 for joint_acceleration in accelerations.values():
-    percentiles.append(np.nanpercentile(joint_acceleration, 99.9))
-    means.append(np.nanmean(joint_acceleration))
+    percentile = np.nanpercentile(joint_acceleration, 99.9)
+    percentiles.append(percentile)
+    print(percentile)
 
 max_max_acc = np.nanmean(percentiles)
 df = pd.DataFrame.from_dict({"pos" : [max_max_pos], "vel" : [max_max_vel], "acc" : [max_max_acc]})

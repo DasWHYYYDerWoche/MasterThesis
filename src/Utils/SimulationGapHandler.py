@@ -20,7 +20,7 @@ class SimulationGapHandler:
         df = pandas.read_csv(path)
         self._max_pos = df["pos"].iloc[0]
         self._max_vel = df["vel"].iloc[0]
-        self._max_acc = df["acc"].iloc[0]
+        self._max_acc = 39944.82638888574
         self._num_loaded_logs = 0
         self._invalid_logs = {}
         self._num_invalid_logs = 0
