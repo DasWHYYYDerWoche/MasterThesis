@@ -48,19 +48,19 @@ class SimulationGapData:
     def load(self) -> bool:
         if self.loaded:
             return True
-        path_replays: Path = get_replay_path_full(self._param_set_id, self._action_name, self._recording_date, self._log_index).parent
+
         #load extraction csv
+        path_extraction = get_extraction_path_full(
+                    self._action_name, self._recording_date, self._log_index).with_suffix(".csv")
         try:
-            extraction : Optional[pandas.DataFrame] = pandas.read_csv(
-                get_extraction_path_full(
-                    self._action_name, self._recording_date, self._log_index).with_suffix(".csv"),
-                sep=None, engine="python")
+            extraction : Optional[pandas.DataFrame] = pandas.read_csv(path_extraction,sep=None, engine="python")
         except Exception as e:
-            logger.warning("No extraction at s% exist for log %s. Error: %s", path_replays, self._log_index, e)
+            logger.warning("No extraction at s% exist for log %s. Error: %s", path_extraction, self._log_index, e)
             return False
         #load replay csv
         replay: Optional[pandas.DataFrame] = None
         replay_error = None
+        path_replays: Path = get_replay_path_full(self._param_set_id, self._action_name, self._recording_date,self._log_index).parent
         for file in path_replays.iterdir():
             if file.name.startswith(str(self._log_index)):
                 try:
@@ -78,7 +78,9 @@ class SimulationGapData:
         self._merged = pandas.merge(left=extraction, right=replay,
                                     left_on="time_step", right_on="replayed_frame",
                                     how='inner', suffixes=(EXTRACTION_SUFFIX, REPLAY_SUFFIX))
-        self._merged.drop(columns=['replayed_frame'])
+        column_names_to_drop = (["JR_A_" + joint_name for joint_name in JOINT_NAMES + ["rHand", "lHand"]] +
+                                ["JR_S_" + joint_name for joint_name in JOINT_NAMES + ["rHand", "lHand"]] + ['replayed_frame'])
+        self._merged = self._merged.drop(columns=column_names_to_drop)
         # normalize and rename time column
         self._merged.rename(columns={"time_step_x": "time_step"}, inplace=True)
         self._merged['time_step'] = self._merged['time_step'] - self._merged['time_step'][0]
