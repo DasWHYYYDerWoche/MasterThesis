@@ -4,14 +4,17 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b8d71ec4-48b2-4ec5-b1a5-6fe6d26ab8b8" name="Changes" comment="- updated action durations&#10;- extract_missing now rextracts everything&#10;- updated max force search factors&#10;- cleaned up run_max_values and run_norm_factors&#10;&#10;updated calculations for&#10;- max acc&#10;- max force">
+    <list default="true" id="b8d71ec4-48b2-4ec5-b1a5-6fe6d26ab8b8" name="Changes" comment="testing to find reason for pc diff">
+      <change afterPath="$PROJECT_DIR$/executables/random_shit/compare_csvs.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/executables/extract_replay/redo_all.py" beforeDir="false" afterPath="$PROJECT_DIR$/executables/extract_replay/redo_all.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/executables/extract_replay/extract_all.py" beforeDir="false" afterPath="$PROJECT_DIR$/executables/extract_replay/extract_all.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/executables/extract_replay/replay_missing.py" beforeDir="false" afterPath="$PROJECT_DIR$/executables/extract_replay/replay_missing.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/executables/statistics/normalization_factors/run_norm_factors_2.py" beforeDir="false" afterPath="$PROJECT_DIR$/executables/statistics/normalization_factors/run_norm_factors_2.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/main.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Constants/Actions.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Constants/Actions.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Constants/Paths.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Constants/Paths.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Simulator/SimulatorHandler.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Simulator/SimulatorHandler.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Utils/SimulationGapData.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Utils/SimulationGapData.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Utils/SimulationGapHandler.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Utils/SimulationGapHandler.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/testing/gap_handler_test.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/testing/gap_handler_test.ipynb" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -64,7 +67,9 @@
     &quot;Python.calculate_statistics (1).executor&quot;: &quot;Run&quot;,
     &quot;Python.calculate_statistics (2).executor&quot;: &quot;Run&quot;,
     &quot;Python.calculate_statistics.executor&quot;: &quot;Run&quot;,
+    &quot;Python.compare_csvs.executor&quot;: &quot;Run&quot;,
     &quot;Python.data_sheet_analysis.executor&quot;: &quot;Run&quot;,
+    &quot;Python.extract_all.executor&quot;: &quot;Run&quot;,
     &quot;Python.extract_missing.executor&quot;: &quot;Run&quot;,
     &quot;Python.grid_search.executor&quot;: &quot;Run&quot;,
     &quot;Python.redo_all (1).executor&quot;: &quot;Run&quot;,
@@ -83,7 +88,7 @@
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;master&quot;,
     &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/felix/PycharmProjects/Thesis/src/IO&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/felix/PycharmProjects/Thesis/executables/random_shit&quot;,
     &quot;settings.editor.selected.configurable&quot;: &quot;org.jetbrains.plugins.github.ui.GithubSettingsConfigurable&quot;
   }
 }</component>
@@ -97,6 +102,7 @@
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\felix\PycharmProjects\Thesis\executables\random_shit" />
       <recent name="C:\Users\felix\PycharmProjects\Thesis\src\IO" />
       <recent name="C:\Users\felix\PycharmProjects\Thesis\executables\optimization" />
       <recent name="C:\Users\felix\PycharmProjects\Thesis\executables\statistics\data_sheet" />
@@ -109,7 +115,51 @@
       <recent name="C:\Users\felix\PycharmProjects\Thesis\executables\optimization\single run optimization" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.run_norm_factors_2">
+  <component name="RunManager" selected="Python.replay_missing">
+    <configuration name="compare_csvs" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="Thesis" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/executables/random_shit" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/executables/random_shit/compare_csvs.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="extract_all" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="Thesis" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/executables/extract_replay" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/executables/extract_replay/extract_all.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="redo_all" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="Thesis" />
       <option name="ENV_FILES" value="" />
@@ -154,50 +204,6 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="run_max_values" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="Thesis" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/executables/statistics/max_values" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/executables/statistics/max_values/run_max_values.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="run_norm_factors" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="Thesis" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/executables/statistics/normalization_factors" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/executables/statistics/normalization_factors/run_norm_factors.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
     <configuration name="run_norm_factors_2" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="Thesis" />
       <option name="ENV_FILES" value="" />
@@ -222,11 +228,11 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.run_norm_factors_2" />
         <item itemvalue="Python.replay_missing" />
+        <item itemvalue="Python.extract_all" />
+        <item itemvalue="Python.run_norm_factors_2" />
+        <item itemvalue="Python.compare_csvs" />
         <item itemvalue="Python.redo_all" />
-        <item itemvalue="Python.run_norm_factors" />
-        <item itemvalue="Python.run_max_values" />
       </list>
     </recent_temporary>
   </component>
@@ -244,14 +250,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1767698678177</updated>
-    </task>
-    <task id="LOCAL-00025" summary="feature:&#10;- update cfg handler and experiment data to handle path construction and removed path construction from cpp code&#10;- this does not yet work !">
-      <option name="closed" value="true" />
-      <created>1770742577783</created>
-      <option name="number" value="00025" />
-      <option name="presentableId" value="LOCAL-00025" />
-      <option name="project" value="LOCAL" />
-      <updated>1770742577783</updated>
     </task>
     <task id="LOCAL-00026" summary="feature:&#10;- finalized new path structure by updating deletion and filter methods in LogExtractor">
       <option name="closed" value="true" />
@@ -637,7 +635,15 @@
       <option name="project" value="LOCAL" />
       <updated>1779807194034</updated>
     </task>
-    <option name="localTasksCounter" value="74" />
+    <task id="LOCAL-00074" summary="testing to find reason for pc diff">
+      <option name="closed" value="true" />
+      <created>1779863654830</created>
+      <option name="number" value="00074" />
+      <option name="presentableId" value="LOCAL-00074" />
+      <option name="project" value="LOCAL" />
+      <updated>1779863654830</updated>
+    </task>
+    <option name="localTasksCounter" value="75" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -652,7 +658,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="fix: updated SimulationGapData to fix missindexing of vel and acc.&#10;feature: added a test to gap_analysis.ipynb" />
     <MESSAGE value="feature: continued work on gap_analysis.ipynb&#10;fix: renamed functions in gapData" />
     <MESSAGE value="feature: moved gap_object and gap_handler tests to separate notebooks. &#10;docs: updated documentation in SimulationGapData" />
     <MESSAGE value="features: update velocity and acceleration calculation to correctly account for step size. &#10;fix: updated gap_object_test.py to use correct step size for axis" />
@@ -677,6 +682,7 @@
     <MESSAGE value="fix: renamed folders for name consistency&#10;&#10;feature: added support for 6/7 joint types&#10;&#10;feature: added maxForce, maxVelocity and combined paramsettings" />
     <MESSAGE value="updated calculations for&#10;- invalid log punishment&#10;- max pos, max vel and max acc&#10;- max force&#10;&#10;created optimizer for max force" />
     <MESSAGE value="- updated action durations&#10;- extract_missing now rextracts everything&#10;- updated max force search factors&#10;- cleaned up run_max_values and run_norm_factors&#10;&#10;updated calculations for&#10;- max acc&#10;- max force" />
-    <option name="LAST_COMMIT_MESSAGE" value="- updated action durations&#10;- extract_missing now rextracts everything&#10;- updated max force search factors&#10;- cleaned up run_max_values and run_norm_factors&#10;&#10;updated calculations for&#10;- max acc&#10;- max force" />
+    <MESSAGE value="testing to find reason for pc diff" />
+    <option name="LAST_COMMIT_MESSAGE" value="testing to find reason for pc diff" />
   </component>
 </project>

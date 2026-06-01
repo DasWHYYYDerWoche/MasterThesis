@@ -1,10 +1,10 @@
-from src import SimulatorHandler, ACTION_NAMES, ExperimentMode
+from src import SimulatorHandler, ACTION_NAMES, ExperimentMode, get_test_data, get_train_data, get_combined_data
 import logging
 logger = logging.getLogger("global_logger")
 logging.basicConfig(filename='info.log',format='%(levelname)s: %(message)s', encoding='utf-8', filemode='w', level=logging.DEBUG)
 
 
-data = [(action_name, None, None) for action_name in ACTION_NAMES]
+data = get_combined_data()
 
 sim_handler = SimulatorHandler()
 sim_handler.num_instances = 5

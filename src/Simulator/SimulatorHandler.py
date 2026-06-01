@@ -6,7 +6,7 @@ from typing import Optional, Any
 from pathlib import Path
 from .ProcessContainer import ProcessContainer
 from .ConfigurationHandler import ConfigurationHandler
-from ..Constants import PATH_EXECUTABLE, PATH_LOG_EXTRACTION_SCENE, PATH_CSV_REPLAY_SCENE
+from ..Constants import PATH_EXECUTABLE, PATH_LOG_EXTRACTION_SCENE, PATH_CSV_REPLAY_SCENE, PATH_LOGS
 from ..Utils import ExperimentParameters , SimulationGapHandler, ExperimentMode, SimulationParameters, sim_params_from_file
 
 import logging
@@ -331,3 +331,46 @@ class SimulatorHandler:
     @dt.setter
     def dt(self, value):
         self._dt = value
+
+
+# emergency methods
+    def split_logs(self):
+        nao = "Jarvis"
+        path = PATH_LOGS / "ThesisFullLogs"
+        log_path = path / nao
+        split_command_file = (path / "extractionJarvis").with_suffix(".txt")
+        d = {}
+        cur_file = ""
+        with open(split_command_file) as f:
+            f_iter = iter(f)
+            line = next(f_iter,None).strip()
+            while line is not None:
+                line = line.strip()
+                if line.endswith(".log"):
+                    cur_file = line
+                    d[cur_file] = []
+                elif line.startswith("log"):
+                    first_line = line
+                    line = next(f_iter, None)
+                    second_line = line.strip()
+                    d[cur_file].append((first_line,second_line))
+                line = next(f_iter, None)
+        for file, commands in d.items():
+            relative_path = (Path("..") / "Logs" / "ThesisFullLogs" / nao / file).as_posix()
+            for first_line, second_line in commands:
+                self._configurationHandler._loggerCfgHandler.set(logging_mode=2,
+                                                                 log_extraction_path="\"" + first_line + "\"",
+                                                                 csv_replay_path="\"" + second_line + "\"",
+                                                                 move_robot=0,
+                                                                 recording_duration=0)
+                self._configurationHandler._loggerCfgHandler.write_to_file()
+                self._configurationHandler._thesisLogExtractionHandler.set(relative_path)
+                self._configurationHandler._thesisLogExtractionHandler.write_to_file()
+                p_open_str = str(PATH_EXECUTABLE) + " " + str(PATH_LOG_EXTRACTION_SCENE) + ".ros2"
+                #if not self.show_ui:
+                 #   p_open_str = p_open_str + " -platform offscreen"
+                p = subprocess.Popen(p_open_str, stdout=subprocess.PIPE, text=True)
+                timer = 0
+                time.sleep(5)
+                p.terminate()
+
