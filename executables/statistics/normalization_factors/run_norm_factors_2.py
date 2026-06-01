@@ -3,7 +3,7 @@ import pandas as pd
 import math
 
 from src import DEFLECTIONS, PATH_DATASHEET_OUTPUT, ACTION_NAMES, SimulationGapHandler, SimulatorHandler, \
-    SimulationParameters, JOINT_NAMES, ExperimentParameters, get_extraction_path_full
+    SimulationParameters, JOINT_NAMES, ExperimentParameters, get_extraction_path_full, get_combined_data
 
 max_pos = []
 for key in DEFLECTIONS.keys():
@@ -25,7 +25,7 @@ joint_types = {
 weights = [len(value) for value in joint_types.values()]
 max_max_vel = np.average(max_velocities, weights=weights)
 
-data = [(action_name, None, None) for action_name in ACTION_NAMES]
+data = get_combined_data()
 eps = ExperimentParameters.create_experiment_parameters(None,data)
 accelerations = {joint : [] for joint in JOINT_NAMES}
 for ep in eps:
@@ -47,22 +47,5 @@ for joint_acceleration in accelerations.values():
 max_max_acc = np.nanmean(percentiles)
 print(max_max_acc)
 
-
-data = [(action_name, None, None) for action_name in ACTION_NAMES]
-simulator = SimulatorHandler()
-replay_settings = SimulationParameters("default_dt113")
-gap_handler = simulator.simulation_gap(settings=replay_settings, data=data)
-gap_datas = gap_handler._sim_gap_data
-accelerations = {joint : [] for joint in JOINT_NAMES}
-for gap_datas_for_action in gap_datas.values():
-    for gap_data in gap_datas_for_action:
-        for joint, acceleration in gap_data.get_acc_extraction(JOINT_NAMES).items():
-            accelerations[joint].extend([val for val in np.abs(acceleration) if val > 0])
-percentiles = []
-for joint_acceleration in accelerations.values():
-    percentile = np.nanpercentile(joint_acceleration, 99.9)
-    percentiles.append(percentile)
-
-print( np.nanmean(percentiles))
 df = pd.DataFrame.from_dict({"pos" : [max_max_pos], "vel" : [max_max_vel], "acc" : [max_max_acc]})
 df.to_csv("output2.csv")

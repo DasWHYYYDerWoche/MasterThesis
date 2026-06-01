@@ -62,9 +62,10 @@ class SimulationGapData:
         replay_error = None
         path_replays: Path = get_replay_path_full(self._param_set_id, self._action_name, self._recording_date,self._log_index).parent
         for file in path_replays.iterdir():
-            if file.name.startswith(str(self._log_index)):
+            if file.name.startswith(str(self._log_index) + "_"):
                 try:
-                    replay = pandas.read_csv(path_replays / file.name, sep=None, engine="python")
+                    path_replays = path_replays / file.name
+                    replay = pandas.read_csv(path_replays, sep=None, engine="python")
                 except Exception as e:
                     replay_error = e
                 break
@@ -82,6 +83,13 @@ class SimulationGapData:
                                 ["JR_S_" + joint_name for joint_name in JOINT_NAMES + ["rHand", "lHand"]] + ['replayed_frame'])
         self._merged = self._merged.drop(columns=column_names_to_drop)
         # normalize and rename time column
+
+        if len(self._merged['time_step'])  <= 0:
+            print("broke: " + self.identifier)
+            print(path_extraction)
+            print(path_replays)
+            print()
+            return False
         self._merged.rename(columns={"time_step_x": "time_step"}, inplace=True)
         self._merged['time_step'] = self._merged['time_step'] - self._merged['time_step'][0]
         self._num_frames = len(self._merged)
