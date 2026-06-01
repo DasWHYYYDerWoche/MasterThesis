@@ -7,9 +7,11 @@ data = [(action_name, None, None) for action_name in ACTION_NAMES]
 
 sim_handler = SimulatorHandler()
 sim_handler.num_instances = 1
-sim_handler.replays_per_instance = 5
+sim_handler.replays_per_instance = 1
 sim_handler.show_ui = False
 sim_handler.dt = -1
+sim_handler.max_wait_for_ready = 200
+sim_handler.max_run_duration = 200
 
-settings = SimulationParameters("defaultFive")
+settings = SimulationParameters("default_seed_5")
 sim_handler.replay(settings, data, mode = ExperimentMode.DEL_EXISTING)

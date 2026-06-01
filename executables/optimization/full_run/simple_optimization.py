@@ -1,7 +1,11 @@
 from __future__ import annotations
+import os
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
+
+
 from src import SimOptimizer, PARAMETERS_GLOBAL_0, PARAMETERS_PER_TYPE_0, ACTION_NAMES, get_project_root, Hyperparameters, SimulatorHandler
 
-from src.Optimizer.Parameter import PARAMETER_SET_0, PARAMETER_SET_1
+from src.Optimizer.Parameter import PARAMETER_SET_0, PARAMETER_SET_1, PARAMETER_SET_2
 
 import logging
 logger = logging.getLogger("global_logger")
@@ -39,9 +43,9 @@ sim_handler.show_ui = False
 sim_handler.num_instances = 3
 sim_handler.replays_per_instance = 4
 sim_handler.max_wait_for_ready = 2
-sim_handler.max_run_duration = 10
+sim_handler.max_run_duration = 20
 
-optimizer = SimOptimizer(parameters=PARAMETER_SET_1,
+optimizer = SimOptimizer(parameters=PARAMETER_SET_2,
                          hyperparameters=hyperparameters,
                          sim_handler=sim_handler,
                          training_data=train_data,
