@@ -32,6 +32,19 @@ ROBOT_TELEPORTATION_INDEX = {
     "calculate_statistics" : -1
 }
 
+COLORS = {
+    "kick_left" : "#4477AA",
+    "kick_right" : "#66CCEE",
+    "walk_front" : "#228833",
+    "walk_back" : "#CCBB44",
+    "sidestep_left" : "#EE6677",
+    "sidestep_right" : "#AA3377",
+    "turn_left" : "#BBBBBB",
+    "turn_right" : "#000000",
+    "standup_back" : "#77AADD",
+    "standup_front" : "#44AA99",
+}
+
 def get_train_data():
     actions = ACTION_NAMES
     date1 = "260528_0"
