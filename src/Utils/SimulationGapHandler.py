@@ -133,6 +133,20 @@ class SimulationGapHandler:
             result[action_name]= np.average(partial_results, weights=weights)
         return result
 
+    def get_gap_std(self, action_names: Optional[list[str]], method: Callable[[SimulationGapData], float]) -> dict[str, float]:
+        if action_names is None or len(action_names) <= 0:
+            action_names = list(self._sim_gap_data.keys())
+        result = {}
+        for action_name in action_names:
+            partial_results: list[float] = []
+            weights: list[float] = []
+            for gap_object in self._sim_gap_data[action_name]:
+                partial_results.append(method(gap_object))
+                weights.append(gap_object.num_frames)
+            average = np.average(partial_results, weights=weights)
+            result[action_name] = sum([weight * (partial_result - average)**2 for partial_result, weight in zip(partial_results, weights)]) / sum(weights)
+        return result
+
     # -------- actual final gap --------
 
     def get_final_FINAL_gap_avg(self, method: Callable[[SimulationGapData], float]) -> float:

@@ -4,17 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b8d71ec4-48b2-4ec5-b1a5-6fe6d26ab8b8" name="Changes" comment="testing to find reason for pc diff">
-      <change afterPath="$PROJECT_DIR$/executables/random_shit/compare_csvs.py" afterDir="false" />
+    <list default="true" id="b8d71ec4-48b2-4ec5-b1a5-6fe6d26ab8b8" name="Changes" comment="update for new trajectories">
+      <change afterPath="$PROJECT_DIR$/testing/eval_1.ipynb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/executables/extract_replay/extract_all.py" beforeDir="false" afterPath="$PROJECT_DIR$/executables/extract_replay/extract_all.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/executables/extract_replay/replay_missing.py" beforeDir="false" afterPath="$PROJECT_DIR$/executables/extract_replay/replay_missing.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/executables/statistics/normalization_factors/run_norm_factors_2.py" beforeDir="false" afterPath="$PROJECT_DIR$/executables/statistics/normalization_factors/run_norm_factors_2.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/main.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/executables/random_shit/compare_csvs.py" beforeDir="false" afterPath="$PROJECT_DIR$/executables/random_shit/compare_csvs.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Constants/Actions.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Constants/Actions.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Constants/Paths.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Constants/Paths.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Simulator/SimulatorHandler.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Simulator/SimulatorHandler.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Utils/SimulationGapData.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Utils/SimulationGapData.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Utils/SimulationGapHandler.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Utils/SimulationGapHandler.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/testing/gap_handler_test.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/testing/gap_handler_test.ipynb" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -25,8 +21,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Jupyter Notebook" />
         <option value="Python Script" />
+        <option value="Jupyter Notebook" />
       </list>
     </option>
   </component>
@@ -89,7 +85,7 @@
     &quot;git-widget-placeholder&quot;: &quot;master&quot;,
     &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
     &quot;last_opened_file_path&quot;: &quot;C:/Users/felix/PycharmProjects/Thesis/executables/random_shit&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;org.jetbrains.plugins.github.ui.GithubSettingsConfigurable&quot;
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.editor&quot;
   }
 }</component>
   <component name="PyConsoleOptionsProvider">
@@ -229,9 +225,9 @@
     <recent_temporary>
       <list>
         <item itemvalue="Python.replay_missing" />
+        <item itemvalue="Python.compare_csvs" />
         <item itemvalue="Python.extract_all" />
         <item itemvalue="Python.run_norm_factors_2" />
-        <item itemvalue="Python.compare_csvs" />
         <item itemvalue="Python.redo_all" />
       </list>
     </recent_temporary>
@@ -250,14 +246,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1767698678177</updated>
-    </task>
-    <task id="LOCAL-00026" summary="feature:&#10;- finalized new path structure by updating deletion and filter methods in LogExtractor">
-      <option name="closed" value="true" />
-      <created>1770809456203</created>
-      <option name="number" value="00026" />
-      <option name="presentableId" value="LOCAL-00026" />
-      <option name="project" value="LOCAL" />
-      <updated>1770809456203</updated>
     </task>
     <task id="LOCAL-00027" summary="feature:&#10;- moved filter methods for eds to ExtractionData">
       <option name="closed" value="true" />
@@ -643,7 +631,15 @@
       <option name="project" value="LOCAL" />
       <updated>1779863654830</updated>
     </task>
-    <option name="localTasksCounter" value="75" />
+    <task id="LOCAL-00075" summary="update for new trajectories">
+      <option name="closed" value="true" />
+      <created>1780303717149</created>
+      <option name="number" value="00075" />
+      <option name="presentableId" value="LOCAL-00075" />
+      <option name="project" value="LOCAL" />
+      <updated>1780303717149</updated>
+    </task>
+    <option name="localTasksCounter" value="76" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -658,7 +654,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="feature: continued work on gap_analysis.ipynb&#10;fix: renamed functions in gapData" />
     <MESSAGE value="feature: moved gap_object and gap_handler tests to separate notebooks. &#10;docs: updated documentation in SimulationGapData" />
     <MESSAGE value="features: update velocity and acceleration calculation to correctly account for step size. &#10;fix: updated gap_object_test.py to use correct step size for axis" />
     <MESSAGE value="features: further work on visualization of sim gap" />
@@ -683,6 +678,7 @@
     <MESSAGE value="updated calculations for&#10;- invalid log punishment&#10;- max pos, max vel and max acc&#10;- max force&#10;&#10;created optimizer for max force" />
     <MESSAGE value="- updated action durations&#10;- extract_missing now rextracts everything&#10;- updated max force search factors&#10;- cleaned up run_max_values and run_norm_factors&#10;&#10;updated calculations for&#10;- max acc&#10;- max force" />
     <MESSAGE value="testing to find reason for pc diff" />
-    <option name="LAST_COMMIT_MESSAGE" value="testing to find reason for pc diff" />
+    <MESSAGE value="update for new trajectories" />
+    <option name="LAST_COMMIT_MESSAGE" value="update for new trajectories" />
   </component>
 </project>
