@@ -8,22 +8,22 @@ JOINT_NAMES = [
 
 WEIGHTS = {
     # Head
-    "headYaw": 0.8,
-    "headPitch": 0.8,
+    "headYaw": 0,
+    "headPitch": 0,
 
     # Left Arm
     "lShoulderPitch": 1,
     "lShoulderRoll": 1,
-    "lElbowYaw": 1,
-    "lElbowRoll": 1,
+    "lElbowYaw": 0.9,
+    "lElbowRoll": 0.9,
     "lWristYaw": 0.8,
     "lHand" : 0,
 
     # Right Arm
     "rShoulderPitch": 1,
     "rShoulderRoll": 1,
-    "rElbowYaw": 1,
-    "rElbowRoll": 1,
+    "rElbowYaw": 0.9,
+    "rElbowRoll": 0.9,
     "rWristYaw": 0.8,
     "rHand" : 0,
 
@@ -31,7 +31,7 @@ WEIGHTS = {
     "lHipYawPitch": 1,
     "lHipRoll": 1,
     "lHipPitch": 1,
-    "lKneePitch": 1,
+    "lKneePitch": 1.1,
     "lAnklePitch": 1,
     "lAnkleRoll": 1,
 
@@ -39,13 +39,13 @@ WEIGHTS = {
     "rHipYawPitch": 1,
     "rHipRoll": 1,
     "rHipPitch": 1,
-    "rKneePitch": 1,
+    "rKneePitch": 1.1,
     "rAnklePitch": 1,
     "rAnkleRoll": 1,
 
-    "x_gyro" : 1.2,
-    "y_gyro" : 1.2,
-    "z_gyro" : 1.2,
+    "x_gyro" : 1.25,
+    "y_gyro" : 1.25,
+    "z_gyro" : 1.25,
 }
 
 DEFLECTIONS = {

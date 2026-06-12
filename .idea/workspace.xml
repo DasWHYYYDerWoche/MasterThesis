@@ -4,14 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b8d71ec4-48b2-4ec5-b1a5-6fe6d26ab8b8" name="Changes" comment="update for new trajectories">
-      <change afterPath="$PROJECT_DIR$/testing/eval_1.ipynb" afterDir="false" />
+    <list default="true" id="b8d71ec4-48b2-4ec5-b1a5-6fe6d26ab8b8" name="Changes" comment="created notebook for evaluation">
+      <change afterPath="$PROJECT_DIR$/executables/random_shit/count_actions.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/executables/extract_replay/replay_missing.py" beforeDir="false" afterPath="$PROJECT_DIR$/executables/extract_replay/replay_missing.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/executables/random_shit/compare_csvs.py" beforeDir="false" afterPath="$PROJECT_DIR$/executables/random_shit/compare_csvs.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Constants/Actions.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Constants/Actions.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Utils/SimulationGapHandler.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Utils/SimulationGapHandler.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/testing/gap_handler_test.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/testing/gap_handler_test.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Constants/Joints.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Constants/Joints.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Structs/Hyperparameters.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Structs/Hyperparameters.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/testing/eval_1.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/testing/eval_1.ipynb" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -21,8 +19,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Python Script" />
         <option value="Jupyter Notebook" />
+        <option value="Python Script" />
       </list>
     </option>
   </component>
@@ -64,6 +62,7 @@
     &quot;Python.calculate_statistics (2).executor&quot;: &quot;Run&quot;,
     &quot;Python.calculate_statistics.executor&quot;: &quot;Run&quot;,
     &quot;Python.compare_csvs.executor&quot;: &quot;Run&quot;,
+    &quot;Python.count_actions.executor&quot;: &quot;Run&quot;,
     &quot;Python.data_sheet_analysis.executor&quot;: &quot;Run&quot;,
     &quot;Python.extract_all.executor&quot;: &quot;Run&quot;,
     &quot;Python.extract_missing.executor&quot;: &quot;Run&quot;,
@@ -111,7 +110,7 @@
       <recent name="C:\Users\felix\PycharmProjects\Thesis\executables\optimization\single run optimization" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.replay_missing">
+  <component name="RunManager" selected="Python.count_actions">
     <configuration name="compare_csvs" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="Thesis" />
       <option name="ENV_FILES" value="" />
@@ -134,6 +133,28 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="count_actions" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="Thesis" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/executables/random_shit" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/executables/random_shit/count_actions.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="extract_all" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="Thesis" />
       <option name="ENV_FILES" value="" />
@@ -148,28 +169,6 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/executables/extract_replay/extract_all.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="redo_all" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="Thesis" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/executables/extract_replay" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/executables/extract_replay/redo_all.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -224,11 +223,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.count_actions" />
         <item itemvalue="Python.replay_missing" />
         <item itemvalue="Python.compare_csvs" />
         <item itemvalue="Python.extract_all" />
         <item itemvalue="Python.run_norm_factors_2" />
-        <item itemvalue="Python.redo_all" />
       </list>
     </recent_temporary>
   </component>
@@ -246,14 +245,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1767698678177</updated>
-    </task>
-    <task id="LOCAL-00027" summary="feature:&#10;- moved filter methods for eds to ExtractionData">
-      <option name="closed" value="true" />
-      <created>1770892965960</created>
-      <option name="number" value="00027" />
-      <option name="presentableId" value="LOCAL-00027" />
-      <option name="project" value="LOCAL" />
-      <updated>1770892965960</updated>
     </task>
     <task id="LOCAL-00028" summary="feature:&#10;- combined CSVReplayer and LogExtractor into ExperimentPerformer">
       <option name="closed" value="true" />
@@ -639,7 +630,15 @@
       <option name="project" value="LOCAL" />
       <updated>1780303717149</updated>
     </task>
-    <option name="localTasksCounter" value="76" />
+    <task id="LOCAL-00076" summary="created notebook for evaluation">
+      <option name="closed" value="true" />
+      <created>1780731779027</created>
+      <option name="number" value="00076" />
+      <option name="presentableId" value="LOCAL-00076" />
+      <option name="project" value="LOCAL" />
+      <updated>1780731779027</updated>
+    </task>
+    <option name="localTasksCounter" value="77" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -654,7 +653,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="feature: moved gap_object and gap_handler tests to separate notebooks. &#10;docs: updated documentation in SimulationGapData" />
     <MESSAGE value="features: update velocity and acceleration calculation to correctly account for step size. &#10;fix: updated gap_object_test.py to use correct step size for axis" />
     <MESSAGE value="features: further work on visualization of sim gap" />
     <MESSAGE value="features: moved constants into separate files&#10;added final gap calculation and scale factor calculation to simgaphandler" />
@@ -679,6 +677,7 @@
     <MESSAGE value="- updated action durations&#10;- extract_missing now rextracts everything&#10;- updated max force search factors&#10;- cleaned up run_max_values and run_norm_factors&#10;&#10;updated calculations for&#10;- max acc&#10;- max force" />
     <MESSAGE value="testing to find reason for pc diff" />
     <MESSAGE value="update for new trajectories" />
-    <option name="LAST_COMMIT_MESSAGE" value="update for new trajectories" />
+    <MESSAGE value="created notebook for evaluation" />
+    <option name="LAST_COMMIT_MESSAGE" value="created notebook for evaluation" />
   </component>
 </project>
