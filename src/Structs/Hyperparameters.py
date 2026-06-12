@@ -12,12 +12,12 @@ class Hyperparameters:
                  num_gen: int):
         self._crossover_pb: float = crossover_pb
         self._mutation_pb: float = mutation_pb
-        self._mutation_sigma: float = mutation_sigma
+        self._mutation_sigma: float = mutation_sigma #unused
         self._mutation_ind_pb: float = mutation_ind_pb
         self._tournament_size: float = tournament_size
-        self._init_offset_factor: float = init_offset_factor
-        self._lower_bound_factor: float = lower_bound_factor
-        self._upper_bound_factor: float = upper_bound_factor
+        self._init_offset_factor: float = init_offset_factor #unused
+        self._lower_bound_factor: float = lower_bound_factor #unused
+        self._upper_bound_factor: float = upper_bound_factor #unused
         self._pop_size: int = pop_size
         self._num_gen: int = num_gen
 

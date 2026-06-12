@@ -43,9 +43,9 @@ WEIGHTS = {
     "rAnklePitch": 1,
     "rAnkleRoll": 1,
 
-    "x_gyro" : 1.2,
-    "y_gyro" : 1.2,
-    "z_gyro" : 1.2,
+    "x_gyro" : 1.25,
+    "y_gyro" : 1.25,
+    "z_gyro" : 1.25,
 }
 
 DEFLECTIONS = {
