@@ -6,6 +6,7 @@ os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 from src import SimOptimizer, PARAMETERS_GLOBAL_0, PARAMETERS_PER_TYPE_0, ACTION_NAMES, get_project_root, Hyperparameters, SimulatorHandler
 
 from src.Optimizer.Parameter import PARAMETER_SET_0, PARAMETER_SET_1, PARAMETER_SET_2
+from src import get_test_data, get_train_data, get_combined_data
 
 import logging
 logger = logging.getLogger("global_logger")
@@ -18,14 +19,8 @@ logging.basicConfig(filename='info.log',
 
 results_folder = (get_project_root() / "executables" / "optimization" / "full_run")
 
-action_names = ACTION_NAMES
-train_indices = [0,1,2,3]
-test_indices = [4]
-train_data = []
-test_data = []
-for action_name in action_names:
-    train_data.extend([(action_name, "260108", index) for index in train_indices])
-    test_data.extend([(action_name, "260108", index) for index in test_indices])
+train_data = get_train_data()
+test_data = get_test_data()
 
 hyperparameters = Hyperparameters(crossover_pb=0.5,
                                   mutation_pb=0.2,
@@ -40,10 +35,10 @@ hyperparameters = Hyperparameters(crossover_pb=0.5,
 
 sim_handler = SimulatorHandler()
 sim_handler.show_ui = False
-sim_handler.num_instances = 3
-sim_handler.replays_per_instance = 4
-sim_handler.max_wait_for_ready = 2
-sim_handler.max_run_duration = 20
+sim_handler.num_instances = 1
+sim_handler.replays_per_instance = 16
+sim_handler.max_wait_for_ready = 5
+sim_handler.max_run_duration = 40
 
 optimizer = SimOptimizer(parameters=PARAMETER_SET_2,
                          hyperparameters=hyperparameters,

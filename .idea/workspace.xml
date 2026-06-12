@@ -6,13 +6,10 @@
   <component name="ChangeListManager">
     <list default="true" id="b8d71ec4-48b2-4ec5-b1a5-6fe6d26ab8b8" name="Changes" comment="?">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/executables/extract_replay/redo_all.py" beforeDir="false" afterPath="$PROJECT_DIR$/executables/extract_replay/redo_all.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/executables/extract_replay/replay_missing.py" beforeDir="false" afterPath="$PROJECT_DIR$/executables/extract_replay/replay_missing.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/executables/optimization/full_run/simple_optimization.py" beforeDir="false" afterPath="$PROJECT_DIR$/executables/optimization/full_run/simple_optimization.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/executables/statistics/normalization_factors/run_norm_factors_2.py" beforeDir="false" afterPath="$PROJECT_DIR$/executables/statistics/normalization_factors/run_norm_factors_2.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Constants/Joints.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Constants/Joints.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Optimizer/Parameter.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Optimizer/Parameter.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Utils/SimulationGapHandler.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Utils/SimulationGapHandler.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/testing/gap_handler_test.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/testing/gap_handler_test.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/testing/eval_1.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/testing/eval_1.ipynb" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

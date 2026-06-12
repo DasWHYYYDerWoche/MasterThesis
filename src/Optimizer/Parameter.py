@@ -99,6 +99,7 @@ PARAMETERS_PER_JOINT_1 = []
 kp = GlobalParameter("Kp", 12500)
 kd = GlobalParameter("Kd", 10000)
 contactKd = GlobalParameter("contactKd", 7.5)
+contactKp = GlobalParameter("contactKp", 1425)
 
 p0 = MotorParameter("p", 20, 0)
 p1 = MotorParameter("p", 20, 1)
@@ -114,6 +115,6 @@ d3 = MotorParameter("d", 0.3, 3)
 d4 = MotorParameter("d", 0.3, 4)
 d25 = MotorParameter("d", 0.3, 2.5)
 
-PARAMETER_SET_0 = [kp, kd,contactKd, p0,p1,p2,p3,p4]
-PARAMETER_SET_1 = [kp, kd,contactKd, p0,p1,p2,p3,p4, d0,d1,d2,d3,d4]
-PARAMETER_SET_2 = [kp, kd,contactKd, p0,p1,p2,p25,p3,p4, d0,d1,d2,d25,d3,d4]
+PARAMETER_SET_0 = [kp, kd,contactKd, contactKp, p0,p1,p2,p3,p4]
+PARAMETER_SET_1 = [kp, kd,contactKd, contactKp, p0,p1,p2,p3,p4, d0,d1,d2,d3,d4]
+PARAMETER_SET_2 = [kp, kd,contactKd, contactKp, p0,p1,p2,p25,p3,p4, d0,d1,d2,d25,d3,d4]
