@@ -5,22 +5,27 @@ from src import PATH_DATASHEET_OUTPUT, JOINT_TYPES_7, SimulationParameters, Simu
 
 data = [(action_name, None, None) for action_name in ACTION_NAMES]
 max_force_list = pd.read_csv(PATH_DATASHEET_OUTPUT)["MaxTorque"].to_list()
-test_factors = [0.7,0.8,0.9,1,1.2,1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0]
+test_factors = [0.7,0.8,0.9,
+                1.0,1.1,1.2,1.3,1.4,1.5,1.6,1.7,1.8,1.9,
+                2.0,2.1,2.2,2.3,2.4,2.5,2.6,2.7,2.8,2.9]
 results = {}
 
 sim = SimulatorHandler()
 sim.dt = -1
 sim.show_ui = False
 sim.replays_per_instance = 8
-sim.num_instances = 6
+sim.max_run_duration = 60
+sim.max_wait_for_ready = 10
+sim.num_instances = 1
 
 
 for test_factor in test_factors:
-    settings = SimulationParameters("maxForceOptimization", "maxVelocity")
+    settings = SimulationParameters("max_force_" + str(test_factor), "max_velocity")
     for max_force, motor_index in zip(max_force_list, JOINT_TYPES_7.keys()):
         settings.set_for_joint_type(motor_index, "max_force", max_force * test_factor)
-    gap_handler = sim.simulation_gap(settings,data=data, replay_mode= ExperimentMode.DEL_EXISTING)
+        settings.save_to_file()
+    gap_handler = sim.simulation_gap(settings,data=data, replay_mode=ExperimentMode.PARTIAL)
     results[test_factor] = gap_handler.get_optimization_target()
 
 print(results)
-pd.Series(results).to_csv("output_large.csv")
+pd.Series(results).to_csv("output.csv")

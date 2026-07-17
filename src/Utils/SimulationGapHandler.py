@@ -24,7 +24,7 @@ class SimulationGapHandler:
         self._num_loaded_logs = 0
         self._invalid_logs = {}
         self._num_invalid_logs = 0
-        self._INVALID_LOG_THRESHOLD = 0.1 # ratio _num_invalid_logs / _num_loaded_logs at which the sim gap is set to float(inf)
+        self._INVALID_LOG_THRESHOLD = 0.05 # ratio _num_invalid_logs / _num_loaded_logs at which the sim gap is set to float(inf)
         self._INVALID_LOG_PUNISH_FACTOR = 1.5 # each missing log is punished with 1.5 times the average gap of logs with the same action
 
     def add(self, action_name: str, recording_date: str, log_index: int):
@@ -69,6 +69,12 @@ class SimulationGapHandler:
         if action_name in self._sim_gap_data.keys() and len(self._sim_gap_data[action_name]) > index:
             return self._sim_gap_data[action_name][index]
         return None
+
+    def get_list(self) -> list[SimulationGapData]:
+        result = []
+        for gap_objects in self._sim_gap_data.values():
+            result.extend(gap_objects)
+        return result
 
     def unload(self):
         for gap_data_list in self._sim_gap_data.values():
@@ -149,8 +155,12 @@ class SimulationGapHandler:
 
     # -------- actual final gap --------
 
-    def get_final_FINAL_gap_avg(self, method: Callable[[SimulationGapData], float]) -> float:
-        gap_per_action = self.get_gap_avg(None, method)
+    def get_final_FINAL_gap_avg(self,
+                                method: Callable[[SimulationGapData], float] = lambda gap_object: SimulationGapData.get_total_gap_avg(gap_object),
+                                action_names : Optional[list[str]] = None) -> float:
+        if action_names is None or len(action_names) <= 0:
+            action_names = list(self._sim_gap_data.keys())
+        gap_per_action = self.get_gap_avg(action_names, method)
         weights = []
         values = []
         for action_name in gap_per_action.keys():
@@ -166,10 +176,14 @@ class SimulationGapHandler:
         if float(self._num_invalid_logs) / float(self._num_loaded_logs) > self._INVALID_LOG_THRESHOLD:
             logger.warning("Attempted calculating the optimization target for more than %s invalid logs. Returned float(inf) instead.")
             return float("inf")
-        for invalid_action in self._invalid_logs.keys():
-            if invalid_action not in self._sim_gap_data.keys():
-                logger.warning("Action %s has no valid logs. Returned float(inf) as optimization target.",invalid_action)
+        for action_name in self._invalid_logs.keys():
+            if action_name not in self._sim_gap_data.keys():
+                logger.warning("Action %s has no valid logs. Returned float(inf) as optimization target.",action_name)
                 return float("inf")
+            if self._invalid_logs[action_name] / (self._invalid_logs[action_name] + len(self._sim_gap_data[action_name])) > self._INVALID_LOG_THRESHOLD:
+                logger.warning("Action %s has to many invalid logs. Returned float(inf) as optimization target.", action_name)
+                return float("inf")
+
         gap_per_action = self.get_gap_avg(None, method)
         weights = []
         values = []

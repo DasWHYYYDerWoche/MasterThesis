@@ -4,6 +4,20 @@ ACTION_NAMES = ["kick_left", "kick_right",
                 "turn_left", "turn_right",
                 "standup_back", "standup_front"]
 
+action_shorthand = {
+    "combined" : "Comb.",
+    "kick_left": "KL",
+    "kick_right": "KR",
+    "walk_front": "WF",
+    "walk_back": "WB",
+    "sidestep_left": "SL",
+    "sidestep_right": "SR",
+    "turn_left": "TL",
+    "turn_right": "TR",
+    "standup_back": "SB",
+    "standup_front": "SF",
+}
+
 RECORDING_DURATIONS = {
     "kick_left" : 2000,
     "kick_right" : 2000,

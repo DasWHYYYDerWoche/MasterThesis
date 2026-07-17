@@ -156,7 +156,7 @@ class SimOptimizer:
         runs simulation, and returns objective value.
         """
         # create simulation parameters
-        simulator_parameters = SimulationParameters("")
+        simulator_parameters = SimulationParameters("", "max_force_2.1")
         for parameter, value in zip(parameters, individual):
             parameter.set(value, simulator_parameters)
 

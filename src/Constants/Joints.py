@@ -1,5 +1,4 @@
 JOINT_NAMES = [
-"headYaw","headPitch",
 "lShoulderPitch","lShoulderRoll","lElbowYaw","lElbowRoll","lWristYaw",
 "rShoulderPitch","rShoulderRoll","rElbowYaw","rElbowRoll","rWristYaw",
 "lHipYawPitch","lHipRoll","lHipPitch","lKneePitch","lAnklePitch","lAnkleRoll",
@@ -87,6 +86,8 @@ DEFLECTIONS = {
 }
 
 ABBREVIATIONS = {
+    "combined":"Comb.",
+
     "headYaw": "HY",
     "headPitch": "HP",
 
