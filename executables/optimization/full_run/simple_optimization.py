@@ -31,8 +31,8 @@ hyperparameters = Hyperparameters(crossover_pb=0.5,
                                   init_offset_factor=0.2,
                                   lower_bound_factor=0.1,
                                   upper_bound_factor=10,
-                                  pop_size=30,
-                                  num_gen=100)
+                                  pop_size=20,
+                                  num_gen=50)
 
 sim_handler = SimulatorHandler()
 sim_handler.show_ui = False

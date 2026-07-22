@@ -13,6 +13,8 @@ sim_handler.dt = -1
 sim_handler.max_run_duration = 200
 sim_handler.max_wait_for_ready = 200
 
-settings = SimulationParameters("default_1")
+settings = SimulationParameters("max_force_2.1")
+settings.load_max_velocity()
+settings.load_max_force(2.1)
 settings.save_to_file()
 sim_handler.replay(settings, data, mode = ExperimentMode.DEL_EXISTING)

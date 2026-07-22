@@ -52,7 +52,8 @@ class SimOptimizer:
         # creates a method attr_name for each attribute that samples a random value from their within its boundaries
         #global parameters
         for parameter in self._parameters:
-            self._toolbox.register(parameter.identifier() + "_init", parameter.get_random_initial_value)  # creates a method to create new Individuals by calling tools.initCycle(creator.Individual, [list of methods], n=1)
+            # creates a method to fill the parameter with an initial value
+            self._toolbox.register(parameter.identifier() + "_init", parameter.get_random_initial_value)
         # tools.initCycle calls the methods in the list in order, repeating n times
         # creator.Individual is a container the results are put into
         self._toolbox.register(
@@ -86,10 +87,14 @@ class SimOptimizer:
             SimOptimizer._clamp_individual(individual, [(p.lower_bound, p.upper_bound) for p in self._parameters])
             return (individual,)
 
+        def select(individuals):
+            pop = tools.selBest(individuals, 2)
+            pop += tools.selTournament(individuals, k= len(individuals) - 2, tournsize=self._hyperparameters.tournament_size)
+
         # genetic operators to create new individuals
         self._toolbox.register("mate", mate)
         self._toolbox.register("mutate", mutate)
-        self._toolbox.register("select", tools.selTournament, tournsize=self._hyperparameters.tournament_size)
+        self._toolbox.register("select", select)
 
     def run(self, seed : int = None):
         self._run_identifier = datetime.now().strftime("%Y_%m_%d_%H_%M_%S")

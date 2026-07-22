@@ -7,7 +7,7 @@ from src import DEFLECTIONS, PATH_DATASHEET_OUTPUT, ACTION_NAMES, SimulationGapH
 
 max_pos = []
 for key in DEFLECTIONS.keys():
-    if key != "lHand" and key != "rHand":
+    if key != "lHand" and key != "rHand" and key != "headYaw" and key != "headPitch":
         lower, upper = DEFLECTIONS[key]
         max_pos.append(max(abs(lower), abs(upper)))
 max_max_pos = np.average(max_pos)
