@@ -207,12 +207,12 @@ class SimulationParameters:
             self._contactKd = value
 
 
-def sim_params_from_file(path : Path, index : int) -> Optional[SimulationParameters]:
+def sim_params_from_file(path : Path, index : int, name : str) -> Optional[SimulationParameters]:
     df = pd.read_csv(path)
     if index < 0 or index >= len(df):
         return None
     as_dict = df.iloc[index].to_dict()
-    sim_params = SimulationParameters(path.parent.name)
+    sim_params = SimulationParameters(name)
     if "Kp" in as_dict.keys():
         sim_params.Kp = as_dict["Kp"]
     if "Kd" in as_dict.keys():

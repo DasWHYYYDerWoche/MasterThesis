@@ -98,7 +98,7 @@ class SimOptimizer:
 
     def run(self, seed : int = None):
         self._run_identifier = datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
-
+        print("start time: " + self._run_identifier)
         random.seed(seed)
         population = self._toolbox.population(n=self._hyperparameters.pop_size)
         stats = tools.Statistics(lambda ind: ind.fitness.values)
@@ -125,6 +125,7 @@ class SimOptimizer:
             self._test_results.append(float(self.evaluate(
                 self._test_data, self._sim_handler, self._parameters, individual)
                                             [0]))
+        print("end time: " + datetime.now().strftime("%Y_%m_%d_%H_%M_%S"))
 
     def save_last_run(self, directory : Path):
         full_path = directory / self._run_identifier
@@ -160,7 +161,7 @@ class SimOptimizer:
         runs simulation, and returns objective value.
         """
         # create simulation parameters
-        simulator_parameters = SimulationParameters("")
+        simulator_parameters = SimulationParameters("", "max_force_2.1")
         for parameter, value in zip(parameters, individual):
             parameter.set(value, simulator_parameters)
 

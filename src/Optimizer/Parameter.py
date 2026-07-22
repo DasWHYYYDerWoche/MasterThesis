@@ -16,10 +16,10 @@ class Parameter(ABC):
                  upper_bound : Optional[float] = None):
         self._name = name
         self._init_mu = init_mu
-        self._init_sigma = init_sigma if init_sigma is not None else self._init_mu / 5
-        self._mutate_sigma = mutate_sigma if mutate_sigma is not None else self._init_mu / 10
-        self._lower_bound = lower_bound if lower_bound is not None else self._init_mu / 10
-        self._upper_bound = upper_bound if upper_bound is not None else self._init_mu * 10
+        self._init_sigma = init_sigma if init_sigma is not None else self._init_mu / 2
+        self._mutate_sigma = mutate_sigma if mutate_sigma is not None else self._init_mu / 20
+        self._lower_bound = lower_bound if lower_bound is not None else self._init_mu / 100
+        self._upper_bound = upper_bound if upper_bound is not None else self._init_mu * 100
 
     def get_random_initial_value(self):
         value = random.gauss(self._init_mu, self._init_sigma)
@@ -99,6 +99,7 @@ PARAMETERS_PER_JOINT_1 = []
 kp = GlobalParameter("Kp", 12500)
 kd = GlobalParameter("Kd", 10000)
 contactKd = GlobalParameter("contactKd", 7.5)
+contactKp = GlobalParameter("contactKp", 1425)
 
 p0 = MotorParameter("p", 20, 0)
 p1 = MotorParameter("p", 20, 1)
@@ -107,13 +108,13 @@ p3 = MotorParameter("p", 20, 3)
 p4 = MotorParameter("p", 20, 4)
 p25 = MotorParameter("p", 20, 2.5)
 
-d0 = MotorParameter("d", 0.3, 0, 0.15, 0.1)
-d1 = MotorParameter("d", 0.3, 1, 0.15, 0.1)
-d2 = MotorParameter("d", 0.3, 2, 0.15, 0.1)
-d3 = MotorParameter("d", 0.3, 3, 0.15, 0.1)
-d4 = MotorParameter("d", 0.3, 4, 0.15, 0.1)
-d25 = MotorParameter("d", 0.3, 2.5, 0.15, 0.1)
+d0 = MotorParameter("d", 0.3, 0, lower_bound=0)
+d1 = MotorParameter("d", 0.3, 1, lower_bound=0)
+d2 = MotorParameter("d", 0.3, 2, lower_bound=0)
+d3 = MotorParameter("d", 0.3, 3, lower_bound=0)
+d4 = MotorParameter("d", 0.3, 4, lower_bound=0)
+d25 = MotorParameter("d", 0.3, 2.5, lower_bound=0)
 
-PARAMETER_SET_0 = [kp, kd,contactKd, p0,p1,p2,p3,p4]
-PARAMETER_SET_1 = [kp, kd,contactKd, p0,p1,p2,p3,p4, d0,d1,d2,d3,d4]
-PARAMETER_SET_2 = [kp, kd,contactKd, p0,p1,p2,p25,p3,p4, d0,d1,d2,d25,d3,d4]
+PARAMETER_SET_0 = [kp, kd,contactKd, contactKp, p0,p1,p2,p3,p4]
+PARAMETER_SET_1 = [kp, kd,contactKd, contactKp, p0,p1,p2,p3,p4, d0,d1,d2,d3,d4]
+PARAMETER_SET_2 = [kp, kd,contactKd, contactKp, p0,p1,p2,p25,p3,p4, d0,d1,d2,d25,d3,d4]

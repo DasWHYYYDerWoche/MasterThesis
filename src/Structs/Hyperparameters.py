@@ -2,22 +2,14 @@ class Hyperparameters:
     def __init__(self,
                  crossover_pb: float,
                  mutation_pb: float,
-                 mutation_sigma: float,
                  mutation_ind_pb: float,
                  tournament_size: float,
-                 init_offset_factor: float,
-                 lower_bound_factor: float,
-                 upper_bound_factor: float,
                  pop_size: int,
                  num_gen: int):
         self._crossover_pb: float = crossover_pb
         self._mutation_pb: float = mutation_pb
-        self._mutation_sigma: float = mutation_sigma #unused
         self._mutation_ind_pb: float = mutation_ind_pb
         self._tournament_size: float = tournament_size
-        self._init_offset_factor: float = init_offset_factor #unused
-        self._lower_bound_factor: float = lower_bound_factor #unused
-        self._upper_bound_factor: float = upper_bound_factor #unused
         self._pop_size: int = pop_size
         self._num_gen: int = num_gen
 
@@ -25,12 +17,8 @@ class Hyperparameters:
         return (
             f"crossover_pb = {self._crossover_pb}\n"
             f"mutation_pb = {self._mutation_pb}\n"
-            f"mutation_sigma = {self._mutation_sigma}\n"
             f"mutation_ind_pb = {self._mutation_ind_pb}\n"
             f"sel_tournament_size = {self._tournament_size}\n"
-            f"init_offset_factor = {self._init_offset_factor}\n"
-            f"lower_bound_factor = {self._lower_bound_factor}\n"
-            f"upper_bound_factor = {self._upper_bound_factor}\n"
             f"pop_size = {self._pop_size}\n"
             f"num_gen = {self._num_gen}"
         )

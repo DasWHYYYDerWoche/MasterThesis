@@ -6,10 +6,12 @@ logging.basicConfig(filename='info.log',format='%(levelname)s: %(message)s', enc
 data = [(action_name, None, None) for action_name in ACTION_NAMES]
 
 sim_handler = SimulatorHandler()
-sim_handler.num_instances = 5
+sim_handler.num_instances = 1
 sim_handler.replays_per_instance = 1
 sim_handler.show_ui = False
 sim_handler.dt = -1
+sim_handler.max_wait_for_ready = 100
+sim_handler.max_run_duration = 100
 
 sim_handler.extract(data, ExperimentMode.DEL_EXISTING)
 settings = SimulationParameters("default")
