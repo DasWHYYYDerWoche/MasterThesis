@@ -4,10 +4,10 @@ import numpy as np
 from scipy.stats import norm
 from matplotlib.cbook import boxplot_stats
 
-folder = "default"
-param_name = "default_1"
+folder = "optimized_0"
+param_name = "optimization_no_force"
 
-data = get_combined_data()
+data = get_train_data()
 sim_params = SimulationParameters(param_name)
 sim_handler = SimulatorHandler()
 gap_handler = sim_handler.simulation_gap(sim_params, data, replay_mode=ExperimentMode.PARTIAL)
@@ -71,7 +71,7 @@ plt.ylim(-y_max * y_margin, y_max * (1 + y_margin))
 plt.xlabel("Action")
 plt.ylabel("Gyroscope Gap")
 plt.legend()
-plt.savefig(folder + "/gyroscope_boxplot.pdf", bbox_inches="tight")
+plt.savefig(folder + "/gyroscope_boxplot_comb.pdf", bbox_inches="tight")
 stats1 = boxplot_stats(values, labels=labels)
 # Convert to table
 table1 = pd.DataFrame([
@@ -86,12 +86,13 @@ table1 = pd.DataFrame([
     }
     for s, mean in zip(stats1, gyro_gap.values())
 ])
-table1.to_csv(folder + "/gyroscope_statistics.csv", index=False)
+table1.to_csv(folder + "/gyroscope_statistics_comb.csv", index=False)
 
 # action gaps
 y_max = 0
 action_gaps = {"combined" : []}
-action_gap = {"combined" : gap_handler.get_final_FINAL_gap_avg()}
+action_gap = {"combined" : gap_handler.get_optimization_target()}
+print(str(action_gap))
 for action, gap_datas in gap_handler._sim_gap_data.items():
     action_gaps[action] = []
     action_gap[action] = gap_handler.get_final_FINAL_gap_avg(action_names=[action])
@@ -110,7 +111,7 @@ plt.grid(visible=True, axis="y")
 values = action_gaps.values()
 labels = [action_shorthand[key] for key in action_gaps.keys()]
 plt.boxplot(values, tick_labels=labels)
-plt.savefig(folder + "/action_gaps.pdf", bbox_inches='tight')
+plt.savefig(folder + "/action_gaps_comb.pdf", bbox_inches='tight')
 stats2 = boxplot_stats(values, labels=labels)
 # Convert to table
 table2 = pd.DataFrame([
@@ -125,4 +126,4 @@ table2 = pd.DataFrame([
     }
     for s, mean in zip(stats2, action_gap.values())
 ])
-table2.to_csv(folder + "/action_statistics.csv", index=False)
+table2.to_csv(folder + "/action_statistics_comb.csv", index=False)

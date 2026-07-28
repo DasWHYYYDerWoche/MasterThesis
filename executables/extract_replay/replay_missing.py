@@ -14,8 +14,8 @@ sim_handler.max_wait_for_ready = 200
 sim_handler.max_run_duration = 200
 
 settings = SimulationParameters("max_force_2.1")
-#settings = sim_params_from_file(get_project_root() / "executables" / "optimization" /"full_run"/ "2026_06_26_11_45_57" / "hallOfFame.csv", 0, "optimization_4")
+#settings = sim_params_from_file(get_project_root() / "executables" / "optimization" /"full_run"/ "2026_06_26_11_45_57" / "hallOfFame.csv", 3, "optimization_no_force")
 settings.load_max_velocity()
 settings.load_max_force(2.1)
 settings.save_to_file()
-sim_handler.replay(settings, data, mode = ExperimentMode.DEL_EXISTING)
+#sim_handler.replay(settings, data, mode = ExperimentMode.DEL_EXISTING)

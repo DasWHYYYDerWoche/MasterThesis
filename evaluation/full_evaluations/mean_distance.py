@@ -15,11 +15,11 @@ plt.rcParams.update({
 })
 y_margin = 0.05
 
-folder = "maxForce"
+folder = "optimized_0"
 
 data = get_combined_data()
-sim_params_base = SimulationParameters("max_velocity")
-sim_params_new = SimulationParameters("max_force_2.1")
+sim_params_base = SimulationParameters("max_force_2.1")
+sim_params_new = SimulationParameters("optimization_0")
 sim_handler = SimulatorHandler()
 gap_handler_base = sim_handler.simulation_gap(sim_params_base, data, replay_mode=ExperimentMode.PARTIAL)
 gap_handler_new = sim_handler.simulation_gap(sim_params_new, data, replay_mode=ExperimentMode.PARTIAL)
@@ -31,12 +31,6 @@ y_max = 0
 y_min = 0
 action_gaps_diff = {"combined" : []}
 means = {"combined" : gap_handler_new.get_final_FINAL_gap_avg() - gap_handler_base.get_final_FINAL_gap_avg()}
-summed = 0
-for key, value in gap_handler_base._sim_gap_data.items():
-    print(key)
-    print(len(value))
-    summed += len(value)
-print(summed)
 for action, gap_datas_base  in gap_handler_base._sim_gap_data.items():
     action_gaps_diff[action] = []
     means[action] = gap_handler_new.get_final_FINAL_gap_avg(action_names = [action]) - gap_handler_base.get_final_FINAL_gap_avg(action_names = [action])

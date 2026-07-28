@@ -6,6 +6,7 @@ from deap import base, creator, tools, algorithms
 from datetime import datetime
 import pandas as pd
 from pathlib import Path
+import pickle
 
 from ..Constants import JOINT_TYPES_5
 from ..Simulator import SimulatorHandler
@@ -156,7 +157,9 @@ class SimOptimizer:
         runs simulation, and returns objective value.
         """
         # create simulation parameters
-        simulator_parameters = SimulationParameters("", "max_force_2.1")
+        simulator_parameters = SimulationParameters("")
+        simulator_parameters.load_max_velocity()
+        simulator_parameters.load_max_force(2.1)
         for parameter, value in zip(parameters, individual):
             parameter.set(value, simulator_parameters)
 
@@ -178,3 +181,124 @@ class SimOptimizer:
     @property
     def hyperparameters(self):
         return self._hyperparameters
+
+def ea_simple_with_checkpoints(
+    population,
+    toolbox,
+    cxpb,
+    mutpb,
+    ngen,
+    stats=None,
+    halloffame=None,
+    verbose=True,
+    checkpoint_interval=10
+):
+    logbook = tools.Logbook()
+    logbook.header = ["gen", "nevals"] + (stats.fields if stats else [])
+
+    # Evaluate initial population
+    invalid_individuals = [
+        ind for ind in population if not ind.fitness.valid
+    ]
+
+    fitnesses = map(toolbox.evaluate, invalid_individuals)
+
+    for ind, fit in zip(invalid_individuals, fitnesses):
+        ind.fitness.values = fit
+
+    if halloffame is not None:
+        halloffame.update(population)
+
+    record = stats.compile(population) if stats is not None else {}
+    logbook.record(
+        gen=0,
+        nevals=len(invalid_individuals),
+        **record
+    )
+
+    if verbose:
+        print(logbook.stream)
+
+    # Evolutionary loop
+    for gen in range(1, ngen + 1):
+
+        # Select offspring
+        offspring = toolbox.select(population, len(population))
+
+        # Apply crossover and mutation
+        offspring = algorithms.varAnd(
+            offspring,
+            toolbox,
+            cxpb=cxpb,
+            mutpb=mutpb
+        )
+
+        # Evaluate invalid offspring
+        invalid_individuals = [
+            ind for ind in offspring if not ind.fitness.valid
+        ]
+
+        fitnesses = map(toolbox.evaluate, invalid_individuals)
+
+        for ind, fit in zip(invalid_individuals, fitnesses):
+            ind.fitness.values = fit
+
+        # Update hall of fame
+        if halloffame is not None:
+            halloffame.update(offspring)
+
+        # Replace population
+        population[:] = offspring
+
+        # Record statistics
+        record = stats.compile(population) if stats is not None else {}
+        logbook.record(
+            gen=gen,
+            nevals=len(invalid_individuals),
+            **record
+        )
+
+        if verbose:
+            print(logbook.stream)
+
+        # Save every 10 generations
+        if gen % checkpoint_interval == 0:
+            save_checkpoint(
+                generation=gen,
+                population=population,
+                halloffame=halloffame,
+                logbook=logbook
+            )
+
+    return population, logbook
+
+def save_checkpoint(
+    generation,
+    population,
+    halloffame,
+    logbook,
+    filename=None
+):
+    if filename is None:
+        filename = f"checkpoint_gen_{generation}.pkl"
+
+    checkpoint = {
+        "generation": generation,
+        "population": population,
+        "halloffame": halloffame,
+        "logbook": logbook,
+        "rndstate": random.getstate(),
+    }
+    with open(filename, "wb") as f:
+        pickle.dump(checkpoint, f)
+    print(f"Saved checkpoint: {filename}")
+
+def load_checkpoint(filename):
+    with open(filename, "rb") as f:
+        checkpoint = pickle.load(f)
+
+    population = checkpoint["population"]
+    halloffame = checkpoint["halloffame"]
+    logbook = checkpoint["logbook"]
+    start_gen = checkpoint["generation"]
+    random.setstate(checkpoint["rndstate"])
