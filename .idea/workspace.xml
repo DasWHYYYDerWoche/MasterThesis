@@ -4,20 +4,21 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b8d71ec4-48b2-4ec5-b1a5-6fe6d26ab8b8" name="Changes" comment="?">
+    <list default="true" id="b8d71ec4-48b2-4ec5-b1a5-6fe6d26ab8b8" name="Changes" comment="updating documentation">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/executables/optimization/full_run/simple_optimization.py" beforeDir="false" afterPath="$PROJECT_DIR$/executables/optimization/full_run/simple_optimization.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/executables/optimization/grid_search/grid_search.py" beforeDir="false" afterPath="$PROJECT_DIR$/executables/optimization/grid_search/grid_search.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Constants/Actions.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Constants/Actions.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Constants/Joints.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Constants/Joints.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Constants/Optimization.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Constants/Paths.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Constants/Paths.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Constants/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Constants/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/IO/CfgHandler.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/IO/CfgHandler.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/IO/FileHandler.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/IO/FileHandler.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/IO/NaoV6H25Handler.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/IO/NaoV6H25Handler.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/IO/ThesisCSVReplayRosHandler.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/IO/ThesisCSVReplayRosHandler.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Optimizer/Parameter.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Optimizer/Parameter.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Optimizer/SimOptimizer.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Optimizer/SimOptimizer.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Simulator/ProcessContainer.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Simulator/ProcessContainer.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Structs/Hyperparameters.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Structs/Hyperparameters.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Utils/SimulationGapData.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Utils/SimulationGapData.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Utils/SimulationGapHandler.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Utils/SimulationGapHandler.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Utils/SimulationParameters.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Utils/SimulationParameters.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Visualization/GapHandlerVisualizer.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Visualization/GapObjectVisualizer.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Visualization/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/testing/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/testing/gap_handler_test.ipynb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/testing/gap_object_test.ipynb" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

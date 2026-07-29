@@ -1,4 +1,8 @@
 class Hyperparameters:
+    """
+    Data object containing all hyperparameters need for the optimization.
+    """
+
     def __init__(self,
                  crossover_pb: float,
                  mutation_pb: float,

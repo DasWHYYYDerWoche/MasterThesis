@@ -26,6 +26,7 @@ class DataType(Enum):
     EXTRACTION = 0
     REPLAY = 1
 
+# factor which scales the simulation gap such that the worst log of the default simulator has a gap of 1
 SCALE_FACTOR = 0.05307869684668788
 
 
@@ -85,17 +86,12 @@ class SimulationGapData:
                                 ["JR_S_" + joint_name for joint_name in JOINT_NAMES + ["rHand", "lHand"]] + ['replayed_frame'])
         self._merged = self._merged.drop(columns=column_names_to_drop)
         # normalize and rename time column
-
-        if len(self._merged['time_step'])  <= 0:
-            print("broke: " + self.identifier)
-            print(path_extraction)
-            print(path_replays)
-            print()
-            return False
         self._merged.rename(columns={"time_step_x": "time_step"}, inplace=True)
         self._merged['time_step'] = self._merged['time_step'] - self._merged['time_step'][0]
         self._num_frames = len(self._merged)
         self._dt = np.diff(self._merged['time_step'] / 1000)
+
+        # normalize gyroscope by subtracting value of first frame
         self._merged['sensor_x_gyro' + EXTRACTION_SUFFIX] = self._merged['sensor_x_gyro' + EXTRACTION_SUFFIX] - self._merged['sensor_x_gyro' + EXTRACTION_SUFFIX][0]
         self._merged['sensor_x_gyro' + REPLAY_SUFFIX] = self._merged['sensor_x_gyro' + REPLAY_SUFFIX] - self._merged['sensor_x_gyro' + REPLAY_SUFFIX][0]
         self._merged['sensor_y_gyro' + EXTRACTION_SUFFIX] = self._merged['sensor_y_gyro' + EXTRACTION_SUFFIX] - self._merged['sensor_y_gyro' + EXTRACTION_SUFFIX][0]
@@ -485,10 +481,6 @@ class SimulationGapData:
     def _integrate(self, data : list[float], n : int = 1, pad_front : bool = True) -> list[float]:
         """
         Integrates the given data n times. If pad_front is True, a 0 is added to the front.
-        :param data:
-        :param n:
-        :param pad_front:
-        :return:
         """
         result = data[1:]
         for i in range(n):

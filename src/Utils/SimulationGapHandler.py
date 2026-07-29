@@ -16,6 +16,7 @@ class SimulationGapHandler:
     def __init__(self, param_set_id: str):
         self._sim_gap_data : dict[str, list[SimulationGapData]] = {}
         self._param_set_id: str = param_set_id
+        # load normalization factors from file
         path = get_project_root() / "executables/statistics/normalization_factors/output2.csv"
         df = pandas.read_csv(path)
         self._max_pos = df["pos"].iloc[0]
@@ -28,6 +29,9 @@ class SimulationGapHandler:
         self._INVALID_LOG_PUNISH_FACTOR = 1.5 # each missing log is punished with 1.5 times the average gap of logs with the same action
 
     def add(self, action_name: str, recording_date: str, log_index: int):
+        """
+        add a new simulationGapData object based on the given values
+        """
         new_data = SimulationGapData(self._param_set_id, action_name, recording_date, log_index,
                               self._max_pos, self._max_vel, self._max_acc)
         if new_data.load():
@@ -41,16 +45,6 @@ class SimulationGapHandler:
                 self._invalid_logs[action_name] = 1
             else:
                 self._invalid_logs[action_name] =+ 1
-
-    def remove(self, action_name: str, recording_date: str, log_index: int):
-        """do not  use"""
-        if action_name not in self._sim_gap_data.keys():
-            return
-        for i, gap_object in enumerate(self._sim_gap_data[action_name]):
-            if gap_object.recording_date == recording_date and gap_object.log_index == log_index:
-                self._sim_gap_data[action_name].pop(i)
-        if len(self._sim_gap_data[action_name]) <= 0:
-            del self._sim_gap_data[action_name]
 
     def get(self, action_name: str, recording_date: str, log_index: int) -> Optional[SimulationGapData]:
         if action_name not in self._sim_gap_data.keys():

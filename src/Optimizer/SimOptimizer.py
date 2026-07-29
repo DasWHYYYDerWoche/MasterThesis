@@ -1,16 +1,14 @@
-from os import mkdir
 from typing import Optional
 import numpy as np
 import random
+import pickle
+import pandas as pd
 from deap import base, creator, tools, algorithms
 from datetime import datetime
-import pandas as pd
 from pathlib import Path
-import pickle
 
-from ..Constants import JOINT_TYPES_5
 from ..Simulator import SimulatorHandler
-from ..Structs import Joint, Hyperparameters
+from ..Structs import Hyperparameters
 from ..Utils import ExperimentMode, SimulationParameters
 from .Parameter import Parameter
 
@@ -18,13 +16,23 @@ import logging
 logger = logging.getLogger("global_logger")
 
 class SimOptimizer:
+    """
+    Class used to perform the optimization using the DEAP toolbox.
+    """
     def __init__(self,
                  parameters : list[Parameter],
                  hyperparameters: Hyperparameters,
                  sim_handler : SimulatorHandler,
                  training_data : list[tuple[str, Optional[str], Optional[int]]] = None,
                  test_data : list[tuple[str, Optional[str], Optional[int]]] = None):
-        # variables keeping track of optimized attributes
+        """
+
+        :param parameters: list of parameters that should be optimized
+        :param hyperparameters:
+        :param sim_handler: preconfigured instance of the simulator
+        :param training_data: data used during training
+        :param test_data: data used to test the five best individuals after the optimization
+        """
         self._parameters = parameters
 
         self._training_data = training_data
@@ -75,6 +83,7 @@ class SimOptimizer:
         self._toolbox.register("evaluate", SimOptimizer.evaluate,
                                self._training_data, self._sim_handler, self._parameters)
 
+        # mate and mutate methods with included clamping
         def mate(individual1, individual2):
             i1, i2 = tools.cxBlend(individual1, individual2, alpha = 0.5)
             SimOptimizer._clamp_individual(i1, [(p.lower_bound, p.upper_bound) for p in self._parameters])
@@ -89,6 +98,7 @@ class SimOptimizer:
             SimOptimizer._clamp_individual(individual, [(p.lower_bound, p.upper_bound) for p in self._parameters])
             return (individual,)
 
+        # tournament size selection with additional elitism by automatically chosing the best two individuals
         def select(individuals):
             pop = tools.selBest(individuals, 2)
             pop += tools.selTournament(individuals, k= len(individuals) - 2, tournsize=self._hyperparameters.tournament_size)
@@ -107,6 +117,11 @@ class SimOptimizer:
         return stats
 
     def run(self, seed: int = None, checkpoint_directory: Optional[Path] = None):
+        """
+        initializes and runs the optimization
+        :param seed: random seed to ensure results can be repeated. Thesis uses seed = 0 for all runs
+        :param checkpoint_directory: directory to which the checkpoint data is saved
+        """
         self._run_identifier = datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
         print("start time: " + self._run_identifier)
 
@@ -114,7 +129,6 @@ class SimOptimizer:
         np.random.seed(seed)
 
         population = self._toolbox.population(n=self._hyperparameters.pop_size)
-
         stats = self._create_stats()
         hall_of_fame = tools.HallOfFame(5)
 
@@ -140,8 +154,8 @@ class SimOptimizer:
         self._stats = stats
         self._hall_of_fame = hall_of_fame
 
+        # calculate test results
         self._test_results.clear()
-
         for individual in self._hall_of_fame:
             self._test_results.append(
                 float(
@@ -153,10 +167,36 @@ class SimOptimizer:
                     )[0]
                 )
             )
-
         print("end time: " + datetime.now().strftime("%Y_%m_%d_%H_%M_%S"))
 
+    def save_checkpoint(self,
+            generation,
+            population,
+            halloffame,
+            logbook,
+            filename=None
+    ):
+        """
+        saves the given parameters to the specified file. Automatically happens every X generations in case of crashes
+        :return:
+        """
+        if filename is None:
+            filename = f"checkpoint_gen_{generation}.pkl"
+        checkpoint = {
+            "generation": generation,
+            "population": population,
+            "halloffame": halloffame,
+            "logbook": logbook,
+            "rndstate": random.getstate(),
+        }
+        with open(filename, "wb") as f:
+            pickle.dump(checkpoint, f)
+        print(f"Saved checkpoint: {filename}")
+
     def save_last_run(self, directory : Path):
+        """
+        saves the last run (logbook, hallOfFame) to the specified directory
+        """
         full_path = directory / self._run_identifier
         if not full_path.exists():
             full_path.mkdir(parents=True)
@@ -189,8 +229,6 @@ class SimOptimizer:
         Maps individual genes to simulator parameters,
         runs simulation, and returns objective value.
         """
-        # create simulation parameters
-
         simulator_parameters = SimulationParameters("")
         simulator_parameters.load_max_velocity()
         simulator_parameters.load_max_force(2.1)
@@ -203,39 +241,28 @@ class SimOptimizer:
         # Return tuple because DEAP needs it
         return (gap,)
 
+    @property
+    def hyperparameters(self):
+        return self._hyperparameters
+
     @staticmethod
-    def _clamp_individual(individual, bounds : list[tuple[float,float]]):
+    def _clamp_individual(individual, bounds: list[tuple[float, float]]):
         for i, (low, high) in enumerate(bounds):
             if individual[i] < low:
                 individual[i] = low
             elif individual[i] > high:
                 individual[i] = high
 
-    @property
-    def hyperparameters(self):
-        return self._hyperparameters
-
-    def save_checkpoint(self,
-            generation,
-            population,
-            halloffame,
-            logbook,
-            filename=None
-    ):
-        if filename is None:
-            filename = f"checkpoint_gen_{generation}.pkl"
-        checkpoint = {
-            "generation": generation,
-            "population": population,
-            "halloffame": halloffame,
-            "logbook": logbook,
-            "rndstate": random.getstate(),
-        }
-        with open(filename, "wb") as f:
-            pickle.dump(checkpoint, f)
-        print(f"Saved checkpoint: {filename}")
 
     def load_checkpoint(self, filename: Path, checkpoint_directory: Optional[Path] = None):
+        """
+        loads a previously created checkpoint. Because this is usually done after a crash, the configuration files may need
+        to manually be reset. This is most easily done by opening Visual Studio and resetting the changed files in the git commit window.
+        :param filename:
+        :param checkpoint_directory:
+        :return:
+        """
+
         filename = Path(filename)
         with open(filename, "rb") as f:
             checkpoint = pickle.load(f)
@@ -304,14 +331,31 @@ def ea_simple_with_checkpoints(
     checkpoint_directory: Optional[Path] = None,
     checkpoint_prefix="checkpoint_gen"
 ):
+    """
+    copy of the EA simple method from DEAP, but adds a checkpoint system.
+
+    Change to be in the class.
+    :param population:
+    :param toolbox:
+    :param cxpb:
+    :param mutpb:
+    :param ngen:
+    :param stats:
+    :param halloffame:
+    :param logbook:
+    :param start_gen:
+    :param verbose:
+    :param checkpoint_interval:
+    :param checkpoint_directory:
+    :param checkpoint_prefix:
+    :return:
+    """
     if checkpoint_directory is not None:
         checkpoint_directory = Path(checkpoint_directory)
         checkpoint_directory.mkdir(parents=True, exist_ok=True)
-
     if logbook is None:
         logbook = tools.Logbook()
         logbook.header = ["gen", "nevals"] + (stats.fields if stats else [])
-
     if not hasattr(logbook, "header") or logbook.header is None:
         logbook.header = ["gen", "nevals"] + (stats.fields if stats else [])
 
@@ -319,9 +363,7 @@ def ea_simple_with_checkpoints(
     invalid_individuals = [
         ind for ind in population if not ind.fitness.valid
     ]
-
     fitnesses = map(toolbox.evaluate, invalid_individuals)
-
     for ind, fit in zip(invalid_individuals, fitnesses):
         ind.fitness.values = fit
 
@@ -329,15 +371,12 @@ def ea_simple_with_checkpoints(
     if start_gen == 0:
         if halloffame is not None:
             halloffame.update(population)
-
         record = stats.compile(population) if stats is not None else {}
-
         logbook.record(
             gen=0,
             nevals=len(invalid_individuals),
             **record
         )
-
         if verbose:
             print(logbook.stream)
 
@@ -345,7 +384,6 @@ def ea_simple_with_checkpoints(
     else:
         if halloffame is not None and len(invalid_individuals) > 0:
             halloffame.update(population)
-
         if verbose:
             print(f"Resuming evolution from generation {start_gen}")
 
@@ -356,14 +394,11 @@ def ea_simple_with_checkpoints(
                 f"Checkpoint generation {start_gen} is already >= target generation {ngen}. "
                 "No additional evolution performed."
             )
-
         return population, logbook
 
     for gen in range(start_gen + 1, ngen + 1):
-
         # Selection
         offspring = toolbox.select(population, len(population))
-
         # Variation
         offspring = algorithms.varAnd(
             offspring,
@@ -371,43 +406,32 @@ def ea_simple_with_checkpoints(
             cxpb=cxpb,
             mutpb=mutpb
         )
-
-        # Evaluate invalid offspring
         invalid_individuals = [
             ind for ind in offspring if not ind.fitness.valid
         ]
-
         fitnesses = map(toolbox.evaluate, invalid_individuals)
-
         for ind, fit in zip(invalid_individuals, fitnesses):
             ind.fitness.values = fit
-
-        # Update hall of fame
         if halloffame is not None:
             halloffame.update(offspring)
-
         # Replace population
         population[:] = offspring
 
         # Record stats
         record = stats.compile(population) if stats is not None else {}
-
         logbook.record(
             gen=gen,
             nevals=len(invalid_individuals),
             **record
         )
-
         if verbose:
             print(logbook.stream)
 
         # Save checkpoint
         if checkpoint_interval is not None and gen % checkpoint_interval == 0:
             filename = f"{checkpoint_prefix}_{gen}.pkl"
-
             if checkpoint_directory is not None:
                 filename = checkpoint_directory / filename
-
             save_checkpoint(
                 generation=gen,
                 population=population,
@@ -415,7 +439,6 @@ def ea_simple_with_checkpoints(
                 logbook=logbook,
                 filename=filename
             )
-
     return population, logbook
 
 def save_checkpoint(

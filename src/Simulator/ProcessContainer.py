@@ -15,15 +15,6 @@ class ProcessContainer:
         self._ready_time = 0
         self._terminated = False
 
-    def update_ready(self):
-        if self.ready:
-            return
-        for line in self._p.stdout:
-            if line.strip() == "READY":
-                self._ready_time = time.time()
-                logger.info("Process %s is ready", self._ep_index)
-
-
     def update_status(self, max_wait_for_ready: float, max_wait_for_finish: float) -> bool:
         if self._ready_time > 0:
             # process was ready and has been running for some time
@@ -52,17 +43,20 @@ class ProcessContainer:
             return False
 
     def ready_timed_out(self, max_wait_for_ready : float) -> bool:
+        # checks if the process has taken to long to send the ready signal
         if self._ready_time > 0:
             return False
         return (time.time() - self._ready_time) > max_wait_for_ready
 
     def finished_timed_out(self, max_wait_for_finish : float) -> bool:
+        # checks if the process has taken to long to finish
         if self._ready_time > 0:
             return (time.time() - self._start_time) > max_wait_for_finish
         return False
 
     @property
     def ready(self) -> bool:
+        # checks if the process is ready by checking the process output for the READY message
         if self._ready_time > 0:
             return True
         for line in self._p.stdout:

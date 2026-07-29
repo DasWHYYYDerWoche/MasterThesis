@@ -15,7 +15,6 @@ logger = logging.getLogger("global_logger")
 class SimulationParameters:
     """
     Holds parameters that change the behavior of the simulation like kd/kp values.
-
     Can be saved to and loaded from a file based on the given ID(s)
     """
 
@@ -69,6 +68,7 @@ class SimulationParameters:
             self.path_target.mkdir(parents=True)
 
     def save_to_file(self) -> bool:
+        # saves the current settings to a file. Files can be overwritten
         if self._type is SimulationParameters.Type.NEW or \
                 self._type is SimulationParameters.Type.NEW_WITH_BASE:
             as_dict = {
@@ -86,6 +86,7 @@ class SimulationParameters:
         return False
 
     def _load_from_file(self):
+        # loads the settings saved at the source path
         with open(self.path_settings_source, "r") as f:
             data = json.load(f)
         self._Kp = data["Kp"]
@@ -97,6 +98,12 @@ class SimulationParameters:
         }
 
     def load_max_force(self, scale_factor : float = 1):
+        """
+        used for the max_force search. Loads the values from the datasheet output and multiplies them by the scale factor.
+        In the thesis is factor is called epsilon and represents the gearbox efficiency
+        :param scale_factor:
+        :return:
+        """
         data = pd.read_csv(PATH_DATASHEET_OUTPUT)
         max_force_list = data["MaxTorque"].to_list()
         for max_force, joint_list in zip(max_force_list, JOINT_TYPES_7.values()):
@@ -104,6 +111,11 @@ class SimulationParameters:
                 joint.max_force = max_force * scale_factor
 
     def load_max_velocity(self, scale_factor : float = 1):
+        """
+        loads the calculated maximum velocity of the servo motors from the corresponding file
+        :param scale_factor:
+        :return:
+        """
         data = pd.read_csv(PATH_DATASHEET_OUTPUT)
         max_velocity_list = data["MaxSpeed_rad_per_s"].to_list()
         for max_velocity, joint_list in zip(max_velocity_list, JOINT_TYPES_7.values()):
@@ -208,6 +220,13 @@ class SimulationParameters:
 
 
 def sim_params_from_file(path : Path, index : int, name : str) -> Optional[SimulationParameters]:
+    """
+    loads the simulation parameters from a hall of fame file
+    :param path:
+    :param index:
+    :param name:
+    :return:
+    """
     df = pd.read_csv(path)
     if index < 0 or index >= len(df):
         return None
