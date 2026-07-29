@@ -1,7 +1,7 @@
 from __future__ import annotations
 from pathlib import Path
 
-PATH : Path = Path.home() / "source" / "repos"/ "pg666"/ "NDevils2015"
+PATH : Path = Path.home() / "source" / "Repos"/ "NDevils2015"
 # path to the config of the loggerT module
 PATH_CONFIG : Path = PATH / "Config"
 # path to scenes
@@ -42,7 +42,7 @@ def get_field_logs_path_full(action_name : str, recording_date : str, log_index 
     return PATH_LOGS / "ThesisFieldLogs" / action_name /  recording_date / (str(log_index) + ".log")
 
 def get_project_root() -> Path:
-    return Path("C:/") / "Users" / "pg-user" / "PycharmProjects" / "MasterThesis"
+    return Path("C:/") / "Users" / "felix" / "PycharmProjects" / "Thesis"
 
 # paths to datasheets
 PATH_DATASHEET_OUTPUT = get_project_root() / "executables/statistics/max_values/output.csv"

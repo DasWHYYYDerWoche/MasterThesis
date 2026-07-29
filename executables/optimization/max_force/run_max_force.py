@@ -1,13 +1,12 @@
 from __future__ import annotations
 import pandas as pd
 from src import PATH_DATASHEET_OUTPUT, JOINT_TYPES_7, SimulationParameters, SimulatorHandler, ExperimentMode, \
-    SimulationGapData, ACTION_NAMES
+    SimulationGapData, ACTION_NAMES, get_combined_data
 
-data = [(action_name, None, None) for action_name in ACTION_NAMES]
+data = get_combined_data()
 max_force_list = pd.read_csv(PATH_DATASHEET_OUTPUT)["MaxTorque"].to_list()
-test_factors = [0.7,0.8,0.9,
-                1.0,1.1,1.2,1.3,1.4,1.5,1.6,1.7,1.8,1.9,
-                2.0,2.1,2.2,2.3,2.4,2.5,2.6,2.7,2.8,2.9]
+test_factors = [0.7,0.8,0.9,1.0,1.1,1.2,1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0,2.1,2.2,2.3,2.4,2.5,2.6,2.7,2.8,2.9] #
+
 results = {}
 
 sim = SimulatorHandler()
@@ -28,4 +27,4 @@ for test_factor in test_factors:
     results[test_factor] = gap_handler.get_optimization_target()
 
 print(results)
-pd.Series(results).to_csv("output.csv")
+pd.Series(results).to_csv("output_home.csv")

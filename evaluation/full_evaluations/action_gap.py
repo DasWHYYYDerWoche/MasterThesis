@@ -4,8 +4,8 @@ import numpy as np
 from scipy.stats import norm
 from matplotlib.cbook import boxplot_stats
 
-folder = "default"
-param_name = "default_1"
+folder = "maxVelocity"
+param_name = "max_velocity"
 
 data = get_combined_data()
 sim_params = SimulationParameters(param_name)
