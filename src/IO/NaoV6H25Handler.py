@@ -10,6 +10,8 @@ from .XmlHandler import XmlHandler
 class NaoV6H25Handler(XmlHandler):
     """
     File handler for the NaoV6H25.rsi2 file of the simulator. Controls the NAO model and related parameters.
+    Since the file is very large the get_default method loads the data from a copy of the file, so make sure you create
+    said copy.
     """
 
     _instance = None

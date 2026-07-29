@@ -1,9 +1,7 @@
 from __future__ import annotations
 from abc import ABC
 from typing import override
-from re import compile as re_compile
 from pathlib import Path
-
 from .FileHandler import FileHandler
 
 class CfgHandler(FileHandler, ABC):
@@ -12,7 +10,7 @@ class CfgHandler(FileHandler, ABC):
 
     var_name = var_data;
 
-    where var_name is a string and var_data is one of int, bool or str
+    where var_name is a string and var_data is one of int, bool or str.
     """
     def __init__(self, path: Path):
         super().__init__(path)

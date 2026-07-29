@@ -3,7 +3,7 @@ import os
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 
 
-from src import SimOptimizer, PARAMETERS_GLOBAL_0, PARAMETERS_PER_TYPE_0, ACTION_NAMES, get_project_root, Hyperparameters, SimulatorHandler
+from src import SimOptimizer,get_project_root, Hyperparameters, SimulatorHandler
 
 from src.Optimizer.Parameter import PARAMETER_SET_0, PARAMETER_SET_1, PARAMETER_SET_2
 from src import get_test_data, get_train_data, get_combined_data

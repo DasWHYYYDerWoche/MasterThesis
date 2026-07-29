@@ -1,3 +1,7 @@
+"""
+Contains Information about the different actions, such as names, shorthands and information needed for replaying.
+"""
+
 ACTION_NAMES = ["kick_left", "kick_right",
                 "walk_front", "walk_back",
                 "sidestep_left", "sidestep_right",

@@ -1,3 +1,9 @@
+"""
+Contains Information about the different joints, such as names, the used weights and shorthands.
+"""
+
+
+
 JOINT_NAMES = [
 "lShoulderPitch","lShoulderRoll","lElbowYaw","lElbowRoll","lWristYaw",
 "rShoulderPitch","rShoulderRoll","rElbowYaw","rElbowRoll","rWristYaw",
@@ -84,6 +90,7 @@ DEFLECTIONS = {
     "rAnklePitch": (-67.97, 53.40),
     "rAnkleRoll": (-44.06, 22.80),
 }
+RANGES = {key : abs(value[0] - value[1]) for key, value in DEFLECTIONS.items()}
 
 ABBREVIATIONS = {
     "combined":"Comb.",
@@ -123,7 +130,7 @@ ABBREVIATIONS = {
 }
 
 
-
+#
 JOINT_TYPES_5 = {
     0 : ["lHipYawPitch", "rHipYawPitch", "lHipRoll", "rHipRoll", "lAnkleRoll", "rAnkleRoll"],
     1 : ["lWristYaw", "rWristYaw"],
@@ -132,10 +139,14 @@ JOINT_TYPES_5 = {
     4 : ["lHipPitch", "rHipPitch", "lKneePitch", "rKneePitch", "lAnklePitch", "rAnklePitch"]
 }
 
+"""
+Somewhat dirty, some joints appear twice. The last appearance overwrites the any before, so
+the shoulder rolls are part of motor type 2.5 and the value from motor type 2 gets overwritten.
+"""
 JOINT_TYPES_7 = {
     0 : ["lHipYawPitch", "rHipYawPitch", "lHipRoll", "rHipRoll", "lAnkleRoll", "rAnkleRoll"],
     1 : ["lWristYaw", "rWristYaw"],
-    1.5 : [],
+    1.5 : [], #empty since the hands are unused
     2 : ["headYaw", "lElbowYaw", "rElbowYaw", "headPitch", "lShoulderRoll", "rShoulderRoll", "lElbowRoll", "rElbowRoll"],
     2.5 : ["headPitch", "lShoulderRoll", "rShoulderRoll", "lElbowRoll", "rElbowRoll"],
     3 : ["lShoulderPitch", "rShoulderPitch"],
@@ -144,6 +155,5 @@ JOINT_TYPES_7 = {
 
 JOINT_GROUPS = {5 : JOINT_TYPES_5, 7 : JOINT_TYPES_7}
 
+#unused, data is loaded from configuration file now
 MAX_MOTOR_VELOCITY = {285.245901639344,1115.35269709544,1557.61589403974,469.954082651228,407.689643228265,500.698742263925,438.823079862438}
-
-RANGES = {key : abs(value[0] - value[1]) for key, value in DEFLECTIONS.items()}

@@ -9,7 +9,7 @@ logger = logging.getLogger("global_logger")
 class FileHandler(ABC):
     """
     superclass to handle all config read and write operations done by the simulator.
-    Provides error handling and a consistent
+    Provides error handling and a consistent data representation
     """
     def __init__(self, path: Path):
         self._path = path

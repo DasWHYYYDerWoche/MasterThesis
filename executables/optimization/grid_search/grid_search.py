@@ -1,3 +1,4 @@
+"""
 from __future__ import annotations
 
 from datetime import datetime
@@ -12,7 +13,7 @@ from src import SimOptimizer, PARAMETERS_GLOBAL_0, PARAMETERS_PER_TYPE_0, ACTION
 logger = logging.getLogger("global_logger")
 logging.basicConfig(filename='info.log',format='%(asctime)s.%(msecs)03d - %(levelname)s: %(message)s', encoding='utf-8', filemode='w', level=logging.DEBUG, datefmt="%Y-%m-%d %H:%M:%S")
 
-""" crossover:
+crossover:
 for i in range(0, len(indices)):
     test_indices = {action_name : train_test_split[action_name][i] for action_name in ACTION_NAMES}
     train_indices = {action_name : [x for x in train_test_split[action_name] if x != test_indices[action_name]] for action_name in ACTION_NAMES}
@@ -24,7 +25,7 @@ for i in range(0, len(indices)):
     print(test_data)
     print(train_data)
     print()
-"""
+
 start_time = datetime.now()
 indices: list[int] = [0,1,2,3,4]
 crossover_pbs: list[float] = [0.2, 0.4, 0.6, 0.8]
@@ -97,7 +98,7 @@ finally:
 
 
 
-
+"""
 
 
 

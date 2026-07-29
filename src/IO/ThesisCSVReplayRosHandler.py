@@ -7,7 +7,8 @@ from .XmlHandler import XmlHandler
 
 class ThesisCSVReplayRosHandler(XmlHandler):
     """
-    File handler for the ThesisCSVReplay.ros2 file of the simulator. Controls the four global simulation parameters.
+    File handler for the ThesisCSVReplay.ros2 file of the simulator.
+    Controls the four global simulation parameters (Kd, Kp, contactKd, contactKp).
     """
 
     _instance = None
