@@ -136,6 +136,7 @@ class SimulatorHandler:
             #wait for a space so that the number of active processes does not exceed the batch_size
             self._wait_for_spot(process_list)
             p_open_str = str(PATH_EXECUTABLE) + " " + str(scene_path) + ".ros2"
+
             if not self.show_ui:
                 p_open_str = p_open_str + " -platform offscreen"
             logger.debug("Process %d created with eps %d to %d", process_index, ep_index, new_ep_index - 1)
@@ -232,8 +233,11 @@ class SimulatorHandler:
         re-replay all)
         :return: a list of SimulationGap objects
         """
+        print("test1")
         self.extract(data, extraction_mode)
+        print("test2")
         self.replay(settings, data, replay_mode)
+        print("test3")
         eps = ExperimentParameters.create_experiment_parameters(settings.target_param_set_id, data)
         gap_handler = SimulationGapHandler(settings.target_param_set_id)
         for ep in eps:

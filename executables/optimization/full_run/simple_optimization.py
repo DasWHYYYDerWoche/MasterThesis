@@ -38,7 +38,7 @@ for action_name in action_names:
 
 sim_handler = SimulatorHandler()
 sim_handler.show_ui = False
-sim_handler.num_instances = 1
+sim_handler.num_instances = 2
 sim_handler.replays_per_instance = 12
 sim_handler.max_wait_for_ready = 5
 sim_handler.max_run_duration = 60
