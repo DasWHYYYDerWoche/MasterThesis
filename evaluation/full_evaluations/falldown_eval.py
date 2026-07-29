@@ -39,7 +39,7 @@ for gap_data in gap_handler.get_all("standup_front"):
         combined.append(value)
 joint_gaps = {"combined" : total_gap}
 for joint in JOINT_NAMES:
-    joint_gaps[joint] = gap_handler.get_final_FINAL_gap_avg(lambda x: SimulationGapData.get_total_gap_avg(x, [joint]), ["kick_right"])
+    joint_gaps[joint] = gap_handler.get_final_FINAL_gap_avg(lambda x: SimulationGapData.get_total_gap_avg(x, [joint]), ["standup_front"])
 boxplot_gaps = {}
 for sensor in sensors:
     boxplot_gaps[sensor] = sensor_gaps[sensor]
@@ -70,12 +70,12 @@ stats2 = boxplot_stats(sensor_gaps.values(), labels=sensor_gaps.keys())
 table2 = pd.DataFrame([
     {
         "Label": ABBREVIATIONS[s["label"]],
-        "Lower whisker": s["whislo"],
-        "Q1": s["q1"],
-        "Median": s["med"],
-        "Mean": joint_gaps[s["label"]],
-        "Q3": s["q3"],
-        "Upper whisker": s["whishi"]
+        "Lower whisker": round(s["whislo"],3),
+        "Q1": round(s["q1"],3),
+        "Median": round(s["med"],3),
+        "Mean": round(joint_gaps[s["label"]],3),
+        "Q3": round(s["q3"],3),
+        "Upper whisker": round(s["whishi"],3)
     }
     for s in stats2
 ])
@@ -100,7 +100,7 @@ for gap_data in gap_handler.get_all("standup_back"):
         combined.append(value)
 joint_gaps = {"combined" : total_gap}
 for joint in JOINT_NAMES:
-    joint_gaps[joint] = gap_handler.get_final_FINAL_gap_avg(lambda x: SimulationGapData.get_total_gap_avg(x, [joint]), ["kick_right"])
+    joint_gaps[joint] = gap_handler.get_final_FINAL_gap_avg(lambda x: SimulationGapData.get_total_gap_avg(x, [joint]), ["standup_back"])
 boxplot_gaps = {}
 for sensor in sensors:
     boxplot_gaps[sensor] = sensor_gaps[sensor]
@@ -130,12 +130,12 @@ stats2 = boxplot_stats(sensor_gaps.values(), labels=sensor_gaps.keys())
 table2 = pd.DataFrame([
     {
         "Label": ABBREVIATIONS[s["label"]],
-        "Lower whisker": s["whislo"],
-        "Q1": s["q1"],
-        "Median": s["med"],
-        "Mean": joint_gaps[s["label"]],
-        "Q3": s["q3"],
-        "Upper whisker": s["whishi"]
+        "Lower whisker": round(s["whislo"], 3),
+        "Q1": round(s["q1"], 3),
+        "Median": round(s["med"], 3),
+        "Mean": round(joint_gaps[s["label"]], 3),
+        "Q3": round(s["q3"], 3),
+        "Upper whisker": round(s["whishi"], 3)
     }
     for s in stats2
 ])
