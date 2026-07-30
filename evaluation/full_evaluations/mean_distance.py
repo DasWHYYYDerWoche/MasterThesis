@@ -18,8 +18,8 @@ y_margin = 0.05
 folder = "optimized_0"
 
 data = get_combined_data()
-sim_params_base = SimulationParameters("max_force_2.1")
-sim_params_new = SimulationParameters("optimization_0")
+sim_params_base = SimulationParameters("default_1")
+sim_params_new = SimulationParameters("max_force_2.1")
 sim_handler = SimulatorHandler()
 gap_handler_base = sim_handler.simulation_gap(sim_params_base, data, replay_mode=ExperimentMode.PARTIAL)
 gap_handler_new = sim_handler.simulation_gap(sim_params_new, data, replay_mode=ExperimentMode.PARTIAL)

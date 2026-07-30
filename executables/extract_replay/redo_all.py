@@ -1,3 +1,7 @@
+"""
+Simple script to extract and replay logs
+"""
+
 from src import SimulatorHandler, SimulationParameters, ExperimentMode, ACTION_NAMES
 import logging
 logger = logging.getLogger("global_logger")

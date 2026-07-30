@@ -5,7 +5,7 @@ import pandas
 from typing import Optional, Callable, TypeVar
 
 from .SimulationGapData import SimulationGapData
-from ..Constants import get_project_root
+from ..Constants import PATH_OUTPUT
 
 import logging
 logger = logging.getLogger("global_logger")
@@ -17,7 +17,7 @@ class SimulationGapHandler:
         self._sim_gap_data : dict[str, list[SimulationGapData]] = {}
         self._param_set_id: str = param_set_id
         # load normalization factors from file
-        path = get_project_root() / "executables/statistics/normalization_factors/output2.csv"
+        path = PATH_OUTPUT / "normalization_factors.csv"
         df = pandas.read_csv(path)
         self._max_pos = df["pos"].iloc[0]
         self._max_vel = df["vel"].iloc[0]

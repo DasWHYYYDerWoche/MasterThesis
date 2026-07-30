@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # Load the CSV file
-df = pd.read_csv(get_project_root() / "executables" / "optimization" / "full_run" / "2026_06_26_11_45_57" / "logbook.csv")
+df = pd.read_csv(PROJECT_ROOT / "executables" / "optimization" / "full_run" / "2026_06_26_11_45_57" / "logbook.csv")
 
 # Replace inf values with NaN so matplotlib can handle them cleanly
 df["avg"] = df["avg"].replace([np.inf, -np.inf], np.nan)
@@ -42,7 +42,7 @@ plt.savefig("optimized_0/training.pdf")
 
 print(str(gen_min_pair))
 param_name = "optimization_0"
-settings = sim_params_from_file(get_project_root() / "executables" / "optimization" /"full_run"/ "2026_06_26_11_45_57" / "hallOfFame.csv", 3, "optimization_0")
+settings = sim_params_from_file(PROJECT_ROOT / "executables" / "optimization" /"full_run"/ "2026_06_26_11_45_57" / "hallOfFame.csv", 3, "optimization_0")
 settings.load_max_velocity()
 settings.load_max_force(2.1)
 sim_handler = SimulatorHandler()

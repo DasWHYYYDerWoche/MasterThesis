@@ -6,7 +6,11 @@ These might need to be updated when using the code on another system. Specifical
 from __future__ import annotations
 from pathlib import Path
 
+# location of this python project
+PROJECT_ROOT : Path = Path("C:/") / "Users" / "felix" / "PycharmProjects" / "Thesis" # change depending on where this project is for you
+# location of the NAO framework
 PATH : Path = Path.home() / "source" / "Repos"/ "NDevils2015" # on the uni pc: source/repos/pg666/NDevils2015
+
 # path to the config of the loggerT module
 PATH_CONFIG : Path = PATH / "Config"
 # path to scenes
@@ -28,6 +32,12 @@ PATH_REPLAYS : Path = PATH_CSV_LOGGER / "replays"
 # path to the executable
 PATH_EXECUTABLE : Path = PATH / "Build" / "simulator-multiconfig" / "Release" / "SimRobot.exe"
 
+PATH_INPUT : Path = PROJECT_ROOT / "input_files"
+PATH_OUTPUT : Path = PROJECT_ROOT / "output_files"
+
+PATH_DATASHEET_OUTPUT = PATH_OUTPUT / "motor_limits.csv"
+PATH_OUTPUT_NORM_FACTORS = PATH_OUTPUT / "normalization_factors.csv"
+
 def get_extraction_path_partial(action_name : str, recording_date : str, log_index : int) -> Path:
     return Path("logsAsCSVs") / action_name / recording_date / str(log_index)
 
@@ -45,10 +55,3 @@ def get_field_logs_path_partial(action_name : str, recording_date : str, log_ind
 
 def get_field_logs_path_full(action_name : str, recording_date : str, log_index : int) -> Path:
     return PATH_LOGS / "ThesisFieldLogs" / action_name /  recording_date / (str(log_index) + ".log")
-
-def get_project_root() -> Path:
-    return Path("C:/") / "Users" / "felix" / "PycharmProjects" / "Thesis" # change depending on where this project is for you
-
-
-PATH_DATASHEET_OUTPUT = get_project_root() / "executables/statistics/max_values/output.csv"
-PATH_OUTPUT_NORM_FACTORS = get_project_root() / "executables/statistics/normalization_factors/output.csv"

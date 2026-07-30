@@ -98,15 +98,10 @@ class SimOptimizer:
             SimOptimizer._clamp_individual(individual, [(p.lower_bound, p.upper_bound) for p in self._parameters])
             return (individual,)
 
-        # tournament size selection with additional elitism by automatically chosing the best two individuals
-        def select(individuals):
-            pop = tools.selBest(individuals, 2)
-            pop += tools.selTournament(individuals, k= len(individuals) - 2, tournsize=self._hyperparameters.tournament_size)
-
         # genetic operators to create new individuals
         self._toolbox.register("mate", mate)
         self._toolbox.register("mutate", mutate)
-        self._toolbox.register("select", select)
+        self._toolbox.register("select", tools.selTournament, tournsize=self._hyperparameters.tournament_size)
 
     def _create_stats(self):
         stats = tools.Statistics(lambda ind: ind.fitness.values[0])
@@ -133,7 +128,7 @@ class SimOptimizer:
         hall_of_fame = tools.HallOfFame(5)
 
         if checkpoint_directory is not None:
-            checkpoint_directory = Path(checkpoint_directory) / self._run_identifier
+            checkpoint_directory = Path(checkpoint_directory) / self._run_identifier / "checkpoints"
             checkpoint_directory.mkdir(parents=True, exist_ok=True)
 
         population, logbook = ea_simple_with_checkpoints(
@@ -197,7 +192,7 @@ class SimOptimizer:
         """
         saves the last run (logbook, hallOfFame) to the specified directory
         """
-        full_path = directory / self._run_identifier
+        full_path = directory / self._run_identifier / "results"
         if not full_path.exists():
             full_path.mkdir(parents=True)
         df = pd.DataFrame(self._logbook)
