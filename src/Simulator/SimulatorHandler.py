@@ -233,11 +233,8 @@ class SimulatorHandler:
         re-replay all)
         :return: a list of SimulationGap objects
         """
-        print("test1")
-        self.extract(data, extraction_mode)
-        print("test2")
+        #self.extract(data, extraction_mode)
         self.replay(settings, data, replay_mode)
-        print("test3")
         eps = ExperimentParameters.create_experiment_parameters(settings.target_param_set_id, data)
         gap_handler = SimulationGapHandler(settings.target_param_set_id)
         for ep in eps:

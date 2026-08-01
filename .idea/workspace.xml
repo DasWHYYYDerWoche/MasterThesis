@@ -6,8 +6,10 @@
   <component name="ChangeListManager">
     <list default="true" id="b8d71ec4-48b2-4ec5-b1a5-6fe6d26ab8b8" name="Changes" comment="?">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/executables/extract_replay/replay_missing.py" beforeDir="false" afterPath="$PROJECT_DIR$/executables/extract_replay/replay_missing.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/executables/optimization/full_run/simple_optimization.py" beforeDir="false" afterPath="$PROJECT_DIR$/executables/optimization/full_run/simple_optimization.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/executables/optimization/single_example/single_example.py" beforeDir="false" afterPath="$PROJECT_DIR$/executables/optimization/single_example/single_example.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/executables/optimization/max_force/run_max_force.py" beforeDir="false" afterPath="$PROJECT_DIR$/executables/optimization/max_force/run_max_force.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/executables/statistics/normalization_factors/run_norm_factors_2.py" beforeDir="false" afterPath="$PROJECT_DIR$/executables/statistics/normalization_factors/run_norm_factors_2.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Optimizer/SimOptimizer.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Optimizer/SimOptimizer.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Simulator/SimulatorHandler.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Simulator/SimulatorHandler.py" afterDir="false" />
     </list>
@@ -132,50 +134,6 @@
     </key>
   </component>
   <component name="RunManager" selected="Python.simple_optimization">
-    <configuration name="action_gap" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="Thesis" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/evaluation/full_evaluations" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/evaluation/full_evaluations/action_gap.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="optimization_eval" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="Thesis" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/evaluation/full_evaluations" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/evaluation/full_evaluations/optimization_eval.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
     <configuration name="replay_missing" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="Thesis" />
       <option name="ENV_FILES" value="" />
@@ -190,6 +148,50 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/executables/extract_replay/replay_missing.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="run_max_force" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="Thesis" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/executables/optimization/max_force" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/executables/optimization/max_force/run_max_force.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="run_norm_factors_2" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="Thesis" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/executables/statistics/normalization_factors" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/executables/statistics/normalization_factors/run_norm_factors_2.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -245,10 +247,10 @@
     <recent_temporary>
       <list>
         <item itemvalue="Python.simple_optimization" />
-        <item itemvalue="Python.single_example" />
+        <item itemvalue="Python.run_norm_factors_2" />
+        <item itemvalue="Python.run_max_force" />
         <item itemvalue="Python.replay_missing" />
-        <item itemvalue="Python.action_gap" />
-        <item itemvalue="Python.optimization_eval" />
+        <item itemvalue="Python.single_example" />
       </list>
     </recent_temporary>
   </component>
@@ -266,14 +268,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1767698678177</updated>
-    </task>
-    <task id="LOCAL-00024" summary="feature:&#10;- further work on csv replayer, currently only starts scene very shortly">
-      <option name="closed" value="true" />
-      <created>1770730944311</created>
-      <option name="number" value="00024" />
-      <option name="presentableId" value="LOCAL-00024" />
-      <option name="project" value="LOCAL" />
-      <updated>1770730944311</updated>
     </task>
     <task id="LOCAL-00025" summary="feature:&#10;- update cfg handler and experiment data to handle path construction and removed path construction from cpp code&#10;- this does not yet work !">
       <option name="closed" value="true" />
@@ -659,7 +653,15 @@
       <option name="project" value="LOCAL" />
       <updated>1785248646752</updated>
     </task>
-    <option name="localTasksCounter" value="73" />
+    <task id="LOCAL-00073" summary="?">
+      <option name="closed" value="true" />
+      <created>1785305536915</created>
+      <option name="number" value="00073" />
+      <option name="presentableId" value="LOCAL-00073" />
+      <option name="project" value="LOCAL" />
+      <updated>1785305536916</updated>
+    </task>
+    <option name="localTasksCounter" value="74" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">

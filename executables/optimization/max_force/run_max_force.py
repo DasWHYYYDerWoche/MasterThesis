@@ -1,9 +1,9 @@
 from __future__ import annotations
 import pandas as pd
 from src import PATH_DATASHEET_OUTPUT, JOINT_TYPES_7, SimulationParameters, SimulatorHandler, ExperimentMode, \
-    SimulationGapData, ACTION_NAMES
+    SimulationGapData, ACTION_NAMES, get_combined_data
 
-data = [(action_name, None, None) for action_name in ACTION_NAMES]
+data = get_combined_data()
 max_force_list = pd.read_csv(PATH_DATASHEET_OUTPUT)["MaxTorque"].to_list()
 test_factors = [0.7,0.8,0.9,
                 1.0,1.1,1.2,1.3,1.4,1.5,1.6,1.7,1.8,1.9,
@@ -13,19 +13,19 @@ results = {}
 sim = SimulatorHandler()
 sim.dt = -1
 sim.show_ui = False
-sim.replays_per_instance = 8
-sim.max_run_duration = 60
-sim.max_wait_for_ready = 10
-sim.num_instances = 1
+sim.replays_per_instance = 12
+sim.max_run_duration = 45
+sim.max_wait_for_ready = 5
+sim.num_instances = 2
 
 
 for test_factor in test_factors:
-    settings = SimulationParameters("max_force_" + str(test_factor), "max_velocity")
+    settings = SimulationParameters("max_force_" + str(test_factor))
+    settings.load_max_velocity()
     for max_force, motor_index in zip(max_force_list, JOINT_TYPES_7.keys()):
         settings.set_for_joint_type(motor_index, "max_force", max_force * test_factor)
         settings.save_to_file()
     gap_handler = sim.simulation_gap(settings,data=data, replay_mode=ExperimentMode.PARTIAL)
     results[test_factor] = gap_handler.get_optimization_target()
 
-print(results)
 pd.Series(results).to_csv("output.csv")

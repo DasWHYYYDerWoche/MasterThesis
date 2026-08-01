@@ -188,7 +188,7 @@ class SimOptimizer:
 
         simulator_parameters = SimulationParameters("")
         simulator_parameters.load_max_velocity()
-        simulator_parameters.load_max_force(2.1)
+        simulator_parameters.load_max_force(2.2)
         for parameter, value in zip(parameters, individual):
             parameter.set(value, simulator_parameters)
         gap_handler = simulator.simulation_gap(simulator_parameters,

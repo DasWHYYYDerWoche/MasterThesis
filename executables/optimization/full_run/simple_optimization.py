@@ -4,7 +4,7 @@ os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 
 
 from src import SimOptimizer, PARAMETERS_GLOBAL_0, PARAMETERS_PER_TYPE_0, ACTION_NAMES, get_project_root, Hyperparameters, SimulatorHandler
-
+from pathlib import Path
 from src.Optimizer.Parameter import PARAMETER_SET_0, PARAMETER_SET_1, PARAMETER_SET_2
 from src import get_test_data, get_train_data, get_combined_data
 
@@ -57,4 +57,5 @@ optimizer = SimOptimizer(parameters=PARAMETER_SET_2,
                          training_data=train_data,
                          test_data=test_data)
 optimizer.run(seed=0)
+#optimizer.load_checkpoint(Path("checkpoint_gen_70.pkl"))
 optimizer.save_last_run(results_folder)
