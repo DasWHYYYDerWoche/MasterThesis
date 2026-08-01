@@ -17,7 +17,7 @@ sim_handler.dt = -1
 sim_handler.max_wait_for_ready = 5
 sim_handler.max_run_duration = 40
 
-settings = SimulationParameters("max_velocity_home")
+settings = SimulationParameters("default")
 #settings = sim_params_from_file(get_project_root() / "executables" / "optimization" /"full_run"/ "2026_06_26_11_45_57" / "hallOfFame.csv", 3, "optimization_no_force")
 settings.load_max_velocity()
 #settings.load_max_force(2.1)

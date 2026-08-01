@@ -4,7 +4,7 @@ calculates the normalization factors for the simulation gap calculation and save
 This file is loaded by the SimulationGapHandler class and needs to be created before running the optimization.
 """
 from src import (DEFLECTIONS, PATH_DATASHEET_OUTPUT, JOINT_NAMES, PATH_OUTPUT,
-                 get_combined_data, ExperimentParameters, get_extraction_path_full)
+                 get_combined_data, ExperimentParameters, get_extraction_path_full, SimulationParameters, SimulatorHandler)
 import numpy as np
 import pandas as pd
 
@@ -49,6 +49,17 @@ max_acc = []
 for joint_acceleration in accelerations.values():
     max_acc.append(np.nanmax(joint_acceleration))
 
+# scale factor
+sim_handler = SimulatorHandler()
+sim_params = SimulationParameters("default")
+gap_handler = sim_handler.simulation_gap(sim_params, data)
+max_sim_gap = 0
+for sim_gap_data in gap_handler.get_list():
+    sim_gap_data._scale_factor = 1 #rest scale factor for its calculation, otherwise it gets larger and larger
+    cur_sim_gap = sim_gap_data.get_total_gap_avg()
+    if cur_sim_gap > max_sim_gap:
+        max_sim_gap = cur_sim_gap
+
 max_max_acc = np.nanmean(max_acc)
-df = pd.DataFrame.from_dict({"pos" : [max_max_pos], "vel" : [max_max_vel], "acc" : [max_max_acc]})
+df = pd.DataFrame.from_dict({"pos" : [max_max_pos], "vel" : [max_max_vel], "acc" : [max_max_acc], "scale" : [max_sim_gap]})
 df.to_csv(PATH_OUTPUT / "normalization_factors.csv")

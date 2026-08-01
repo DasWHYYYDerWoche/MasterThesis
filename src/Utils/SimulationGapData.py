@@ -1,15 +1,12 @@
 from __future__ import annotations
 
-from collections import Counter
 from typing import Optional
 from pathlib import Path
-import warnings
 
 
 import numpy
 import numpy as np
 import pandas
-from statistics import fmean
 from enum import Enum
 
 from pandas.errors import PerformanceWarning
@@ -27,7 +24,7 @@ class DataType(Enum):
     REPLAY = 1
 
 # factor which scales the simulation gap such that the worst log of the default simulator has a gap of 1
-SCALE_FACTOR = 0.05307869684668788
+OLD_SCALE_FACTOR = 0.05307869684668788
 
 
 class SimulationGapData:
@@ -36,7 +33,7 @@ class SimulationGapData:
     """
 
     def __init__(self, param_set_id: str, action_name: str, recording_date: str, log_index: int,
-                 pos_scale_factor : float = 1, vel_scale_factor : float = 1, acc_scale_factor : float = 1):
+                 pos_scale_factor : float = 1, vel_scale_factor : float = 1, acc_scale_factor : float = 1, scale_factor : float = 1):
         self._merged : Optional[pandas.DataFrame] = None
         self._param_set_id: str = param_set_id
         self._action_name: str = action_name
@@ -47,6 +44,7 @@ class SimulationGapData:
         self._pos_gap_factor = pos_scale_factor
         self._vel_gap_factor = vel_scale_factor
         self._acc_gap_factor = acc_scale_factor
+        self._scale_factor = scale_factor
 
     def load(self) -> bool:
         if self.loaded:
@@ -264,7 +262,7 @@ class SimulationGapData:
         d_a = self.get_acc_gaps(sensor_names, start_index, end_index)
         d_total = {}
         for joint in d_p.keys():
-            d_total[joint] = [(p + v + a)/SCALE_FACTOR for p,v,a in zip(d_p[joint], d_v[joint], d_a[joint])]
+            d_total[joint] = [(p + v + a)/self._scale_factor for p,v,a in zip(d_p[joint], d_v[joint], d_a[joint])]
         return d_total
 
     # -------- average for joints --------

@@ -22,6 +22,7 @@ class SimulationGapHandler:
         self._max_pos = df["pos"].iloc[0]
         self._max_vel = df["vel"].iloc[0]
         self._max_acc = df["acc"].iloc[0]
+        self._scale_factor = df["scale"].iloc[0]
         self._num_loaded_logs = 0
         self._invalid_logs = {}
         self._num_invalid_logs = 0
@@ -33,7 +34,7 @@ class SimulationGapHandler:
         add a new simulationGapData object based on the given values
         """
         new_data = SimulationGapData(self._param_set_id, action_name, recording_date, log_index,
-                              self._max_pos, self._max_vel, self._max_acc)
+                              self._max_pos, self._max_vel, self._max_acc, self._scale_factor)
         if new_data.load():
             if action_name not in self._sim_gap_data.keys():
                 self._sim_gap_data[action_name] = []

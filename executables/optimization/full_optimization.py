@@ -7,11 +7,7 @@ from __future__ import annotations
 import os
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 
-
-from src import SimOptimizer,PATH_OUTPUT, Hyperparameters, SimulatorHandler
-
-from src.Optimizer.Parameter import PARAMETER_SET_2
-from src import get_test_data, get_train_data
+from src import SimOptimizer,PATH_OUTPUT, Hyperparameters, SimulatorHandler, PARAMETER_SET_2, get_test_data, get_train_data
 
 import logging
 logger = logging.getLogger("global_logger")
