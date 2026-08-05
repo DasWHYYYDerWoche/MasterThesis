@@ -8,7 +8,7 @@ ACTION_NAMES = ["kick_left", "kick_right",
                 "turn_left", "turn_right",
                 "standup_back", "standup_front"]
 
-action_shorthand = {
+action_shorthands = {
     "combined" : "Comb.",
     "kick_left": "KL",
     "kick_right": "KR",

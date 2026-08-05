@@ -47,6 +47,15 @@ class SimulationGapHandler:
             else:
                 self._invalid_logs[action_name] =+ 1
 
+    def remove(self, action_name: str, recording_date: str, log_index: int):
+        target = None
+        for gap_data in self._sim_gap_data[action_name]:
+            if gap_data.recording_date == recording_date and gap_data.log_index == log_index:
+                target = gap_data
+                break
+        if target:
+            self._sim_gap_data[action_name].remove(target)
+
     def get(self, action_name: str, recording_date: str, log_index: int) -> Optional[SimulationGapData]:
         if action_name not in self._sim_gap_data.keys():
             return None

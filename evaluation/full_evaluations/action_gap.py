@@ -51,7 +51,7 @@ for action in non_falldown_actions:
     non_falldown_values.extend(gyro_gaps[action])
 non_falldown_mean = np.nanmean(non_falldown_values)
 
-labels = [action_shorthand[key] for key in gyro_gaps.keys()]
+labels = [action_shorthands[key] for key in gyro_gaps.keys()]
 values = list(gyro_gaps.values())
 
 plt.boxplot(
@@ -109,7 +109,7 @@ plt.xlabel("Action")
 plt.ylabel("Simulation Gap")
 plt.grid(visible=True, axis="y")
 values = action_gaps.values()
-labels = [action_shorthand[key] for key in action_gaps.keys()]
+labels = [action_shorthands[key] for key in action_gaps.keys()]
 plt.boxplot(values, tick_labels=labels)
 plt.savefig(folder + "/action_gaps_comb.pdf", bbox_inches='tight')
 stats2 = boxplot_stats(values, labels=labels)

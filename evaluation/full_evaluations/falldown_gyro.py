@@ -2,8 +2,8 @@ from src import *
 import matplotlib.pyplot as plt
 import numpy as np
 
-folder = "maxForce"
-param_name = "max_force_2.1"
+folder = "default"
+param_name = "default"
 
 data = get_combined_data()
 sim_params = SimulationParameters(param_name)

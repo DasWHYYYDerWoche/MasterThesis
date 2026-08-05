@@ -11,6 +11,8 @@ JOINT_NAMES = [
 "rHipYawPitch","rHipRoll","rHipPitch","rKneePitch","rAnklePitch","rAnkleRoll",
 ]
 
+SENSOR_NAMES = JOINT_NAMES + ["x_gyro", "y_gyro", "z_gyro"]
+
 WEIGHTS = {
     # Head
     "headYaw": 0,
@@ -110,14 +112,14 @@ ABBREVIATIONS = {
     "rElbowRoll": "RER",
     "rWristYaw": "RWY",
 
-    "lHipYawPitch": "LHipYP",
+    "lHipYawPitch": "HipYP",
     "lHipRoll": "LHipR",
     "lHipPitch": "LHipP",
     "lKneePitch": "LKP",
     "lAnklePitch": "LAP",
     "lAnkleRoll": "LAR",
 
-    "rHipYawPitch": "RHipYP",
+    "rHipYawPitch": "HipYP",
     "rHipRoll": "RHipR",
     "rHipPitch": "RHipP",
     "rKneePitch": "RKP",

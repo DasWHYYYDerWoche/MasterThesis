@@ -4,23 +4,22 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b8d71ec4-48b2-4ec5-b1a5-6fe6d26ab8b8" name="Changes" comment="updating documentation for the executables part 1">
-      <change afterPath="$PROJECT_DIR$/executables/figure_generation/crossover_search.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/executables/figure_generation/tournament_search.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/executables/optimization/tournament_size_search.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/input_files/tournament_size_search/ts2_hallOfFame.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/input_files/tournament_size_search/ts3_hallOfFame.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/input_files/tournament_size_search/ts4_hallOfFame.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/input_files/tournament_size_search/ts5_hallOfFame.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/input_files/tournament_size_search/ts6_hallOfFame.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/Utils/Plotter.py" afterDir="false" />
+    <list default="true" id="b8d71ec4-48b2-4ec5-b1a5-6fe6d26ab8b8" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/executables/figure_generation/action_boxplots.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/executables/figure_generation/diff_boxplots.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/executables/figure_generation/gyroscope_boxplot.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/executables/figure_generation/joint_boxplot.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/executables/figure_generation/joint_diff_boxplot.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/executables/figure_generation/max_force_search.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/output_files/normalization_factors.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/executables/extract_replay/replay_missing.py" beforeDir="false" afterPath="$PROJECT_DIR$/executables/extract_replay/replay_missing.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/executables/optimization/full_optimization.py" beforeDir="false" afterPath="$PROJECT_DIR$/executables/optimization/full_optimization.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/executables/statistics/normalization_factors.py" beforeDir="false" afterPath="$PROJECT_DIR$/executables/statistics/normalization_factors.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Utils/SimulationGapData.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Utils/SimulationGapData.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/evaluation/full_evaluations/action_gap.py" beforeDir="false" afterPath="$PROJECT_DIR$/evaluation/full_evaluations/action_gap.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/evaluation/full_evaluations/falldown_gyro.py" beforeDir="false" afterPath="$PROJECT_DIR$/evaluation/full_evaluations/falldown_gyro.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/evaluation/full_evaluations/mean_distance.py" beforeDir="false" afterPath="$PROJECT_DIR$/evaluation/full_evaluations/mean_distance.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Constants/Actions.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Constants/Actions.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Constants/Joints.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Constants/Joints.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Utils/Plotter.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Utils/Plotter.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Utils/SimulationGapHandler.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Utils/SimulationGapHandler.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Utils/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Utils/__init__.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -61,53 +60,59 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "Python.Joint.executor": "Run",
-    "Python.OneMaxTest.executor": "Run",
-    "Python.OneMaxTestShort.executor": "Run",
-    "Python.SimulatorHandler.executor": "Run",
-    "Python.action_gap.executor": "Run",
-    "Python.calculate_maximums (1).executor": "Run",
-    "Python.calculate_maximums.executor": "Run",
-    "Python.calculate_statistics (1).executor": "Run",
-    "Python.calculate_statistics (2).executor": "Run",
-    "Python.calculate_statistics.executor": "Run",
-    "Python.calculate_train_test_split (1).executor": "Run",
-    "Python.compare_csvs.executor": "Run",
-    "Python.count_actions.executor": "Run",
-    "Python.crossover_search.executor": "Run",
-    "Python.data_sheet_analysis.executor": "Run",
-    "Python.extract_all.executor": "Run",
-    "Python.extract_missing.executor": "Run",
-    "Python.grid_search.executor": "Run",
-    "Python.max_force_search.executor": "Run",
-    "Python.mean_distance.executor": "Run",
-    "Python.motor_limits.executor": "Run",
-    "Python.normalization_factors.executor": "Run",
-    "Python.redo_all (1).executor": "Run",
-    "Python.redo_all.executor": "Run",
-    "Python.replay_missing.executor": "Run",
-    "Python.run_max_force.executor": "Run",
-    "Python.run_max_values.executor": "Run",
-    "Python.run_norm_factors.executor": "Run",
-    "Python.run_norm_factors_2.executor": "Run",
-    "Python.simple_optimization (1).executor": "Run",
-    "Python.simple_optimization.executor": "Run",
-    "Python.single_example.executor": "Run",
-    "Python.single_run_optimization (1).executor": "Run",
-    "Python.single_trajectory_optimization.executor": "Run",
-    "Python.tournament_search.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "master",
-    "ignore.virus.scanning.warn.message": "true",
-    "last_opened_file_path": "C:/Users/felix/PycharmProjects/Thesis/executables/random_shit",
-    "settings.editor.selected.configurable": "preferences.editor"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;Python.Joint.executor&quot;: &quot;Run&quot;,
+    &quot;Python.OneMaxTest.executor&quot;: &quot;Run&quot;,
+    &quot;Python.OneMaxTestShort.executor&quot;: &quot;Run&quot;,
+    &quot;Python.SimulatorHandler.executor&quot;: &quot;Run&quot;,
+    &quot;Python.action_boxplots.executor&quot;: &quot;Run&quot;,
+    &quot;Python.action_gap.executor&quot;: &quot;Run&quot;,
+    &quot;Python.calculate_maximums (1).executor&quot;: &quot;Run&quot;,
+    &quot;Python.calculate_maximums.executor&quot;: &quot;Run&quot;,
+    &quot;Python.calculate_statistics (1).executor&quot;: &quot;Run&quot;,
+    &quot;Python.calculate_statistics (2).executor&quot;: &quot;Run&quot;,
+    &quot;Python.calculate_statistics.executor&quot;: &quot;Run&quot;,
+    &quot;Python.calculate_train_test_split (1).executor&quot;: &quot;Run&quot;,
+    &quot;Python.compare_csvs.executor&quot;: &quot;Run&quot;,
+    &quot;Python.count_actions.executor&quot;: &quot;Run&quot;,
+    &quot;Python.crossover_search.executor&quot;: &quot;Run&quot;,
+    &quot;Python.data_sheet_analysis.executor&quot;: &quot;Run&quot;,
+    &quot;Python.diff_boxplots.executor&quot;: &quot;Run&quot;,
+    &quot;Python.extract_all.executor&quot;: &quot;Run&quot;,
+    &quot;Python.extract_missing.executor&quot;: &quot;Run&quot;,
+    &quot;Python.falldown_gyro.executor&quot;: &quot;Run&quot;,
+    &quot;Python.grid_search.executor&quot;: &quot;Run&quot;,
+    &quot;Python.gyroscope_boxplot.executor&quot;: &quot;Run&quot;,
+    &quot;Python.joint_boxplot.executor&quot;: &quot;Run&quot;,
+    &quot;Python.joint_diff_boxplot.executor&quot;: &quot;Run&quot;,
+    &quot;Python.max_force_search.executor&quot;: &quot;Run&quot;,
+    &quot;Python.mean_distance.executor&quot;: &quot;Run&quot;,
+    &quot;Python.motor_limits.executor&quot;: &quot;Run&quot;,
+    &quot;Python.normalization_factors.executor&quot;: &quot;Run&quot;,
+    &quot;Python.redo_all (1).executor&quot;: &quot;Run&quot;,
+    &quot;Python.redo_all.executor&quot;: &quot;Run&quot;,
+    &quot;Python.replay_missing.executor&quot;: &quot;Run&quot;,
+    &quot;Python.run_max_force.executor&quot;: &quot;Run&quot;,
+    &quot;Python.run_max_values.executor&quot;: &quot;Run&quot;,
+    &quot;Python.run_norm_factors.executor&quot;: &quot;Run&quot;,
+    &quot;Python.run_norm_factors_2.executor&quot;: &quot;Run&quot;,
+    &quot;Python.simple_optimization (1).executor&quot;: &quot;Run&quot;,
+    &quot;Python.simple_optimization.executor&quot;: &quot;Run&quot;,
+    &quot;Python.single_example.executor&quot;: &quot;Run&quot;,
+    &quot;Python.single_run_optimization (1).executor&quot;: &quot;Run&quot;,
+    &quot;Python.single_trajectory_optimization.executor&quot;: &quot;Run&quot;,
+    &quot;Python.tournament_search.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/felix/PycharmProjects/Thesis/executables/random_shit&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.editor&quot;
   }
-}]]></component>
+}</component>
   <component name="PyConsoleOptionsProvider">
     <option name="myPythonConsoleState">
       <console-settings module-name="Thesis" is-module-sdk="true">
@@ -131,30 +136,8 @@
       <recent name="C:\Users\felix\PycharmProjects\Thesis\input_files\output_comparison_set_1" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.crossover_search">
-    <configuration name="SimulatorHandler" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="Thesis" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src/Simulator" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/Simulator/SimulatorHandler.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="crossover_search" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+  <component name="RunManager" selected="Python.diff_boxplots">
+    <configuration name="action_boxplots" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="Thesis" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -167,7 +150,7 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/executables/figure_generation/crossover_search.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/executables/figure_generation/action_boxplots.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -176,51 +159,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="normalization_factors" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="Thesis" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/executables/statistics" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/executables/statistics/normalization_factors.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="replay_missing" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="Thesis" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/executables/extract_replay" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/executables/extract_replay/replay_missing.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="tournament_search" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="diff_boxplots" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="Thesis" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -233,7 +172,73 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/executables/figure_generation/tournament_search.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/executables/figure_generation/diff_boxplots.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="falldown_gyro" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="Thesis" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/evaluation/full_evaluations" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/evaluation/full_evaluations/falldown_gyro.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="joint_boxplot" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="Thesis" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/executables/figure_generation" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/executables/figure_generation/joint_boxplot.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="joint_diff_boxplot" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="Thesis" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/executables/figure_generation" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/executables/figure_generation/joint_diff_boxplot.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -244,11 +249,11 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.crossover_search" />
-        <item itemvalue="Python.tournament_search" />
-        <item itemvalue="Python.normalization_factors" />
-        <item itemvalue="Python.replay_missing" />
-        <item itemvalue="Python.SimulatorHandler" />
+        <item itemvalue="Python.diff_boxplots" />
+        <item itemvalue="Python.action_boxplots" />
+        <item itemvalue="Python.joint_diff_boxplot" />
+        <item itemvalue="Python.joint_boxplot" />
+        <item itemvalue="Python.falldown_gyro" />
       </list>
     </recent_temporary>
   </component>
@@ -266,14 +271,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1767698678177</updated>
-    </task>
-    <task id="LOCAL-00031" summary="fix:&#10;moved filehandlers from simulator into separate files">
-      <option name="closed" value="true" />
-      <created>1771261737596</created>
-      <option name="number" value="00031" />
-      <option name="presentableId" value="LOCAL-00031" />
-      <option name="project" value="LOCAL" />
-      <updated>1771261737596</updated>
     </task>
     <task id="LOCAL-00032" summary="fix:&#10;moved files again and again help me pls&#10;feature:&#10;SimulatorSettings can now be saved to a file and loaded">
       <option name="closed" value="true" />
@@ -659,7 +656,15 @@
       <option name="project" value="LOCAL" />
       <updated>1785423739257</updated>
     </task>
-    <option name="localTasksCounter" value="80" />
+    <task id="LOCAL-00080" summary="updated scale factor calculation and added scripts to generate images for crossoverpb and tournamentsize searches">
+      <option name="closed" value="true" />
+      <created>1785577825842</created>
+      <option name="number" value="00080" />
+      <option name="presentableId" value="LOCAL-00080" />
+      <option name="project" value="LOCAL" />
+      <updated>1785577825842</updated>
+    </task>
+    <option name="localTasksCounter" value="81" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -674,7 +679,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="features: moved a bunch of files around to fix import problems..." />
     <MESSAGE value="features: testing with optimization (it works kinda)" />
     <MESSAGE value="fix: updated calculation of weights for pos vel and acc when calculating sim gap&#10;feature: added boolean to loggerT.cfg which is used to move the robot for falldown states" />
     <MESSAGE value="feature: standup_back extraction, replay and sim gap work correctly" />
@@ -699,6 +703,7 @@
     <MESSAGE value="created count action script" />
     <MESSAGE value="updating documentation for most of the src files" />
     <MESSAGE value="updating documentation for the executables part 1" />
-    <option name="LAST_COMMIT_MESSAGE" value="updating documentation for the executables part 1" />
+    <MESSAGE value="updated scale factor calculation and added scripts to generate images for crossoverpb and tournamentsize searches" />
+    <option name="LAST_COMMIT_MESSAGE" value="updated scale factor calculation and added scripts to generate images for crossoverpb and tournamentsize searches" />
   </component>
 </project>

@@ -64,14 +64,14 @@ plt.xlabel("Action")
 plt.ylabel("Simulation Gap Difference")
 plt.grid(visible=True, axis="y")
 values = action_gaps_diff.values()
-labels = [action_shorthand[key] for key in action_gaps_diff.keys()]
+labels = [action_shorthands[key] for key in action_gaps_diff.keys()]
 plt.boxplot(values, tick_labels=labels)
 plt.savefig(folder + "/diff_base.pdf", bbox_inches='tight')
 stats2 = boxplot_stats(action_gaps_diff.values(), labels=action_gaps_diff.keys())
 # Convert to table
 table2 = pd.DataFrame([
     {
-        "Label": action_shorthand[s["label"]],
+        "Label": action_shorthands[s["label"]],
         "Lower whisker": s["whislo"],
         "Q1": s["q1"],
         "Median": s["med"],
